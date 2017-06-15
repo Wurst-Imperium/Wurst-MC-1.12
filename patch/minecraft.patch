@@ -1,45 +1,70 @@
-From 3b08070926d168d9aa75f320f18fcf2e1d09aa12 Mon Sep 17 00:00:00 2001
+From 9c034f0d620c87ca14f335728d60390c815eb781 Mon Sep 17 00:00:00 2001
 From: Alexander01998 <contact.wurstimperium@gmail.com>
-Date: Thu, 1 Jun 2017 11:05:25 +0200
+Date: Thu, 15 Jun 2017 18:43:39 +0200
 Subject: [PATCH] mod
 
 ---
  Start.java                                         |   2 +-
- net/minecraft/block/Block.java                     |  42 ++--
+ net/minecraft/block/Block.java                     |  40 ++--
  net/minecraft/block/BlockCactus.java               |   7 +
  net/minecraft/block/BlockLiquid.java               |  15 +-
  net/minecraft/block/BlockSlab.java                 |   6 +-
  net/minecraft/block/BlockSoulSand.java             |   6 +
- net/minecraft/client/Minecraft.java                | 196 +++++++++--------
- net/minecraft/client/entity/EntityPlayerSP.java    | 103 ++++++---
+ net/minecraft/client/Minecraft.java                | 210 +++++++++---------
+ net/minecraft/client/entity/EntityPlayerSP.java    | 117 ++++++----
  net/minecraft/client/gui/FontRenderer.java         |  17 +-
- net/minecraft/client/gui/GuiButton.java            |  19 +-
+ net/minecraft/client/gui/GuiButton.java            |  28 ++-
+ net/minecraft/client/gui/GuiButtonImage.java       |   2 +-
+ net/minecraft/client/gui/GuiButtonLanguage.java    |   2 +-
+ net/minecraft/client/gui/GuiButtonToggle.java      |   2 +-
+ .../GuiClickableScrolledSelectionListProxy.java    |   4 +-
+ net/minecraft/client/gui/GuiCreateFlatWorld.java   |   2 +-
+ .../client/gui/GuiCustomizeWorldScreen.java        |   4 +-
  net/minecraft/client/gui/GuiDisconnected.java      |  81 +++++++
+ net/minecraft/client/gui/GuiFlatPresets.java       |   2 +-
  net/minecraft/client/gui/GuiGameOver.java          |  14 +-
- net/minecraft/client/gui/GuiIngame.java            |  21 +-
+ net/minecraft/client/gui/GuiIngame.java            |  23 +-
  net/minecraft/client/gui/GuiIngameMenu.java        |  49 ++++-
- net/minecraft/client/gui/GuiMainMenu.java          |  41 +++-
+ net/minecraft/client/gui/GuiKeyBindingList.java    |   4 +-
+ net/minecraft/client/gui/GuiLanguage.java          |   2 +-
+ net/minecraft/client/gui/GuiListExtended.java      |   2 +-
+ net/minecraft/client/gui/GuiLockIconButton.java    |   2 +-
+ net/minecraft/client/gui/GuiMainMenu.java          |  43 +++-
  net/minecraft/client/gui/GuiMemoryErrorScreen.java |   4 +-
+ net/minecraft/client/gui/GuiMerchant.java          |   2 +-
  net/minecraft/client/gui/GuiMultiplayer.java       |  99 +++++++--
  net/minecraft/client/gui/GuiNewChat.java           |  20 +-
- net/minecraft/client/gui/GuiScreen.java            |   6 +-
- net/minecraft/client/gui/GuiScreenBook.java        |  77 ++++++-
+ net/minecraft/client/gui/GuiOptionsRowList.java    |   4 +-
+ net/minecraft/client/gui/GuiPageButtonList.java    |   2 +-
+ net/minecraft/client/gui/GuiScreen.java            |  27 ++-
+ net/minecraft/client/gui/GuiScreenBook.java        |  79 ++++++-
+ .../client/gui/GuiScreenCustomizePresets.java      |   2 +-
  net/minecraft/client/gui/GuiScreenServerList.java  |  10 +-
+ .../gui/GuiSimpleScrolledSelectionListProxy.java   |   2 +-
+ net/minecraft/client/gui/GuiSlot.java              |   4 +-
+ net/minecraft/client/gui/GuiSlotRealmsProxy.java   |   2 +-
+ net/minecraft/client/gui/GuiSnooper.java           |   2 +-
  .../client/gui/ServerListEntryNormal.java          |  33 ++-
- net/minecraft/client/gui/achievement/GuiStats.java |  22 +-
+ net/minecraft/client/gui/achievement/GuiStats.java |  30 ++-
+ net/minecraft/client/gui/inventory/GuiBeacon.java  |   2 +-
  net/minecraft/client/gui/inventory/GuiChest.java   |  76 +++++++
  .../client/gui/inventory/GuiContainer.java         |  11 +-
  .../client/gui/inventory/GuiEditSign.java          |  19 +-
+ .../client/gui/recipebook/GuiButtonRecipe.java     |   2 +-
+ .../client/gui/recipebook/GuiButtonRecipeTab.java  |   2 +-
+ .../client/gui/recipebook/GuiRecipeBook.java       |   4 +-
+ .../client/gui/recipebook/GuiRecipeOverlay.java    |   4 +-
+ .../client/gui/recipebook/RecipeBookPage.java      |   6 +-
  .../client/multiplayer/GuiConnecting.java          |  14 +-
- .../client/multiplayer/PlayerControllerMP.java     |  34 +--
- net/minecraft/client/multiplayer/ServerList.java   |   6 +
- .../client/network/NetHandlerPlayClient.java       | 191 ++++-------------
- .../client/network/NetworkPlayerInfo.java          |   8 +
+ .../client/multiplayer/PlayerControllerMP.java     |  38 ++--
+ net/minecraft/client/multiplayer/ServerList.java   |  15 +-
+ .../client/network/NetHandlerPlayClient.java       | 194 +++--------------
+ .../client/network/NetworkPlayerInfo.java          |  15 +-
  .../client/renderer/BlockFluidRenderer.java        |   8 +
  .../client/renderer/BlockModelRenderer.java        |  14 +-
  net/minecraft/client/renderer/EntityRenderer.java  | 106 ++++++---
  .../client/renderer/InventoryEffectRenderer.java   |  22 +-
- net/minecraft/client/renderer/ItemRenderer.java    |  10 +
+ net/minecraft/client/renderer/ItemRenderer.java    |  13 +-
  net/minecraft/client/renderer/chunk/VisGraph.java  |  11 +-
  net/minecraft/client/renderer/entity/Render.java   |  24 +++
  .../client/renderer/entity/RenderLivingBase.java   |  16 +-
@@ -47,23 +72,31 @@ Subject: [PATCH] mod
  .../client/renderer/texture/TextureUtil.java       |   2 +-
  net/minecraft/client/resources/SkinManager.java    |  25 ++-
  net/minecraft/client/settings/KeyBinding.java      |   2 +-
- net/minecraft/crash/CrashReport.java               |  25 ++-
+ net/minecraft/crash/CrashReport.java               |  20 +-
  net/minecraft/entity/Entity.java                   | 236 +++++++++++----------
- net/minecraft/entity/EntityLivingBase.java         |  39 ++--
- net/minecraft/entity/player/EntityPlayer.java      |  40 ++--
+ net/minecraft/entity/EntityLiving.java             |   4 +-
+ net/minecraft/entity/EntityLivingBase.java         |  47 ++--
+ net/minecraft/entity/item/EntityMinecart.java      |   2 +-
+ net/minecraft/entity/monster/EntitySlime.java      |   2 +-
+ net/minecraft/entity/passive/AbstractHorse.java    |   2 +-
+ net/minecraft/entity/passive/EntityBat.java        |   2 +-
+ net/minecraft/entity/player/EntityPlayer.java      |  44 ++--
+ net/minecraft/entity/player/EntityPlayerMP.java    |   2 +-
  net/minecraft/item/ItemSword.java                  |   2 +-
  net/minecraft/item/ItemTool.java                   |   2 +-
- net/minecraft/network/NetworkManager.java          |  57 +++--
+ net/minecraft/network/NetworkManager.java          |  56 +++--
  net/minecraft/potion/PotionEffect.java             |  11 +-
- net/minecraft/realms/Realms.java                   |  12 +-
+ net/minecraft/realms/RealmsButton.java             |   2 +-
  net/minecraft/tileentity/TileEntitySign.java       |   2 +-
+ net/minecraft/util/MovementInput.java              |   4 +-
+ net/minecraft/util/MovementInputFromOptions.java   |   8 +-
  net/minecraft/util/ScreenShotHelper.java           |  15 +-
- net/minecraft/util/Timer.java                      |   4 +
+ net/minecraft/util/Timer.java                      |  14 +-
  net/minecraft/world/World.java                     |  35 +--
- 56 files changed, 1343 insertions(+), 632 deletions(-)
+ 89 files changed, 1437 insertions(+), 734 deletions(-)
 
 diff --git a/Start.java b/Start.java
-index ae0025f..9b0eed6 100644
+index ae0025f..46ccf4f 100644
 --- a/Start.java
 +++ b/Start.java
 @@ -8,7 +8,7 @@ public class Start
@@ -71,12 +104,12 @@ index ae0025f..9b0eed6 100644
      public static void main(String[] args)
      {
 -        Main.main(concat(new String[] {"--version", "mcp", "--accessToken", "0", "--assetsDir", "assets", "--assetIndex", "1.8", "--userProperties", "{}"}, args));
-+        Main.main(concat(new String[] {"--version", "mcp", "--accessToken", "0", "--assetsDir", "assets", "--assetIndex", "1.11", "--userProperties", "{}"}, args));
++        Main.main(concat(new String[] {"--version", "mcp", "--accessToken", "0", "--assetsDir", "assets", "--assetIndex", "1.12", "--userProperties", "{}"}, args));
      }
  
      public static <T> T[] concat(T[] first, T[] second)
 diff --git a/net/minecraft/block/Block.java b/net/minecraft/block/Block.java
-index 6d7a6ee..963909e 100644
+index 28bbdfc..b2b6fec 100644
 --- a/net/minecraft/block/Block.java
 +++ b/net/minecraft/block/Block.java
 @@ -1,11 +1,14 @@
@@ -96,7 +129,7 @@ index 6d7a6ee..963909e 100644
  import net.minecraft.block.material.EnumPushReaction;
  import net.minecraft.block.material.MapColor;
  import net.minecraft.block.material.Material;
-@@ -28,15 +31,7 @@ import net.minecraft.item.ItemBlock;
+@@ -30,15 +33,7 @@ import net.minecraft.item.ItemBlock;
  import net.minecraft.item.ItemStack;
  import net.minecraft.stats.StatList;
  import net.minecraft.tileentity.TileEntity;
@@ -113,7 +146,7 @@ index 6d7a6ee..963909e 100644
  import net.minecraft.util.math.AxisAlignedBB;
  import net.minecraft.util.math.BlockPos;
  import net.minecraft.util.math.MathHelper;
-@@ -47,6 +42,8 @@ import net.minecraft.util.text.translation.I18n;
+@@ -49,6 +44,8 @@ import net.minecraft.util.text.translation.I18n;
  import net.minecraft.world.Explosion;
  import net.minecraft.world.IBlockAccess;
  import net.minecraft.world.World;
@@ -122,7 +155,7 @@ index 6d7a6ee..963909e 100644
  
  public class Block
  {
-@@ -378,7 +375,12 @@ public class Block
+@@ -390,7 +387,12 @@ public class Block
      @Deprecated
      public boolean isFullCube(IBlockState state)
      {
@@ -136,7 +169,7 @@ index 6d7a6ee..963909e 100644
      }
  
      @Deprecated
-@@ -487,6 +489,10 @@ public class Block
+@@ -499,6 +501,10 @@ public class Block
      @Deprecated
      public boolean shouldSideBeRendered(IBlockState blockState, IBlockAccess blockAccess, BlockPos pos, EnumFacing side)
      {
@@ -147,7 +180,7 @@ index 6d7a6ee..963909e 100644
          AxisAlignedBB axisalignedbb = blockState.getBoundingBox(blockAccess, pos);
  
          switch (side)
-@@ -593,6 +599,10 @@ public class Block
+@@ -603,6 +609,10 @@ public class Block
  
      public boolean canCollideCheck(IBlockState state, boolean hitIfLiquid)
      {
@@ -158,23 +191,21 @@ index 6d7a6ee..963909e 100644
          return this.isCollidable();
      }
  
-@@ -685,7 +695,13 @@ public class Block
-     public float getPlayerRelativeBlockHardness(IBlockState state, EntityPlayer player, World worldIn, BlockPos pos)
-     {
-         float f = state.getBlockHardness(worldIn, pos);
--        return f < 0.0F ? 0.0F : (!player.canHarvestBlock(state) ? player.getDigSpeed(state) / f / 100.0F : player.getDigSpeed(state) / f / 30.0F);
-+        
-+		// TODO: Client
-+		return f < 0.0F ? 0.0F
-+			: (!player.canHarvestBlock(state)
+@@ -702,7 +712,11 @@ public class Block
+         }
+         else
+         {
+-            return !player.canHarvestBlock(state) ? player.getDigSpeed(state) / f / 100.0F : player.getDigSpeed(state) / f / 30.0F;
++			// TODO: Client
++			return (!player.canHarvestBlock(state)
 +				? player.getDigSpeed(state) / f / 100.0F
 +				: player.getDigSpeed(state) / f / 30.0F)
 +				* WurstClient.INSTANCE.mods.fastBreakMod.getHardnessModifier();
+         }
      }
  
-     /**
 diff --git a/net/minecraft/block/BlockCactus.java b/net/minecraft/block/BlockCactus.java
-index f170b8b..5ea582d 100644
+index 086eadd..722cc51 100644
 --- a/net/minecraft/block/BlockCactus.java
 +++ b/net/minecraft/block/BlockCactus.java
 @@ -1,6 +1,7 @@
@@ -185,7 +216,7 @@ index f170b8b..5ea582d 100644
  import net.minecraft.block.material.Material;
  import net.minecraft.block.properties.IProperty;
  import net.minecraft.block.properties.PropertyInteger;
-@@ -16,6 +17,7 @@ import net.minecraft.util.math.AxisAlignedBB;
+@@ -17,6 +18,7 @@ import net.minecraft.util.math.AxisAlignedBB;
  import net.minecraft.util.math.BlockPos;
  import net.minecraft.world.IBlockAccess;
  import net.minecraft.world.World;
@@ -193,7 +224,7 @@ index f170b8b..5ea582d 100644
  
  public class BlockCactus extends Block
  {
-@@ -65,6 +67,11 @@ public class BlockCactus extends Block
+@@ -66,6 +68,11 @@ public class BlockCactus extends Block
  
      public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, IBlockAccess worldIn, BlockPos pos)
      {
@@ -206,7 +237,7 @@ index f170b8b..5ea582d 100644
      }
  
 diff --git a/net/minecraft/block/BlockLiquid.java b/net/minecraft/block/BlockLiquid.java
-index 80533d7..83b8ee6 100644
+index 98b6e58..1c3ec05 100644
 --- a/net/minecraft/block/BlockLiquid.java
 +++ b/net/minecraft/block/BlockLiquid.java
 @@ -1,7 +1,9 @@
@@ -219,7 +250,7 @@ index 80533d7..83b8ee6 100644
  import net.minecraft.block.material.Material;
  import net.minecraft.block.properties.IProperty;
  import net.minecraft.block.properties.PropertyInteger;
-@@ -24,6 +26,7 @@ import net.minecraft.util.math.MathHelper;
+@@ -25,6 +27,7 @@ import net.minecraft.util.math.MathHelper;
  import net.minecraft.util.math.Vec3d;
  import net.minecraft.world.IBlockAccess;
  import net.minecraft.world.World;
@@ -227,7 +258,7 @@ index 80533d7..83b8ee6 100644
  
  public abstract class BlockLiquid extends Block
  {
-@@ -44,12 +47,16 @@ public abstract class BlockLiquid extends Block
+@@ -45,12 +48,16 @@ public abstract class BlockLiquid extends Block
      @Nullable
      public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, IBlockAccess worldIn, BlockPos pos)
      {
@@ -246,7 +277,7 @@ index 80533d7..83b8ee6 100644
      }
  
      /**
-@@ -91,7 +98,9 @@ public abstract class BlockLiquid extends Block
+@@ -92,7 +99,9 @@ public abstract class BlockLiquid extends Block
  
      public boolean canCollideCheck(IBlockState state, boolean hitIfLiquid)
      {
@@ -258,7 +289,7 @@ index 80533d7..83b8ee6 100644
  
      /**
 diff --git a/net/minecraft/block/BlockSlab.java b/net/minecraft/block/BlockSlab.java
-index 2e96195..8af9b3c 100644
+index 9b4b1ec..b5aaa65 100644
 --- a/net/minecraft/block/BlockSlab.java
 +++ b/net/minecraft/block/BlockSlab.java
 @@ -1,6 +1,7 @@
@@ -269,7 +300,7 @@ index 2e96195..8af9b3c 100644
  import net.minecraft.block.material.MapColor;
  import net.minecraft.block.material.Material;
  import net.minecraft.block.properties.IProperty;
-@@ -15,6 +16,7 @@ import net.minecraft.util.math.AxisAlignedBB;
+@@ -16,6 +17,7 @@ import net.minecraft.util.math.AxisAlignedBB;
  import net.minecraft.util.math.BlockPos;
  import net.minecraft.world.IBlockAccess;
  import net.minecraft.world.World;
@@ -277,7 +308,7 @@ index 2e96195..8af9b3c 100644
  
  public abstract class BlockSlab extends Block
  {
-@@ -80,7 +82,9 @@ public abstract class BlockSlab extends Block
+@@ -112,7 +114,9 @@ public abstract class BlockSlab extends Block
  
      public boolean isFullCube(IBlockState state)
      {
@@ -320,7 +351,7 @@ index b48d9bd..88f7932 100644
          entityIn.motionZ *= 0.4D;
      }
 diff --git a/net/minecraft/client/Minecraft.java b/net/minecraft/client/Minecraft.java
-index 20bd020..d317882 100644
+index 2dea5d6..a735dd5 100644
 --- a/net/minecraft/client/Minecraft.java
 +++ b/net/minecraft/client/Minecraft.java
 @@ -1,18 +1,5 @@
@@ -342,10 +373,14 @@ index 20bd020..d317882 100644
  import java.awt.image.BufferedImage;
  import java.io.File;
  import java.io.IOException;
-@@ -35,28 +22,48 @@ import java.util.UUID;
+@@ -35,34 +22,49 @@ import java.util.UUID;
  import java.util.concurrent.Callable;
  import java.util.concurrent.Executors;
  import java.util.concurrent.FutureTask;
+-import java.util.function.Consumer;
+-import java.util.function.Function;
+-import java.util.function.Predicate;
+ import java.util.stream.Collectors;
 +
  import javax.annotation.Nullable;
  import javax.imageio.ImageIO;
@@ -400,16 +435,19 @@ index 20bd020..d317882 100644
 -import net.minecraft.client.gui.GuiScreen;
 -import net.minecraft.client.gui.GuiScreenWorking;
 -import net.minecraft.client.gui.GuiSleepMP;
+-import net.minecraft.client.gui.GuiWinGame;
 -import net.minecraft.client.gui.ScaledResolution;
+-import net.minecraft.client.gui.ScreenChatOptions;
 +import net.minecraft.client.gui.*;
- import net.minecraft.client.gui.achievement.GuiAchievement;
- import net.minecraft.client.gui.inventory.GuiInventory;
- import net.minecraft.client.main.GameConfiguration;
-@@ -67,15 +74,7 @@ import net.minecraft.client.multiplayer.WorldClient;
+ import net.minecraft.client.gui.advancements.GuiScreenAdvancements;
+ import net.minecraft.client.gui.chat.NarratorChatListener;
+ import net.minecraft.client.gui.inventory.GuiContainerCreative;
+@@ -77,15 +79,7 @@ import net.minecraft.client.multiplayer.WorldClient;
  import net.minecraft.client.network.NetHandlerLoginClient;
  import net.minecraft.client.network.NetHandlerPlayClient;
  import net.minecraft.client.particle.ParticleManager;
 -import net.minecraft.client.renderer.BlockRendererDispatcher;
+-import net.minecraft.client.renderer.BufferBuilder;
 -import net.minecraft.client.renderer.EntityRenderer;
 -import net.minecraft.client.renderer.GlStateManager;
 -import net.minecraft.client.renderer.ItemRenderer;
@@ -417,12 +455,11 @@ index 20bd020..d317882 100644
 -import net.minecraft.client.renderer.RenderGlobal;
 -import net.minecraft.client.renderer.RenderItem;
 -import net.minecraft.client.renderer.Tessellator;
--import net.minecraft.client.renderer.VertexBuffer;
 +import net.minecraft.client.renderer.*;
  import net.minecraft.client.renderer.block.model.ModelManager;
  import net.minecraft.client.renderer.chunk.RenderChunk;
  import net.minecraft.client.renderer.color.BlockColors;
-@@ -87,28 +86,8 @@ import net.minecraft.client.renderer.texture.TextureManager;
+@@ -97,28 +91,8 @@ import net.minecraft.client.renderer.texture.TextureManager;
  import net.minecraft.client.renderer.texture.TextureMap;
  import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
  import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
@@ -450,10 +487,10 @@ index 20bd020..d317882 100644
 -import net.minecraft.client.resources.data.TextureMetadataSectionSerializer;
 +import net.minecraft.client.resources.*;
 +import net.minecraft.client.resources.data.*;
+ import net.minecraft.client.settings.CreativeSettings;
  import net.minecraft.client.settings.GameSettings;
  import net.minecraft.client.settings.KeyBinding;
- import net.minecraft.client.shader.Framebuffer;
-@@ -151,20 +130,8 @@ import net.minecraft.stats.IStatStringFormat;
+@@ -167,21 +141,8 @@ import net.minecraft.stats.RecipeBook;
  import net.minecraft.stats.StatisticsManager;
  import net.minecraft.tileentity.TileEntity;
  import net.minecraft.tileentity.TileEntitySkull;
@@ -465,6 +502,7 @@ index 20bd020..d317882 100644
 -import net.minecraft.util.MinecraftError;
 -import net.minecraft.util.MouseHelper;
 -import net.minecraft.util.MovementInputFromOptions;
+-import net.minecraft.util.NonNullList;
 -import net.minecraft.util.ReportedException;
 -import net.minecraft.util.ResourceLocation;
 -import net.minecraft.util.ScreenShotHelper;
@@ -475,7 +513,7 @@ index 20bd020..d317882 100644
  import net.minecraft.util.datafix.DataFixer;
  import net.minecraft.util.datafix.DataFixesManager;
  import net.minecraft.util.math.BlockPos;
-@@ -183,27 +150,22 @@ import net.minecraft.world.chunk.storage.AnvilSaveConverter;
+@@ -201,27 +162,22 @@ import net.minecraft.world.chunk.storage.AnvilSaveConverter;
  import net.minecraft.world.storage.ISaveFormat;
  import net.minecraft.world.storage.ISaveHandler;
  import net.minecraft.world.storage.WorldInfo;
@@ -507,15 +545,15 @@ index 20bd020..d317882 100644
  {
      private static final Logger LOGGER = LogManager.getLogger();
 -    private static final ResourceLocation LOCATION_MOJANG_PNG = new ResourceLocation("textures/gui/title/mojang.png");
-+    
++	
 +	// TODO: Client
 +	private static final ResourceLocation LOCATION_MOJANG_PNG =
 +		new ResourceLocation("wurst/wurst_loading.png");
-+    
++	
      public static final boolean IS_RUNNING_ON_MAC = Util.getOSType() == Util.EnumOS.OSX;
  
      /** A 10MiB preallocation to ensure the heap is reasonably sized. */
-@@ -236,7 +198,7 @@ public class Minecraft implements IThreadListener, ISnooperInfo
+@@ -254,7 +210,7 @@ public class Minecraft implements IThreadListener, ISnooperInfo
  
      /** True if the player is connected to a realms server */
      private boolean connectedToRealms;
@@ -524,16 +562,16 @@ index 20bd020..d317882 100644
  
      /** Instance of PlayerUsageSnooper. */
      private final Snooper usageSnooper = new Snooper("client", this, MinecraftServer.getCurrentTimeMillis());
-@@ -250,7 +212,7 @@ public class Minecraft implements IThreadListener, ISnooperInfo
-     private Entity renderViewEntity;
+@@ -269,7 +225,7 @@ public class Minecraft implements IThreadListener, ISnooperInfo
      public Entity pointedEntity;
      public ParticleManager effectRenderer;
+     private SearchTreeManager field_193995_ae = new SearchTreeManager();
 -    private final Session session;
 +    public Session session;
      private boolean isGamePaused;
+     private float field_193996_ah;
  
-     /** The font renderer used for displaying and measuring text */
-@@ -308,7 +270,7 @@ public class Minecraft implements IThreadListener, ISnooperInfo
+@@ -326,7 +282,7 @@ public class Minecraft implements IThreadListener, ISnooperInfo
      /**
       * When you place a block, it's set to 6, decremented once per tick, when it's 0, you can place another block.
       */
@@ -542,13 +580,13 @@ index 20bd020..d317882 100644
      private String serverName;
      private int serverPort;
  
-@@ -592,13 +554,16 @@ public class Minecraft implements IThreadListener, ISnooperInfo
+@@ -603,13 +559,16 @@ public class Minecraft implements IThreadListener, ISnooperInfo
          this.checkGLError("Post startup");
          this.ingameGUI = new GuiIngame(this);
- 
+ 		
 +		// TODO: Client
 +		WurstClient.INSTANCE.startClient();
-+
++		
          if (this.serverName != null)
          {
 -            this.displayGuiScreen(new GuiConnecting(new GuiMainMenu(), this, this.serverName, this.serverPort));
@@ -561,28 +599,28 @@ index 20bd020..d317882 100644
          }
  
          this.renderEngine.deleteTexture(this.mojangLogo);
-@@ -622,6 +587,10 @@ public class Minecraft implements IThreadListener, ISnooperInfo
+@@ -633,6 +592,10 @@ public class Minecraft implements IThreadListener, ISnooperInfo
          }
  
          this.renderGlobal.makeEntityOutlineShader();
-+
++		
 +		// TODO: Client
 +		if(WurstBot.isEnabled())
 +			WurstBot.getBot().start();
      }
  
-     private void registerMetadataSerializers()
-@@ -676,6 +645,9 @@ public class Minecraft implements IThreadListener, ISnooperInfo
+     private void func_193986_ar()
+@@ -724,6 +687,9 @@ public class Minecraft implements IThreadListener, ISnooperInfo
          else
          {
              Display.setDisplayMode(new DisplayMode(this.displayWidth, this.displayHeight));
-+            
++			
 +			// TODO: Client
 +			FrameHook.createFrame(mcDefaultResourcePack, LOGGER);
          }
      }
  
-@@ -1003,14 +975,14 @@ public class Minecraft implements IThreadListener, ISnooperInfo
+@@ -1051,14 +1017,14 @@ public class Minecraft implements IThreadListener, ISnooperInfo
  
          if (guiScreenIn == null && this.world == null)
          {
@@ -599,7 +637,48 @@ index 20bd020..d317882 100644
          {
              this.gameSettings.showDebugInfo = false;
              this.ingameGUI.getChatGUI().clearChatMessages(true);
-@@ -1536,6 +1508,12 @@ public class Minecraft implements IThreadListener, ISnooperInfo
+@@ -1181,7 +1147,7 @@ public class Minecraft implements IThreadListener, ISnooperInfo
+         long i1 = System.nanoTime() - l;
+         this.checkGLError("Pre render");
+         this.mcProfiler.endStartSection("sound");
+-        this.mcSoundHandler.setListener(this.player, this.timer.field_194147_b);
++        this.mcSoundHandler.setListener(this.player, this.timer.renderPartialTicks);
+         this.mcProfiler.endSection();
+         this.mcProfiler.startSection("render");
+         GlStateManager.pushMatrix();
+@@ -1194,7 +1160,7 @@ public class Minecraft implements IThreadListener, ISnooperInfo
+         if (!this.skipRenderWorld)
+         {
+             this.mcProfiler.endStartSection("gameRenderer");
+-            this.entityRenderer.updateCameraAndRender(this.isGamePaused ? this.field_193996_ah : this.timer.field_194147_b, i);
++            this.entityRenderer.updateCameraAndRender(this.isGamePaused ? this.field_193996_ah : this.timer.renderPartialTicks, i);
+             this.mcProfiler.endStartSection("toasts");
+             this.field_193034_aS.func_191783_a(new ScaledResolution(this));
+             this.mcProfiler.endSection();
+@@ -1224,7 +1190,7 @@ public class Minecraft implements IThreadListener, ISnooperInfo
+         this.framebufferMc.framebufferRender(this.displayWidth, this.displayHeight);
+         GlStateManager.popMatrix();
+         GlStateManager.pushMatrix();
+-        this.entityRenderer.renderStreamIndicator(this.timer.field_194147_b);
++        this.entityRenderer.renderStreamIndicator(this.timer.renderPartialTicks);
+         GlStateManager.popMatrix();
+         this.mcProfiler.startSection("root");
+         this.updateDisplay();
+@@ -1237,11 +1203,11 @@ public class Minecraft implements IThreadListener, ISnooperInfo
+         {
+             if (this.isGamePaused)
+             {
+-                this.field_193996_ah = this.timer.field_194147_b;
++                this.field_193996_ah = this.timer.renderPartialTicks;
+             }
+             else
+             {
+-                this.timer.field_194147_b = this.field_193996_ah;
++                this.timer.renderPartialTicks = this.field_193996_ah;
+             }
+ 
+             this.isGamePaused = flag;
+@@ -1590,6 +1556,12 @@ public class Minecraft implements IThreadListener, ISnooperInfo
      {
          if (this.leftClickCounter <= 0)
          {
@@ -611,8 +690,8 @@ index 20bd020..d317882 100644
 +			
              if (this.objectMouseOver == null)
              {
-                 LOGGER.error("Null returned as \'hitResult\', this shouldn\'t happen!");
-@@ -1581,10 +1559,16 @@ public class Minecraft implements IThreadListener, ISnooperInfo
+                 LOGGER.error("Null returned as 'hitResult', this shouldn't happen!");
+@@ -1635,10 +1607,16 @@ public class Minecraft implements IThreadListener, ISnooperInfo
      /**
       * Called when user clicked he's mouse right button (place)
       */
@@ -630,28 +709,10 @@ index 20bd020..d317882 100644
              this.rightClickDelayTimer = 4;
  
              if (!this.player.isRowingBoat())
-@@ -1800,7 +1784,7 @@ public class Minecraft implements IThreadListener, ISnooperInfo
-             this.leftClickCounter = 10000;
-         }
- 
--        if (this.currentScreen != null)
-+		if(this.currentScreen != null)
-         {
-             try
-             {
-@@ -1842,7 +1826,7 @@ public class Minecraft implements IThreadListener, ISnooperInfo
-             }
-         }
- 
--        if (this.currentScreen == null || this.currentScreen.allowUserInput)
-+		if(this.currentScreen == null || this.currentScreen.allowUserInput)
- 		{
-             this.mcProfiler.endStartSection("mouse");
-             this.runTickMouse();
-@@ -1936,8 +1920,11 @@ public class Minecraft implements IThreadListener, ISnooperInfo
+@@ -1992,8 +1970,11 @@ public class Minecraft implements IThreadListener, ISnooperInfo
  
              this.mcProfiler.endStartSection("animateTick");
- 
+ 			
 -            if (!this.isGamePaused && this.world != null)
 +			// TODO: Client
 +			if(!this.isGamePaused && this.world != null
@@ -661,7 +722,7 @@ index 20bd020..d317882 100644
                  this.world.doVoidFogParticles(MathHelper.floor(this.player.posX), MathHelper.floor(this.player.posY), MathHelper.floor(this.player.posZ));
              }
  
-@@ -2002,6 +1989,9 @@ public class Minecraft implements IThreadListener, ISnooperInfo
+@@ -2058,6 +2039,9 @@ public class Minecraft implements IThreadListener, ISnooperInfo
  
                  if (this.currentScreen == null)
                  {
@@ -671,18 +732,18 @@ index 20bd020..d317882 100644
                      if (i == 1)
                      {
                          this.displayInGameMenu();
-@@ -2444,6 +2434,10 @@ public class Minecraft implements IThreadListener, ISnooperInfo
-         networkmanager.sendPacket(new C00Handshake(316, socketaddress.toString(), 0, EnumConnectionState.LOGIN));
+@@ -2511,6 +2495,10 @@ public class Minecraft implements IThreadListener, ISnooperInfo
+         networkmanager.sendPacket(new C00Handshake(335, socketaddress.toString(), 0, EnumConnectionState.LOGIN));
          networkmanager.sendPacket(new CPacketLoginStart(this.getSession().getProfile()));
          this.myNetworkManager = networkmanager;
-+        
++		
 +		// TODO: Client
 +		SpamProcessor.runScript("joinworld",
 +			"Runs whenever you join a singleplayer world.");
      }
  
      /**
-@@ -2649,6 +2643,10 @@ public class Minecraft implements IThreadListener, ISnooperInfo
+@@ -2716,6 +2704,10 @@ public class Minecraft implements IThreadListener, ISnooperInfo
              }
              else
              {
@@ -693,8 +754,17 @@ index 20bd020..d317882 100644
                  if (this.objectMouseOver.typeOfHit != RayTraceResult.Type.ENTITY || this.objectMouseOver.entityHit == null || !flag)
                  {
                      return;
+@@ -3518,7 +3510,7 @@ public class Minecraft implements IThreadListener, ISnooperInfo
+ 
+     public float getRenderPartialTicks()
+     {
+-        return this.timer.field_194147_b;
++        return this.timer.renderPartialTicks;
+     }
+ 
+     public float func_193989_ak()
 diff --git a/net/minecraft/client/entity/EntityPlayerSP.java b/net/minecraft/client/entity/EntityPlayerSP.java
-index 0728387..447a7e7 100644
+index 990f31d..74e6c60 100644
 --- a/net/minecraft/client/entity/EntityPlayerSP.java
 +++ b/net/minecraft/client/entity/EntityPlayerSP.java
 @@ -1,7 +1,9 @@
@@ -726,9 +796,9 @@ index 0728387..447a7e7 100644
  import net.minecraft.client.network.NetHandlerPlayClient;
  import net.minecraft.entity.Entity;
  import net.minecraft.entity.IJumpingMount;
-@@ -43,16 +35,7 @@ import net.minecraft.item.Item;
- import net.minecraft.item.ItemElytra;
+@@ -44,17 +36,7 @@ import net.minecraft.item.ItemElytra;
  import net.minecraft.item.ItemStack;
+ import net.minecraft.item.crafting.IRecipe;
  import net.minecraft.network.datasync.DataParameter;
 -import net.minecraft.network.play.client.CPacketAnimation;
 -import net.minecraft.network.play.client.CPacketChatMessage;
@@ -739,12 +809,13 @@ index 0728387..447a7e7 100644
 -import net.minecraft.network.play.client.CPacketPlayer;
 -import net.minecraft.network.play.client.CPacketPlayerAbilities;
 -import net.minecraft.network.play.client.CPacketPlayerDigging;
+-import net.minecraft.network.play.client.CPacketRecipeInfo;
 -import net.minecraft.network.play.client.CPacketVehicleMove;
 +import net.minecraft.network.play.client.*;
  import net.minecraft.potion.Potion;
  import net.minecraft.potion.PotionEffect;
- import net.minecraft.stats.StatBase;
-@@ -75,6 +58,11 @@ import net.minecraft.util.math.Vec3d;
+ import net.minecraft.stats.RecipeBook;
+@@ -78,6 +60,11 @@ import net.minecraft.util.math.Vec3d;
  import net.minecraft.util.text.ITextComponent;
  import net.minecraft.world.IInteractionObject;
  import net.minecraft.world.World;
@@ -756,7 +827,7 @@ index 0728387..447a7e7 100644
  
  public class EntityPlayerSP extends AbstractClientPlayer
  {
-@@ -226,6 +214,9 @@ public class EntityPlayerSP extends AbstractClientPlayer
+@@ -231,12 +218,15 @@ public class EntityPlayerSP extends AbstractClientPlayer
      {
          if (this.world.isBlockLoaded(new BlockPos(this.posX, 0.0D, this.posZ)))
          {
@@ -766,7 +837,14 @@ index 0728387..447a7e7 100644
              super.onUpdate();
  
              if (this.isRiding())
-@@ -243,6 +234,9 @@ public class EntityPlayerSP extends AbstractClientPlayer
+             {
+                 this.connection.sendPacket(new CPacketPlayer.Rotation(this.rotationYaw, this.rotationPitch, this.onGround));
+-                this.connection.sendPacket(new CPacketInput(this.moveStrafing, this.field_191988_bg, this.movementInput.jump, this.movementInput.sneak));
++                this.connection.sendPacket(new CPacketInput(this.moveStrafing, this.moveForward, this.movementInput.jump, this.movementInput.sneak));
+                 Entity entity = this.getLowestRidingEntity();
+ 
+                 if (entity != this && entity.canPassengerSteer())
+@@ -248,6 +238,9 @@ public class EntityPlayerSP extends AbstractClientPlayer
              {
                  this.onUpdateWalkingPlayer();
              }
@@ -776,7 +854,7 @@ index 0728387..447a7e7 100644
          }
      }
  
-@@ -285,24 +279,46 @@ public class EntityPlayerSP extends AbstractClientPlayer
+@@ -290,24 +283,46 @@ public class EntityPlayerSP extends AbstractClientPlayer
  
          if (this.isCurrentViewEntity())
          {
@@ -791,7 +869,7 @@ index 0728387..447a7e7 100644
              double d2 = this.posZ - this.lastReportedPosZ;
 -            double d3 = (double)(this.rotationYaw - this.lastReportedYaw);
 -            double d4 = (double)(this.rotationPitch - this.lastReportedPitch);
-+            
++
 +			// TODO: Client
 +            double d3 = (double)(yaw - this.lastReportedYaw);
 +            double d4 = (double)(pitch - this.lastReportedPitch);
@@ -806,11 +884,11 @@ index 0728387..447a7e7 100644
 +			if(WurstClient.INSTANCE.mods.remoteViewMod.isActive()
 +				|| WurstClient.INSTANCE.mods.freecamMod.isActive()
 +				|| WurstClient.INSTANCE.mods.potionSaverMod.isFrozen())
- 			{
--                this.connection.sendPacket(new CPacketPlayer.PositionRotation(this.motionX, -999.0D, this.motionZ, this.rotationYaw, this.rotationPitch, this.onGround));
++			{
 +				
-+			}else if (this.isRiding())
-+            {
++			}else if(this.isRiding())
+             {
+-                this.connection.sendPacket(new CPacketPlayer.PositionRotation(this.motionX, -999.0D, this.motionZ, this.rotationYaw, this.rotationPitch, this.onGround));
 +				// TODO: Client
 +				this.connection
 +					.sendPacket(new CPacketPlayer.PositionRotation(this.motionX,
@@ -828,7 +906,7 @@ index 0728387..447a7e7 100644
              }
              else if (flag2)
              {
-@@ -310,7 +326,9 @@ public class EntityPlayerSP extends AbstractClientPlayer
+@@ -315,7 +330,9 @@ public class EntityPlayerSP extends AbstractClientPlayer
              }
              else if (flag3)
              {
@@ -839,7 +917,7 @@ index 0728387..447a7e7 100644
              }
              else if (this.prevOnGround != this.onGround)
              {
-@@ -359,7 +377,27 @@ public class EntityPlayerSP extends AbstractClientPlayer
+@@ -364,7 +381,24 @@ public class EntityPlayerSP extends AbstractClientPlayer
       */
      public void sendChatMessage(String message)
      {
@@ -852,11 +930,8 @@ index 0728387..447a7e7 100644
 +			return;
 +		this.connection.sendPacket(new CPacketChatMessage(event.getMessage()));
 +    }
-+
++    
 +	// TODO: Client
-+	/**
-+	 * Sends a chat message from the player.
-+	 */
 +	public void sendAutomaticChatMessage(String message)
 +	{
 +		ChatOutputEvent event = new ChatOutputEvent(message, true);
@@ -868,20 +943,70 @@ index 0728387..447a7e7 100644
  	}
  
      public void swingArm(EnumHand hand)
-@@ -945,8 +983,11 @@ public class EntityPlayerSP extends AbstractClientPlayer
-         boolean flag2 = this.movementInput.moveForward >= 0.8F;
+@@ -881,7 +915,7 @@ public class EntityPlayerSP extends AbstractClientPlayer
+         if (this.isCurrentViewEntity())
+         {
+             this.moveStrafing = this.movementInput.moveStrafe;
+-            this.field_191988_bg = this.movementInput.field_192832_b;
++            this.moveForward = this.movementInput.moveForward;
+             this.isJumping = this.movementInput.jump;
+             this.prevRenderArmYaw = this.renderArmYaw;
+             this.prevRenderArmPitch = this.renderArmPitch;
+@@ -961,14 +995,17 @@ public class EntityPlayerSP extends AbstractClientPlayer
+         boolean flag = this.movementInput.jump;
+         boolean flag1 = this.movementInput.sneak;
+         float f = 0.8F;
+-        boolean flag2 = this.movementInput.field_192832_b >= 0.8F;
++        boolean flag2 = this.movementInput.moveForward >= 0.8F;
          this.movementInput.updatePlayerMoveState();
+         this.mc.func_193032_ao().func_193293_a(this.movementInput);
  
 -        if (this.isHandActive() && !this.isRiding())
 +		// TODO: Client
 +		if(this.isHandActive() && !this.isRiding()
 +			&& !WurstClient.INSTANCE.mods.noSlowdownMod.blockItemSlowness())
  		{
-+        	
++			
              this.movementInput.moveStrafe *= 0.2F;
-             this.movementInput.moveForward *= 0.2F;
+-            this.movementInput.field_192832_b *= 0.2F;
++            this.movementInput.moveForward *= 0.2F;
              this.sprintToggleTimer = 0;
-@@ -1146,7 +1187,9 @@ public class EntityPlayerSP extends AbstractClientPlayer
+         }
+ 
+@@ -988,7 +1025,7 @@ public class EntityPlayerSP extends AbstractClientPlayer
+         this.pushOutOfBlocks(this.posX + (double)this.width * 0.35D, axisalignedbb.minY + 0.5D, this.posZ + (double)this.width * 0.35D);
+         boolean flag4 = (float)this.getFoodStats().getFoodLevel() > 6.0F || this.capabilities.allowFlying;
+ 
+-        if (this.onGround && !flag1 && !flag2 && this.movementInput.field_192832_b >= 0.8F && !this.isSprinting() && flag4 && !this.isHandActive() && !this.isPotionActive(MobEffects.BLINDNESS))
++        if (this.onGround && !flag1 && !flag2 && this.movementInput.moveForward >= 0.8F && !this.isSprinting() && flag4 && !this.isHandActive() && !this.isPotionActive(MobEffects.BLINDNESS))
+         {
+             if (this.sprintToggleTimer <= 0 && !this.mc.gameSettings.keyBindSprint.isKeyDown())
+             {
+@@ -1000,12 +1037,12 @@ public class EntityPlayerSP extends AbstractClientPlayer
+             }
+         }
+ 
+-        if (!this.isSprinting() && this.movementInput.field_192832_b >= 0.8F && flag4 && !this.isHandActive() && !this.isPotionActive(MobEffects.BLINDNESS) && this.mc.gameSettings.keyBindSprint.isKeyDown())
++        if (!this.isSprinting() && this.movementInput.moveForward >= 0.8F && flag4 && !this.isHandActive() && !this.isPotionActive(MobEffects.BLINDNESS) && this.mc.gameSettings.keyBindSprint.isKeyDown())
+         {
+             this.setSprinting(true);
+         }
+ 
+-        if (this.isSprinting() && (this.movementInput.field_192832_b < 0.8F || this.isCollidedHorizontally || !flag4))
++        if (this.isSprinting() && (this.movementInput.moveForward < 0.8F || this.isCollidedHorizontally || !flag4))
+         {
+             this.setSprinting(false);
+         }
+@@ -1052,7 +1089,7 @@ public class EntityPlayerSP extends AbstractClientPlayer
+             if (this.movementInput.sneak)
+             {
+                 this.movementInput.moveStrafe = (float)((double)this.movementInput.moveStrafe / 0.3D);
+-                this.movementInput.field_192832_b = (float)((double)this.movementInput.field_192832_b / 0.3D);
++                this.movementInput.moveForward = (float)((double)this.movementInput.moveForward / 0.3D);
+                 this.motionY -= (double)(this.capabilities.getFlySpeed() * 3.0F);
+             }
+ 
+@@ -1166,7 +1203,9 @@ public class EntityPlayerSP extends AbstractClientPlayer
  
      public boolean isAutoJumpEnabled()
      {
@@ -893,7 +1018,7 @@ index 0728387..447a7e7 100644
  
      protected void updateAutoJump(float p_189810_1_, float p_189810_2_)
 diff --git a/net/minecraft/client/gui/FontRenderer.java b/net/minecraft/client/gui/FontRenderer.java
-index 30f760d..8ef3ab7 100644
+index affc2a9..07523a3 100644
 --- a/net/minecraft/client/gui/FontRenderer.java
 +++ b/net/minecraft/client/gui/FontRenderer.java
 @@ -1,8 +1,5 @@
@@ -917,8 +1042,8 @@ index 30f760d..8ef3ab7 100644
 +import com.ibm.icu.text.Bidi;
 +
  import net.minecraft.client.Minecraft;
+ import net.minecraft.client.renderer.BufferBuilder;
  import net.minecraft.client.renderer.GlStateManager;
- import net.minecraft.client.renderer.Tessellator;
 @@ -22,7 +26,7 @@ import net.minecraft.client.resources.IResourceManager;
  import net.minecraft.client.resources.IResourceManagerReloadListener;
  import net.minecraft.client.settings.GameSettings;
@@ -948,10 +1073,26 @@ index 30f760d..8ef3ab7 100644
          int i = this.sizeStringToWidth(str, wrapWidth);
  
 diff --git a/net/minecraft/client/gui/GuiButton.java b/net/minecraft/client/gui/GuiButton.java
-index 93eccc5..d8a0216 100644
+index e2f52f7..3b46f27 100644
 --- a/net/minecraft/client/gui/GuiButton.java
 +++ b/net/minecraft/client/gui/GuiButton.java
-@@ -88,8 +88,23 @@ public class GuiButton extends Gui
+@@ -73,7 +73,14 @@ public class GuiButton extends Gui
+         return i;
+     }
+ 	
+-    public void func_191745_a(Minecraft p_191745_1_, int p_191745_2_, int p_191745_3_, float p_191745_4_)
++	// TODO: Client
++	public void drawButton(Minecraft p_191745_1_, int p_191745_2_,
++		int p_191745_3_)
++	{
++		drawButton(p_191745_1_, p_191745_2_, p_191745_3_, 0);
++	}
++	
++    public void drawButton(Minecraft p_191745_1_, int p_191745_2_, int p_191745_3_, float p_191745_4_)
+     {
+         if (this.visible)
+         {
+@@ -85,8 +92,23 @@ public class GuiButton extends Gui
              GlStateManager.enableBlend();
              GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
              GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
@@ -968,17 +1109,106 @@ index 93eccc5..d8a0216 100644
 +			drawTexturedModalRect(xPosition + width / 2, yPosition + height / 2,
 +				200 - width / 2, 46 + i * 20 + 20 - height / 2, width / 2,
 +				height / 2);
-+			// this.drawTexturedModalRect(this.xPosition, this.yPosition, 0, 46
-+			// + i * 20, this.width / 2, this.height);
++			// this.drawTexturedModalRect(this.xPosition, this.yPosition, 0,
++			// 46 + i * 20, this.width / 2, this.height);
 +			// this.drawTexturedModalRect(this.xPosition + this.width / 2,
-+			// this.yPosition, 200 - this.width / 2, 46 + i * 20, this.width /
-+			// 2, this.height);
++			// this.yPosition, 200 - this.width / 2, 46 + i * 20,
++			// this.width / 2, this.height);
 +			
-             this.mouseDragged(mc, mouseX, mouseY);
+             this.mouseDragged(p_191745_1_, p_191745_2_, p_191745_3_);
              int j = 14737632;
  
+diff --git a/net/minecraft/client/gui/GuiButtonImage.java b/net/minecraft/client/gui/GuiButtonImage.java
+index dbde310..1bf240b 100644
+--- a/net/minecraft/client/gui/GuiButtonImage.java
++++ b/net/minecraft/client/gui/GuiButtonImage.java
+@@ -26,7 +26,7 @@ public class GuiButtonImage extends GuiButton
+         this.yPosition = p_191746_2_;
+     }
+ 
+-    public void func_191745_a(Minecraft p_191745_1_, int p_191745_2_, int p_191745_3_, float p_191745_4_)
++    public void drawButton(Minecraft p_191745_1_, int p_191745_2_, int p_191745_3_, float p_191745_4_)
+     {
+         if (this.visible)
+         {
+diff --git a/net/minecraft/client/gui/GuiButtonLanguage.java b/net/minecraft/client/gui/GuiButtonLanguage.java
+index b53d49c..13fc370 100644
+--- a/net/minecraft/client/gui/GuiButtonLanguage.java
++++ b/net/minecraft/client/gui/GuiButtonLanguage.java
+@@ -10,7 +10,7 @@ public class GuiButtonLanguage extends GuiButton
+         super(buttonID, xPos, yPos, 20, 20, "");
+     }
+ 
+-    public void func_191745_a(Minecraft p_191745_1_, int p_191745_2_, int p_191745_3_, float p_191745_4_)
++    public void drawButton(Minecraft p_191745_1_, int p_191745_2_, int p_191745_3_, float p_191745_4_)
+     {
+         if (this.visible)
+         {
+diff --git a/net/minecraft/client/gui/GuiButtonToggle.java b/net/minecraft/client/gui/GuiButtonToggle.java
+index dcd04d4..19460a9 100644
+--- a/net/minecraft/client/gui/GuiButtonToggle.java
++++ b/net/minecraft/client/gui/GuiButtonToggle.java
+@@ -44,7 +44,7 @@ public class GuiButtonToggle extends GuiButton
+         this.yPosition = p_191752_2_;
+     }
+ 
+-    public void func_191745_a(Minecraft p_191745_1_, int p_191745_2_, int p_191745_3_, float p_191745_4_)
++    public void drawButton(Minecraft p_191745_1_, int p_191745_2_, int p_191745_3_, float p_191745_4_)
+     {
+         if (this.visible)
+         {
+diff --git a/net/minecraft/client/gui/GuiClickableScrolledSelectionListProxy.java b/net/minecraft/client/gui/GuiClickableScrolledSelectionListProxy.java
+index b988100..8b87f5b 100644
+--- a/net/minecraft/client/gui/GuiClickableScrolledSelectionListProxy.java
++++ b/net/minecraft/client/gui/GuiClickableScrolledSelectionListProxy.java
+@@ -41,7 +41,7 @@ public class GuiClickableScrolledSelectionListProxy extends GuiSlot
+         this.proxy.renderBackground();
+     }
+ 
+-    protected void func_192637_a(int p_192637_1_, int p_192637_2_, int p_192637_3_, int p_192637_4_, int p_192637_5_, int p_192637_6_, float p_192637_7_)
++    protected void drawSlot(int p_192637_1_, int p_192637_2_, int p_192637_3_, int p_192637_4_, int p_192637_5_, int p_192637_6_, float p_192637_7_)
+     {
+         this.proxy.renderItem(p_192637_1_, p_192637_2_, p_192637_3_, p_192637_4_, p_192637_5_, p_192637_6_);
+     }
+@@ -108,7 +108,7 @@ public class GuiClickableScrolledSelectionListProxy extends GuiSlot
+                 this.renderSelected(this.width, k, l, Tezzelator.instance);
+             }
+ 
+-            this.func_192637_a(j, p_192638_1_, k, l, p_192638_3_, p_192638_4_, p_192638_5_);
++            this.drawSlot(j, p_192638_1_, k, l, p_192638_3_, p_192638_4_, p_192638_5_);
+         }
+     }
+ }
+diff --git a/net/minecraft/client/gui/GuiCreateFlatWorld.java b/net/minecraft/client/gui/GuiCreateFlatWorld.java
+index 3e46906..392d3ff 100644
+--- a/net/minecraft/client/gui/GuiCreateFlatWorld.java
++++ b/net/minecraft/client/gui/GuiCreateFlatWorld.java
+@@ -226,7 +226,7 @@ public class GuiCreateFlatWorld extends GuiScreen
+         {
+         }
+ 
+-        protected void func_192637_a(int p_192637_1_, int p_192637_2_, int p_192637_3_, int p_192637_4_, int p_192637_5_, int p_192637_6_, float p_192637_7_)
++        protected void drawSlot(int p_192637_1_, int p_192637_2_, int p_192637_3_, int p_192637_4_, int p_192637_5_, int p_192637_6_, float p_192637_7_)
+         {
+             FlatLayerInfo flatlayerinfo = (FlatLayerInfo)GuiCreateFlatWorld.this.theFlatGeneratorInfo.getFlatLayers().get(GuiCreateFlatWorld.this.theFlatGeneratorInfo.getFlatLayers().size() - p_192637_1_ - 1);
+             IBlockState iblockstate = flatlayerinfo.getLayerMaterial();
+diff --git a/net/minecraft/client/gui/GuiCustomizeWorldScreen.java b/net/minecraft/client/gui/GuiCustomizeWorldScreen.java
+index 4a342be..67de83b 100644
+--- a/net/minecraft/client/gui/GuiCustomizeWorldScreen.java
++++ b/net/minecraft/client/gui/GuiCustomizeWorldScreen.java
+@@ -1020,8 +1020,8 @@ public class GuiCustomizeWorldScreen extends GuiScreen implements GuiSlider.Form
+             this.drawCenteredString(this.fontRendererObj, I18n.format("createWorld.customize.custom.confirmTitle"), this.width / 2, 105, 16777215);
+             this.drawCenteredString(this.fontRendererObj, I18n.format("createWorld.customize.custom.confirm1"), this.width / 2, 125, 16777215);
+             this.drawCenteredString(this.fontRendererObj, I18n.format("createWorld.customize.custom.confirm2"), this.width / 2, 135, 16777215);
+-            this.confirm.func_191745_a(this.mc, mouseX, mouseY, partialTicks);
+-            this.cancel.func_191745_a(this.mc, mouseX, mouseY, partialTicks);
++            this.confirm.drawButton(this.mc, mouseX, mouseY, partialTicks);
++            this.cancel.drawButton(this.mc, mouseX, mouseY, partialTicks);
+         }
+     }
+ }
 diff --git a/net/minecraft/client/gui/GuiDisconnected.java b/net/minecraft/client/gui/GuiDisconnected.java
-index 69151c7..dd7cfe7 100644
+index 518c82d..192dd26 100644
 --- a/net/minecraft/client/gui/GuiDisconnected.java
 +++ b/net/minecraft/client/gui/GuiDisconnected.java
 @@ -2,8 +2,12 @@ package net.minecraft.client.gui;
@@ -1004,7 +1234,7 @@ index 69151c7..dd7cfe7 100644
      public GuiDisconnected(GuiScreen screen, String reasonLocalizationKey, ITextComponent chatComp)
      {
          this.parentScreen = screen;
-         this.reason = I18n.format(reasonLocalizationKey, new Object[0]);
+         this.reason = I18n.format(reasonLocalizationKey);
          this.message = chatComp;
 +
 +		// TODO: Client
@@ -1017,7 +1247,7 @@ index 69151c7..dd7cfe7 100644
 @@ -38,6 +50,26 @@ public class GuiDisconnected extends GuiScreen
          this.multilineMessage = this.fontRendererObj.listFormattedStringToWidth(this.message.getFormattedText(), this.width - 50);
          this.textHeight = this.multilineMessage.size() * this.fontRendererObj.FONT_HEIGHT;
-         this.buttonList.add(new GuiButton(0, this.width / 2 - 100, Math.min(this.height / 2 + this.textHeight / 2 + this.fontRendererObj.FONT_HEIGHT, this.height - 30), I18n.format("gui.toMenu", new Object[0])));
+         this.buttonList.add(new GuiButton(0, this.width / 2 - 100, Math.min(this.height / 2 + this.textHeight / 2 + this.fontRendererObj.FONT_HEIGHT, this.height - 30), I18n.format("gui.toMenu")));
 +        
 +		// TODO: Client
 +		buttonList.add(new GuiButton(1, width / 2 - 100,
@@ -1045,7 +1275,7 @@ index 69151c7..dd7cfe7 100644
          if (button.id == 0)
          {
              this.mc.displayGuiScreen(this.parentScreen);
-+            
++			
 +			// TODO: Client
 +		}else if(button.id == 1)
 +		{
@@ -1069,7 +1299,7 @@ index 69151c7..dd7cfe7 100644
 +			mc.displayGuiScreen(servers);
 +		}
 +    }
-+
++	
 +	// TODO: Client
 +	public void updateScreen()
 +	{
@@ -1097,8 +1327,21 @@ index 69151c7..dd7cfe7 100644
  		}
  	}
  
+diff --git a/net/minecraft/client/gui/GuiFlatPresets.java b/net/minecraft/client/gui/GuiFlatPresets.java
+index 2dbbfb8..6afabaa 100644
+--- a/net/minecraft/client/gui/GuiFlatPresets.java
++++ b/net/minecraft/client/gui/GuiFlatPresets.java
+@@ -265,7 +265,7 @@ public class GuiFlatPresets extends GuiScreen
+         {
+         }
+ 
+-        protected void func_192637_a(int p_192637_1_, int p_192637_2_, int p_192637_3_, int p_192637_4_, int p_192637_5_, int p_192637_6_, float p_192637_7_)
++        protected void drawSlot(int p_192637_1_, int p_192637_2_, int p_192637_3_, int p_192637_4_, int p_192637_5_, int p_192637_6_, float p_192637_7_)
+         {
+             GuiFlatPresets.LayerItem guiflatpresets$layeritem = GuiFlatPresets.FLAT_WORLD_PRESETS.get(p_192637_1_);
+             this.renderIcon(p_192637_2_, p_192637_3_, guiflatpresets$layeritem.icon, guiflatpresets$layeritem.iconMetadata);
 diff --git a/net/minecraft/client/gui/GuiGameOver.java b/net/minecraft/client/gui/GuiGameOver.java
-index 0d62806..d28e917 100644
+index 248472d..d2a41ca 100644
 --- a/net/minecraft/client/gui/GuiGameOver.java
 +++ b/net/minecraft/client/gui/GuiGameOver.java
 @@ -1,12 +1,18 @@
@@ -1142,7 +1385,7 @@ index 0d62806..d28e917 100644
              {
                  guibutton.enabled = true;
              }
-+            
++			
 +			// TODO: Client
 +			WurstClient.INSTANCE.events.fire(DeathEvent.INSTANCE);
 +			SpamProcessor.runScript("death", "Runs whenever you die.");
@@ -1150,18 +1393,20 @@ index 0d62806..d28e917 100644
      }
  }
 diff --git a/net/minecraft/client/gui/GuiIngame.java b/net/minecraft/client/gui/GuiIngame.java
-index 0831e89..e438b27 100644
+index 05a9237..5fd2b82 100644
 --- a/net/minecraft/client/gui/GuiIngame.java
 +++ b/net/minecraft/client/gui/GuiIngame.java
-@@ -1,13 +1,16 @@
+@@ -1,15 +1,18 @@
  package net.minecraft.client.gui;
  
 -import com.google.common.base.Predicate;
 -import com.google.common.collect.Iterables;
 -import com.google.common.collect.Lists;
+-import com.google.common.collect.Maps;
 -import com.google.common.collect.Ordering;
  import java.util.Collection;
  import java.util.List;
+ import java.util.Map;
  import java.util.Random;
 +
  import javax.annotation.Nullable;
@@ -1169,12 +1414,13 @@ index 0831e89..e438b27 100644
 +import com.google.common.base.Predicate;
 +import com.google.common.collect.Iterables;
 +import com.google.common.collect.Lists;
++import com.google.common.collect.Maps;
 +import com.google.common.collect.Ordering;
 +
  import net.minecraft.block.material.Material;
  import net.minecraft.client.Minecraft;
- import net.minecraft.client.gui.inventory.GuiContainer;
-@@ -48,6 +51,8 @@ import net.minecraft.util.math.RayTraceResult;
+ import net.minecraft.client.gui.chat.IChatListener;
+@@ -55,6 +58,8 @@ import net.minecraft.util.text.ChatType;
  import net.minecraft.util.text.ITextComponent;
  import net.minecraft.util.text.TextFormatting;
  import net.minecraft.world.border.WorldBorder;
@@ -1183,7 +1429,7 @@ index 0831e89..e438b27 100644
  
  public class GuiIngame extends Gui
  {
-@@ -346,6 +351,10 @@ public class GuiIngame extends Gui
+@@ -366,6 +371,10 @@ public class GuiIngame extends Gui
              this.renderScoreboard(scoreobjective1, scaledresolution);
          }
          
@@ -1194,19 +1440,19 @@ index 0831e89..e438b27 100644
          GlStateManager.enableBlend();
          GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
          GlStateManager.disableAlpha();
-@@ -1044,6 +1053,10 @@ public class GuiIngame extends Gui
+@@ -1064,6 +1073,10 @@ public class GuiIngame extends Gui
  
      private void renderPumpkinOverlay(ScaledResolution scaledRes)
      {
 +		// TODO: Client
 +		if(WurstClient.INSTANCE.mods.noOverlayMod.isActive())
 +			return;
-+    	
++		
          GlStateManager.disableDepth();
          GlStateManager.depthMask(false);
          GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
 diff --git a/net/minecraft/client/gui/GuiIngameMenu.java b/net/minecraft/client/gui/GuiIngameMenu.java
-index cbd9720..83a51c8 100644
+index d61fb38..4eb1165 100644
 --- a/net/minecraft/client/gui/GuiIngameMenu.java
 +++ b/net/minecraft/client/gui/GuiIngameMenu.java
 @@ -1,17 +1,29 @@
@@ -1216,8 +1462,8 @@ index cbd9720..83a51c8 100644
 +
 +import org.lwjgl.opengl.GL11;
 +
- import net.minecraft.client.gui.achievement.GuiAchievements;
  import net.minecraft.client.gui.achievement.GuiStats;
+ import net.minecraft.client.gui.advancements.GuiScreenAdvancements;
  import net.minecraft.client.multiplayer.WorldClient;
 +import net.minecraft.client.renderer.OpenGlHelper;
  import net.minecraft.client.resources.I18n;
@@ -1231,7 +1477,7 @@ index cbd9720..83a51c8 100644
  {
      private int saveStep;
      private int visibleTime;
- 
+ 	
 +	// TODO: Client
 +	private static final ResourceLocation wurstTextures =
 +		new ResourceLocation("wurst/wurst_128.png");
@@ -1241,17 +1487,17 @@ index cbd9720..83a51c8 100644
       * window resizes, the buttonList is cleared beforehand.
 @@ -31,6 +43,12 @@ public class GuiIngameMenu extends GuiScreen
  
-         this.buttonList.add(new GuiButton(4, this.width / 2 - 100, this.height / 4 + 24 + -16, I18n.format("menu.returnToGame", new Object[0])));
-         this.buttonList.add(new GuiButton(0, this.width / 2 - 100, this.height / 4 + 96 + -16, 98, 20, I18n.format("menu.options", new Object[0])));
-+
+         this.buttonList.add(new GuiButton(4, this.width / 2 - 100, this.height / 4 + 24 + -16, I18n.format("menu.returnToGame")));
+         this.buttonList.add(new GuiButton(0, this.width / 2 - 100, this.height / 4 + 96 + -16, 98, 20, I18n.format("menu.options")));
++		
 +		// TODO: Client
 +		if(WurstClient.INSTANCE.isEnabled())
 +			this.buttonList.add(new GuiButton(8, this.width / 2 - 100,
 +				this.height / 4 + 72 + i, "            Options"));
 +		
-         GuiButton guibutton = this.addButton(new GuiButton(7, this.width / 2 + 2, this.height / 4 + 96 + -16, 98, 20, I18n.format("menu.shareToLan", new Object[0])));
+         GuiButton guibutton = this.addButton(new GuiButton(7, this.width / 2 + 2, this.height / 4 + 96 + -16, 98, 20, I18n.format("menu.shareToLan")));
          guibutton.enabled = this.mc.isSingleplayer() && !this.mc.getIntegratedServer().getPublic();
-         this.buttonList.add(new GuiButton(5, this.width / 2 - 100, this.height / 4 + 48 + -16, 98, 20, I18n.format("gui.achievements", new Object[0])));
+         this.buttonList.add(new GuiButton(5, this.width / 2 - 100, this.height / 4 + 48 + -16, 98, 20, I18n.format("gui.advancements")));
 @@ -44,6 +62,11 @@ public class GuiIngameMenu extends GuiScreen
      {
          switch (button.id)
@@ -1286,9 +1532,9 @@ index cbd9720..83a51c8 100644
              case 2:
 @@ -109,5 +132,25 @@ public class GuiIngameMenu extends GuiScreen
          this.drawDefaultBackground();
-         this.drawCenteredString(this.fontRendererObj, I18n.format("menu.game", new Object[0]), this.width / 2, 40, 16777215);
+         this.drawCenteredString(this.fontRendererObj, I18n.format("menu.game"), this.width / 2, 40, 16777215);
          super.drawScreen(mouseX, mouseY, partialTicks);
-+
++		
 +		// TODO: Client
 +		if(!WurstClient.INSTANCE.isEnabled())
 +			return;
@@ -1310,42 +1556,105 @@ index cbd9720..83a51c8 100644
 +		Gui.drawModalRectWithCustomSizedTexture(x, y, u, v, w, h, fw, fh);
      }
  }
+diff --git a/net/minecraft/client/gui/GuiKeyBindingList.java b/net/minecraft/client/gui/GuiKeyBindingList.java
+index 5454463..ca88556 100644
+--- a/net/minecraft/client/gui/GuiKeyBindingList.java
++++ b/net/minecraft/client/gui/GuiKeyBindingList.java
+@@ -125,7 +125,7 @@ public class GuiKeyBindingList extends GuiListExtended
+             this.btnReset.xPosition = p_192634_2_ + 190;
+             this.btnReset.yPosition = p_192634_3_;
+             this.btnReset.enabled = this.keybinding.getKeyCode() != this.keybinding.getKeyCodeDefault();
+-            this.btnReset.func_191745_a(GuiKeyBindingList.this.mc, p_192634_6_, p_192634_7_, p_192634_9_);
++            this.btnReset.drawButton(GuiKeyBindingList.this.mc, p_192634_6_, p_192634_7_, p_192634_9_);
+             this.btnChangeKeyBinding.xPosition = p_192634_2_ + 105;
+             this.btnChangeKeyBinding.yPosition = p_192634_3_;
+             this.btnChangeKeyBinding.displayString = GameSettings.getKeyDisplayString(this.keybinding.getKeyCode());
+@@ -152,7 +152,7 @@ public class GuiKeyBindingList extends GuiListExtended
+                 this.btnChangeKeyBinding.displayString = TextFormatting.RED + this.btnChangeKeyBinding.displayString;
+             }
+ 
+-            this.btnChangeKeyBinding.func_191745_a(GuiKeyBindingList.this.mc, p_192634_6_, p_192634_7_, p_192634_9_);
++            this.btnChangeKeyBinding.drawButton(GuiKeyBindingList.this.mc, p_192634_6_, p_192634_7_, p_192634_9_);
+         }
+ 
+         public boolean mousePressed(int slotIndex, int mouseX, int mouseY, int mouseEvent, int relativeX, int relativeY)
+diff --git a/net/minecraft/client/gui/GuiLanguage.java b/net/minecraft/client/gui/GuiLanguage.java
+index 4648b65..a3bdcfc 100644
+--- a/net/minecraft/client/gui/GuiLanguage.java
++++ b/net/minecraft/client/gui/GuiLanguage.java
+@@ -155,7 +155,7 @@ public class GuiLanguage extends GuiScreen
+             GuiLanguage.this.drawDefaultBackground();
+         }
+ 
+-        protected void func_192637_a(int p_192637_1_, int p_192637_2_, int p_192637_3_, int p_192637_4_, int p_192637_5_, int p_192637_6_, float p_192637_7_)
++        protected void drawSlot(int p_192637_1_, int p_192637_2_, int p_192637_3_, int p_192637_4_, int p_192637_5_, int p_192637_6_, float p_192637_7_)
+         {
+             GuiLanguage.this.fontRendererObj.setBidiFlag(true);
+             GuiLanguage.this.drawCenteredString(GuiLanguage.this.fontRendererObj, ((Language)this.languageMap.get(this.langCodeList.get(p_192637_1_))).toString(), this.width / 2, p_192637_3_ + 1, 16777215);
+diff --git a/net/minecraft/client/gui/GuiListExtended.java b/net/minecraft/client/gui/GuiListExtended.java
+index 86acacb..233a380 100644
+--- a/net/minecraft/client/gui/GuiListExtended.java
++++ b/net/minecraft/client/gui/GuiListExtended.java
+@@ -28,7 +28,7 @@ public abstract class GuiListExtended extends GuiSlot
+     {
+     }
+ 
+-    protected void func_192637_a(int p_192637_1_, int p_192637_2_, int p_192637_3_, int p_192637_4_, int p_192637_5_, int p_192637_6_, float p_192637_7_)
++    protected void drawSlot(int p_192637_1_, int p_192637_2_, int p_192637_3_, int p_192637_4_, int p_192637_5_, int p_192637_6_, float p_192637_7_)
+     {
+         this.getListEntry(p_192637_1_).func_192634_a(p_192637_1_, p_192637_2_, p_192637_3_, this.getListWidth(), p_192637_4_, p_192637_5_, p_192637_6_, this.isMouseYWithinSlotBounds(p_192637_6_) && this.getSlotIndexFromScreenCoords(p_192637_5_, p_192637_6_) == p_192637_1_, p_192637_7_);
+     }
+diff --git a/net/minecraft/client/gui/GuiLockIconButton.java b/net/minecraft/client/gui/GuiLockIconButton.java
+index e0f466e..4cc1caa 100644
+--- a/net/minecraft/client/gui/GuiLockIconButton.java
++++ b/net/minecraft/client/gui/GuiLockIconButton.java
+@@ -22,7 +22,7 @@ public class GuiLockIconButton extends GuiButton
+         this.locked = lockedIn;
+     }
+ 
+-    public void func_191745_a(Minecraft p_191745_1_, int p_191745_2_, int p_191745_3_, float p_191745_4_)
++    public void drawButton(Minecraft p_191745_1_, int p_191745_2_, int p_191745_3_, float p_191745_4_)
+     {
+         if (this.visible)
+         {
 diff --git a/net/minecraft/client/gui/GuiMainMenu.java b/net/minecraft/client/gui/GuiMainMenu.java
-index 138ab6d..fe6ae6d 100644
+index 8971081..1d95329 100644
 --- a/net/minecraft/client/gui/GuiMainMenu.java
 +++ b/net/minecraft/client/gui/GuiMainMenu.java
-@@ -1,6 +1,5 @@
+@@ -1,7 +1,5 @@
  package net.minecraft.client.gui;
  
 -import com.google.common.collect.Lists;
+-import com.google.common.util.concurrent.Runnables;
  import java.io.BufferedReader;
  import java.io.Closeable;
  import java.io.IOException;
-@@ -10,6 +9,16 @@ import java.util.Calendar;
+@@ -12,6 +10,17 @@ import java.util.Calendar;
  import java.util.Date;
  import java.util.List;
  import java.util.Random;
 +
-+import org.apache.commons.io.Charsets;
 +import org.apache.commons.io.IOUtils;
 +import org.apache.logging.log4j.LogManager;
 +import org.apache.logging.log4j.Logger;
++import org.lwjgl.input.Mouse;
 +import org.lwjgl.opengl.GLContext;
 +import org.lwjgl.util.glu.Project;
 +
 +import com.google.common.collect.Lists;
++import com.google.common.util.concurrent.Runnables;
 +
  import net.minecraft.client.Minecraft;
+ import net.minecraft.client.renderer.BufferBuilder;
  import net.minecraft.client.renderer.GlStateManager;
- import net.minecraft.client.renderer.OpenGlHelper;
-@@ -28,12 +37,8 @@ import net.minecraft.util.text.TextFormatting;
- import net.minecraft.world.demo.DemoWorldServer;
+@@ -30,12 +39,8 @@ import net.minecraft.util.text.TextFormatting;
+ import net.minecraft.world.WorldServerDemo;
  import net.minecraft.world.storage.ISaveFormat;
  import net.minecraft.world.storage.WorldInfo;
--import org.apache.commons.io.Charsets;
 -import org.apache.commons.io.IOUtils;
 -import org.apache.logging.log4j.LogManager;
 -import org.apache.logging.log4j.Logger;
+-import org.lwjgl.input.Mouse;
 -import org.lwjgl.opengl.GLContext;
 -import org.lwjgl.util.glu.Project;
 +import net.wurstclient.WurstClient;
@@ -1353,7 +1662,7 @@ index 138ab6d..fe6ae6d 100644
  
  public class GuiMainMenu extends GuiScreen
  {
-@@ -44,7 +49,7 @@ public class GuiMainMenu extends GuiScreen
+@@ -46,7 +51,7 @@ public class GuiMainMenu extends GuiScreen
      private final float updateCounter;
  
      /** The splash message. */
@@ -1362,11 +1671,11 @@ index 138ab6d..fe6ae6d 100644
      private GuiButton buttonResetDemo;
  
      /** Timer used to rotate the panorama, increases every tick. */
-@@ -282,7 +287,23 @@ public class GuiMainMenu extends GuiScreen
+@@ -277,7 +282,23 @@ public class GuiMainMenu extends GuiScreen
      {
-         this.buttonList.add(new GuiButton(1, this.width / 2 - 100, p_73969_1_, I18n.format("menu.singleplayer", new Object[0])));
-         this.buttonList.add(new GuiButton(2, this.width / 2 - 100, p_73969_1_ + p_73969_2_ * 1, I18n.format("menu.multiplayer", new Object[0])));
--        this.realmsButton = this.addButton(new GuiButton(14, this.width / 2 - 100, p_73969_1_ + p_73969_2_ * 2, I18n.format("menu.online", new Object[0])));
+         this.buttonList.add(new GuiButton(1, this.width / 2 - 100, p_73969_1_, I18n.format("menu.singleplayer")));
+         this.buttonList.add(new GuiButton(2, this.width / 2 - 100, p_73969_1_ + p_73969_2_ * 1, I18n.format("menu.multiplayer")));
+-        this.realmsButton = this.addButton(new GuiButton(14, this.width / 2 - 100, p_73969_1_ + p_73969_2_ * 2, I18n.format("menu.online")));
 +
 +		// TODO: Client
 +		if(WurstClient.INSTANCE.isEnabled())
@@ -1387,7 +1696,7 @@ index 138ab6d..fe6ae6d 100644
      }
  
      /**
-@@ -520,7 +541,7 @@ public class GuiMainMenu extends GuiScreen
+@@ -515,7 +536,7 @@ public class GuiMainMenu extends GuiScreen
      /**
       * Renders the skybox in the main menu
       */
@@ -1397,7 +1706,7 @@ index 138ab6d..fe6ae6d 100644
          this.mc.getFramebuffer().unbindFramebuffer();
          GlStateManager.viewport(0, 0, 256, 256);
 diff --git a/net/minecraft/client/gui/GuiMemoryErrorScreen.java b/net/minecraft/client/gui/GuiMemoryErrorScreen.java
-index 27d32e9..c41add9 100644
+index e7e485d..de9c81a 100644
 --- a/net/minecraft/client/gui/GuiMemoryErrorScreen.java
 +++ b/net/minecraft/client/gui/GuiMemoryErrorScreen.java
 @@ -1,7 +1,9 @@
@@ -1419,8 +1728,21 @@ index 27d32e9..c41add9 100644
          }
          else if (button.id == 1)
          {
+diff --git a/net/minecraft/client/gui/GuiMerchant.java b/net/minecraft/client/gui/GuiMerchant.java
+index 53e35f3..475b939 100644
+--- a/net/minecraft/client/gui/GuiMerchant.java
++++ b/net/minecraft/client/gui/GuiMerchant.java
+@@ -246,7 +246,7 @@ public class GuiMerchant extends GuiContainer
+             this.forward = p_i1095_4_;
+         }
+ 
+-        public void func_191745_a(Minecraft p_191745_1_, int p_191745_2_, int p_191745_3_, float p_191745_4_)
++        public void drawButton(Minecraft p_191745_1_, int p_191745_2_, int p_191745_3_, float p_191745_4_)
+         {
+             if (this.visible)
+             {
 diff --git a/net/minecraft/client/gui/GuiMultiplayer.java b/net/minecraft/client/gui/GuiMultiplayer.java
-index 9a4b028..cf9a188 100644
+index 208019f..365c0a9 100644
 --- a/net/minecraft/client/gui/GuiMultiplayer.java
 +++ b/net/minecraft/client/gui/GuiMultiplayer.java
 @@ -1,9 +1,15 @@
@@ -1478,10 +1800,10 @@ index 9a4b028..cf9a188 100644
      }
  
 @@ -99,6 +111,24 @@ public class GuiMultiplayer extends GuiScreen
-         this.buttonList.add(new GuiButton(3, this.width / 2 + 4 + 50, this.height - 52, 100, 20, I18n.format("selectServer.add", new Object[0])));
-         this.buttonList.add(new GuiButton(8, this.width / 2 + 4, this.height - 28, 70, 20, I18n.format("selectServer.refresh", new Object[0])));
-         this.buttonList.add(new GuiButton(0, this.width / 2 + 4 + 76, this.height - 28, 75, 20, I18n.format("gui.cancel", new Object[0])));
-+
+         this.buttonList.add(new GuiButton(3, this.width / 2 + 4 + 50, this.height - 52, 100, 20, I18n.format("selectServer.add")));
+         this.buttonList.add(new GuiButton(8, this.width / 2 + 4, this.height - 28, 70, 20, I18n.format("selectServer.refresh")));
+         this.buttonList.add(new GuiButton(0, this.width / 2 + 4 + 76, this.height - 28, 75, 20, I18n.format("gui.cancel")));
++		
 +		// TODO: Client
 +		if(WurstClient.INSTANCE.isEnabled())
 +		{
@@ -1506,7 +1828,7 @@ index 9a4b028..cf9a188 100644
          }
  
          this.oldServerPinger.pingPendingNetworks();
-+
++		
 +		// TODO: Client
 +		// Enable/disable "Last Server" button
 +		if(WurstClient.INSTANCE.isEnabled())
@@ -1521,7 +1843,7 @@ index 9a4b028..cf9a188 100644
 -            }
 -        }
 -    }
- 
+ 				
 -    private void refreshServerList()
 +				// TODO: Client
 +			}else if(button.id == 5)
@@ -1558,7 +1880,7 @@ index 9a4b028..cf9a188 100644
 +					deletingServer = true;
 +					confirmClicked(true, i);
 +				}
-+            	
++				
                  if (keyCode == 200)
                  {
                      if (isShiftKeyDown())
@@ -1566,8 +1888,8 @@ index 9a4b028..cf9a188 100644
          this.hoveringText = null;
          this.drawDefaultBackground();
          this.serverListSelector.drawScreen(mouseX, mouseY, partialTicks);
--        this.drawCenteredString(this.fontRendererObj, I18n.format("multiplayer.title", new Object[0]), this.width / 2, 20, 16777215);
-+
+-        this.drawCenteredString(this.fontRendererObj, I18n.format("multiplayer.title"), this.width / 2, 20, 16777215);
++		
 +		// TODO: Client
 +		this.drawCenteredString(this.fontRendererObj,
 +			I18n.format("multiplayer.title", new Object[0]), this.width / 2, 16,
@@ -1579,11 +1901,11 @@ index 9a4b028..cf9a188 100644
 @@ -386,6 +451,10 @@ public class GuiMultiplayer extends GuiScreen
      {
          GuiListExtended.IGuiListEntry guilistextended$iguilistentry = this.serverListSelector.getSelected() < 0 ? null : this.serverListSelector.getListEntry(this.serverListSelector.getSelected());
- 
+ 		
 +		// TODO: Client
 +		ServerHook.updateLastServerFromServerlist(guilistextended$iguilistentry,
 +			this);
-+
++		
          if (guilistextended$iguilistentry instanceof ServerListEntryNormal)
          {
              this.connectToServer(((ServerListEntryNormal)guilistextended$iguilistentry).getServerData());
@@ -1595,7 +1917,7 @@ index 9a4b028..cf9a188 100644
 +    public void connectToServer(ServerData server)
      {
          this.mc.displayGuiScreen(new GuiConnecting(this, this.mc, server));
-+        
++		
 +		// TODO: Client
 +		SpamProcessor.runScript("joinserver",
 +			"Runs whenever you join a server.");
@@ -1603,7 +1925,7 @@ index 9a4b028..cf9a188 100644
  
      public void selectServer(int index)
 diff --git a/net/minecraft/client/gui/GuiNewChat.java b/net/minecraft/client/gui/GuiNewChat.java
-index 7607b50..172a274 100644
+index 4beb22e..749753f 100644
 --- a/net/minecraft/client/gui/GuiNewChat.java
 +++ b/net/minecraft/client/gui/GuiNewChat.java
 @@ -1,17 +1,23 @@
@@ -1644,15 +1966,96 @@ index 7607b50..172a274 100644
 +		if(event.isCancelled())
 +			return;
 +		chatComponent = event.getComponent();
-+    	
++		
          this.setChatLine(chatComponent, chatLineId, this.mc.ingameGUI.getUpdateCounter(), false);
-         LOGGER.info("[CHAT] {}", new Object[] {chatComponent.getUnformattedText().replaceAll("\r", "\\\\r").replaceAll("\n", "\\\\n")});
+         LOGGER.info("[CHAT] {}", (Object)chatComponent.getUnformattedText().replaceAll("\r", "\\\\r").replaceAll("\n", "\\\\n"));
      }
+diff --git a/net/minecraft/client/gui/GuiOptionsRowList.java b/net/minecraft/client/gui/GuiOptionsRowList.java
+index 7a5d7ba..f092a75 100644
+--- a/net/minecraft/client/gui/GuiOptionsRowList.java
++++ b/net/minecraft/client/gui/GuiOptionsRowList.java
+@@ -80,13 +80,13 @@ public class GuiOptionsRowList extends GuiListExtended
+             if (this.buttonA != null)
+             {
+                 this.buttonA.yPosition = p_192634_3_;
+-                this.buttonA.func_191745_a(this.client, p_192634_6_, p_192634_7_, p_192634_9_);
++                this.buttonA.drawButton(this.client, p_192634_6_, p_192634_7_, p_192634_9_);
+             }
+ 
+             if (this.buttonB != null)
+             {
+                 this.buttonB.yPosition = p_192634_3_;
+-                this.buttonB.func_191745_a(this.client, p_192634_6_, p_192634_7_, p_192634_9_);
++                this.buttonB.drawButton(this.client, p_192634_6_, p_192634_7_, p_192634_9_);
+             }
+         }
+ 
+diff --git a/net/minecraft/client/gui/GuiPageButtonList.java b/net/minecraft/client/gui/GuiPageButtonList.java
+index bb01f1d..1e67f5e 100644
+--- a/net/minecraft/client/gui/GuiPageButtonList.java
++++ b/net/minecraft/client/gui/GuiPageButtonList.java
+@@ -459,7 +459,7 @@ public class GuiPageButtonList extends GuiListExtended
+ 
+             if (!p_192635_5_)
+             {
+-                p_192635_1_.func_191745_a(this.client, p_192635_3_, p_192635_4_, p_192635_6_);
++                p_192635_1_.drawButton(this.client, p_192635_3_, p_192635_4_, p_192635_6_);
+             }
+         }
+ 
 diff --git a/net/minecraft/client/gui/GuiScreen.java b/net/minecraft/client/gui/GuiScreen.java
-index 85d2c91..c580e80 100644
+index dbc44c6..8930c97 100644
 --- a/net/minecraft/client/gui/GuiScreen.java
 +++ b/net/minecraft/client/gui/GuiScreen.java
-@@ -428,7 +428,11 @@ public abstract class GuiScreen extends Gui implements GuiYesNoCallback
+@@ -1,8 +1,5 @@
+ package net.minecraft.client.gui;
+ 
+-import com.google.common.base.Splitter;
+-import com.google.common.collect.Lists;
+-import com.google.common.collect.Sets;
+ import java.awt.Toolkit;
+ import java.awt.datatransfer.ClipboardOwner;
+ import java.awt.datatransfer.DataFlavor;
+@@ -16,6 +13,17 @@ import java.util.Arrays;
+ import java.util.List;
+ import java.util.Locale;
+ import java.util.Set;
++
++import org.apache.commons.lang3.StringUtils;
++import org.apache.logging.log4j.LogManager;
++import org.apache.logging.log4j.Logger;
++import org.lwjgl.input.Keyboard;
++import org.lwjgl.input.Mouse;
++
++import com.google.common.base.Splitter;
++import com.google.common.collect.Lists;
++import com.google.common.collect.Sets;
++
+ import net.minecraft.client.Minecraft;
+ import net.minecraft.client.renderer.BufferBuilder;
+ import net.minecraft.client.renderer.GlStateManager;
+@@ -33,11 +41,6 @@ import net.minecraft.util.text.ITextComponent;
+ import net.minecraft.util.text.TextFormatting;
+ import net.minecraft.util.text.event.ClickEvent;
+ import net.minecraft.util.text.event.HoverEvent;
+-import org.apache.commons.lang3.StringUtils;
+-import org.apache.logging.log4j.LogManager;
+-import org.apache.logging.log4j.Logger;
+-import org.lwjgl.input.Keyboard;
+-import org.lwjgl.input.Mouse;
+ 
+ public abstract class GuiScreen extends Gui implements GuiYesNoCallback
+ {
+@@ -84,7 +87,7 @@ public abstract class GuiScreen extends Gui implements GuiYesNoCallback
+     {
+         for (int i = 0; i < this.buttonList.size(); ++i)
+         {
+-            ((GuiButton)this.buttonList.get(i)).func_191745_a(this.mc, mouseX, mouseY, partialTicks);
++            ((GuiButton)this.buttonList.get(i)).drawButton(this.mc, mouseX, mouseY, partialTicks);
+         }
+ 
+         for (int j = 0; j < this.labelList.size(); ++j)
+@@ -417,7 +420,11 @@ public abstract class GuiScreen extends Gui implements GuiYesNoCallback
                  }
                  else if (clickevent.getAction() == ClickEvent.Action.OPEN_FILE)
                  {
@@ -1666,7 +2069,7 @@ index 85d2c91..c580e80 100644
                  }
                  else if (clickevent.getAction() == ClickEvent.Action.SUGGEST_COMMAND)
 diff --git a/net/minecraft/client/gui/GuiScreenBook.java b/net/minecraft/client/gui/GuiScreenBook.java
-index 7de227b..633c28e 100644
+index 189b0b7..90beca3 100644
 --- a/net/minecraft/client/gui/GuiScreenBook.java
 +++ b/net/minecraft/client/gui/GuiScreenBook.java
 @@ -1,11 +1,18 @@
@@ -1709,18 +2112,18 @@ index 7de227b..633c28e 100644
 @@ -66,6 +72,10 @@ public class GuiScreenBook extends GuiScreen
      private GuiButton buttonFinalize;
      private GuiButton buttonCancel;
- 
+ 	
 +	// TODO: Client
 +	private boolean hasCommand;
 +	private String command;
-+
++	
      public GuiScreenBook(EntityPlayer player, ItemStack book, boolean isUnsigned)
      {
          this.editingPlayer = player;
 @@ -92,6 +102,21 @@ public class GuiScreenBook extends GuiScreen
          }
      }
- 
+ 	
 +	// TODO: Client
 +	public void signWithCommand(String command)
 +	{
@@ -1735,15 +2138,15 @@ index 7de227b..633c28e 100644
 +			e.printStackTrace();
 +		}
 +	}
-+
++	
      /**
       * Called from the main game loop to update the screen.
       */
 @@ -116,6 +141,10 @@ public class GuiScreenBook extends GuiScreen
-             this.buttonDone = this.addButton(new GuiButton(0, this.width / 2 + 2, 196, 98, 20, I18n.format("gui.done", new Object[0])));
-             this.buttonFinalize = this.addButton(new GuiButton(5, this.width / 2 - 100, 196, 98, 20, I18n.format("book.finalizeButton", new Object[0])));
-             this.buttonCancel = this.addButton(new GuiButton(4, this.width / 2 + 2, 196, 98, 20, I18n.format("gui.cancel", new Object[0])));
-+
+             this.buttonDone = this.addButton(new GuiButton(0, this.width / 2 + 2, 196, 98, 20, I18n.format("gui.done")));
+             this.buttonFinalize = this.addButton(new GuiButton(5, this.width / 2 - 100, 196, 98, 20, I18n.format("book.finalizeButton")));
+             this.buttonCancel = this.addButton(new GuiButton(4, this.width / 2 + 2, 196, 98, 20, I18n.format("gui.cancel")));
++			
 +			// TODO: Client
 +			this.buttonList.add(new GuiButton(6, (width + bookImageWidth) / 2,
 +				bookImageHeight / 2, 100, 20, "Command Link"));
@@ -1754,7 +2157,7 @@ index 7de227b..633c28e 100644
              this.buttonCancel.visible = this.bookGettingSigned;
              this.buttonFinalize.visible = this.bookGettingSigned;
              this.buttonFinalize.enabled = !this.bookTitle.trim().isEmpty();
-+            
++			
 +			// TODO: Client
 +			GuiButton buttonCommandLink = (GuiButton)buttonList.get(4);
 +			buttonCommandLink.visible = bookGettingSigned;
@@ -1766,7 +2169,7 @@ index 7de227b..633c28e 100644
                      s1 = "MC|BSign";
                      this.bookObj.setTagInfo("author", new NBTTagString(this.editingPlayer.getName()));
                      this.bookObj.setTagInfo("title", new NBTTagString(this.bookTitle.trim()));
-+                    
++					
 +					// TODO: Client
 +					if(hasCommand)
 +						try
@@ -1799,7 +2202,7 @@ index 7de227b..633c28e 100644
              else if (button.id == 4 && this.bookGettingSigned)
              {
                  this.bookGettingSigned = false;
-+                
++				
 +				// TODO: Client
 +			}else if(button.id == 6)
 +			{
@@ -1807,8 +2210,30 @@ index 7de227b..633c28e 100644
  			}
  
              this.updateButtons();
+@@ -630,7 +695,7 @@ public class GuiScreenBook extends GuiScreen
+             this.isForward = p_i46316_4_;
+         }
+ 
+-        public void func_191745_a(Minecraft p_191745_1_, int p_191745_2_, int p_191745_3_, float p_191745_4_)
++        public void drawButton(Minecraft p_191745_1_, int p_191745_2_, int p_191745_3_, float p_191745_4_)
+         {
+             if (this.visible)
+             {
+diff --git a/net/minecraft/client/gui/GuiScreenCustomizePresets.java b/net/minecraft/client/gui/GuiScreenCustomizePresets.java
+index 53076d5..39ddac2 100644
+--- a/net/minecraft/client/gui/GuiScreenCustomizePresets.java
++++ b/net/minecraft/client/gui/GuiScreenCustomizePresets.java
+@@ -226,7 +226,7 @@ public class GuiScreenCustomizePresets extends GuiScreen
+             tessellator.draw();
+         }
+ 
+-        protected void func_192637_a(int p_192637_1_, int p_192637_2_, int p_192637_3_, int p_192637_4_, int p_192637_5_, int p_192637_6_, float p_192637_7_)
++        protected void drawSlot(int p_192637_1_, int p_192637_2_, int p_192637_3_, int p_192637_4_, int p_192637_5_, int p_192637_6_, float p_192637_7_)
+         {
+             GuiScreenCustomizePresets.Info guiscreencustomizepresets$info = GuiScreenCustomizePresets.PRESETS.get(p_192637_1_);
+             this.blitIcon(p_192637_2_, p_192637_3_, guiscreencustomizepresets$info.texture);
 diff --git a/net/minecraft/client/gui/GuiScreenServerList.java b/net/minecraft/client/gui/GuiScreenServerList.java
-index 0ea5063..ae2e5b9 100644
+index c257b30..81ddbf6 100644
 --- a/net/minecraft/client/gui/GuiScreenServerList.java
 +++ b/net/minecraft/client/gui/GuiScreenServerList.java
 @@ -1,9 +1,12 @@
@@ -1829,7 +2254,7 @@ index 0ea5063..ae2e5b9 100644
              else if (button.id == 0)
              {
                  this.serverData.serverIP = this.ipEdit.getText();
-+                
++				
 +				// TODO: Client
 +				ServerHook.updateLastServerFromDirectConnect(
 +					(GuiMultiplayer)lastScreen, serverData);
@@ -1837,40 +2262,101 @@ index 0ea5063..ae2e5b9 100644
                  this.lastScreen.confirmClicked(true, 0);
              }
          }
+diff --git a/net/minecraft/client/gui/GuiSimpleScrolledSelectionListProxy.java b/net/minecraft/client/gui/GuiSimpleScrolledSelectionListProxy.java
+index a1d553c..16ece2d 100644
+--- a/net/minecraft/client/gui/GuiSimpleScrolledSelectionListProxy.java
++++ b/net/minecraft/client/gui/GuiSimpleScrolledSelectionListProxy.java
+@@ -44,7 +44,7 @@ public class GuiSimpleScrolledSelectionListProxy extends GuiSlot
+         this.realmsScrolledSelectionList.renderBackground();
+     }
+ 
+-    protected void func_192637_a(int p_192637_1_, int p_192637_2_, int p_192637_3_, int p_192637_4_, int p_192637_5_, int p_192637_6_, float p_192637_7_)
++    protected void drawSlot(int p_192637_1_, int p_192637_2_, int p_192637_3_, int p_192637_4_, int p_192637_5_, int p_192637_6_, float p_192637_7_)
+     {
+         this.realmsScrolledSelectionList.renderItem(p_192637_1_, p_192637_2_, p_192637_3_, p_192637_4_, p_192637_5_, p_192637_6_);
+     }
+diff --git a/net/minecraft/client/gui/GuiSlot.java b/net/minecraft/client/gui/GuiSlot.java
+index 7025dba..e16367d 100644
+--- a/net/minecraft/client/gui/GuiSlot.java
++++ b/net/minecraft/client/gui/GuiSlot.java
+@@ -129,7 +129,7 @@ public abstract class GuiSlot
+     {
+     }
+ 
+-    protected abstract void func_192637_a(int p_192637_1_, int p_192637_2_, int p_192637_3_, int p_192637_4_, int p_192637_5_, int p_192637_6_, float p_192637_7_);
++    protected abstract void drawSlot(int p_192637_1_, int p_192637_2_, int p_192637_3_, int p_192637_4_, int p_192637_5_, int p_192637_6_, float p_192637_7_);
+ 
+     /**
+      * Handles drawing a list's header row.
+@@ -479,7 +479,7 @@ public abstract class GuiSlot
+                 GlStateManager.enableTexture2D();
+             }
+ 
+-            this.func_192637_a(j, p_192638_1_, k, l, p_192638_3_, p_192638_4_, p_192638_5_);
++            this.drawSlot(j, p_192638_1_, k, l, p_192638_3_, p_192638_4_, p_192638_5_);
+         }
+     }
+ 
+diff --git a/net/minecraft/client/gui/GuiSlotRealmsProxy.java b/net/minecraft/client/gui/GuiSlotRealmsProxy.java
+index 14b8d85..1f31752 100644
+--- a/net/minecraft/client/gui/GuiSlotRealmsProxy.java
++++ b/net/minecraft/client/gui/GuiSlotRealmsProxy.java
+@@ -39,7 +39,7 @@ public class GuiSlotRealmsProxy extends GuiSlot
+         this.selectionList.renderBackground();
+     }
+ 
+-    protected void func_192637_a(int p_192637_1_, int p_192637_2_, int p_192637_3_, int p_192637_4_, int p_192637_5_, int p_192637_6_, float p_192637_7_)
++    protected void drawSlot(int p_192637_1_, int p_192637_2_, int p_192637_3_, int p_192637_4_, int p_192637_5_, int p_192637_6_, float p_192637_7_)
+     {
+         this.selectionList.renderItem(p_192637_1_, p_192637_2_, p_192637_3_, p_192637_4_, p_192637_5_, p_192637_6_);
+     }
+diff --git a/net/minecraft/client/gui/GuiSnooper.java b/net/minecraft/client/gui/GuiSnooper.java
+index 6cc7d7b..21afee2 100644
+--- a/net/minecraft/client/gui/GuiSnooper.java
++++ b/net/minecraft/client/gui/GuiSnooper.java
+@@ -141,7 +141,7 @@ public class GuiSnooper extends GuiScreen
+         {
+         }
+ 
+-        protected void func_192637_a(int p_192637_1_, int p_192637_2_, int p_192637_3_, int p_192637_4_, int p_192637_5_, int p_192637_6_, float p_192637_7_)
++        protected void drawSlot(int p_192637_1_, int p_192637_2_, int p_192637_3_, int p_192637_4_, int p_192637_5_, int p_192637_6_, float p_192637_7_)
+         {
+             GuiSnooper.this.fontRendererObj.drawString(GuiSnooper.this.keys.get(p_192637_1_), 10, p_192637_3_, 16777215);
+             GuiSnooper.this.fontRendererObj.drawString(GuiSnooper.this.values.get(p_192637_1_), 230, p_192637_3_, 16777215);
 diff --git a/net/minecraft/client/gui/ServerListEntryNormal.java b/net/minecraft/client/gui/ServerListEntryNormal.java
-index 69340ee..6f734b0 100644
+index ee3802a..0555d3d 100644
 --- a/net/minecraft/client/gui/ServerListEntryNormal.java
 +++ b/net/minecraft/client/gui/ServerListEntryNormal.java
 @@ -1,16 +1,22 @@
  package net.minecraft.client.gui;
  
-+import java.awt.image.BufferedImage;
-+import java.net.UnknownHostException;
-+import java.util.List;
-+import java.util.concurrent.ScheduledThreadPoolExecutor;
-+import java.util.concurrent.ThreadPoolExecutor;
+-import com.google.common.util.concurrent.ThreadFactoryBuilder;
+-import io.netty.buffer.ByteBuf;
+-import io.netty.buffer.ByteBufInputStream;
+-import io.netty.buffer.Unpooled;
+-import io.netty.handler.codec.base64.Base64;
+ import java.awt.image.BufferedImage;
+ import java.net.UnknownHostException;
+ import java.nio.charset.StandardCharsets;
+ import java.util.List;
+ import java.util.concurrent.ScheduledThreadPoolExecutor;
+ import java.util.concurrent.ThreadPoolExecutor;
 +
 +import org.apache.commons.lang3.Validate;
 +import org.apache.logging.log4j.LogManager;
 +import org.apache.logging.log4j.Logger;
 +
- import com.google.common.base.Charsets;
- import com.google.common.util.concurrent.ThreadFactoryBuilder;
++import com.google.common.util.concurrent.ThreadFactoryBuilder;
 +
- import io.netty.buffer.ByteBuf;
- import io.netty.buffer.ByteBufInputStream;
- import io.netty.buffer.Unpooled;
- import io.netty.handler.codec.base64.Base64;
--import java.awt.image.BufferedImage;
--import java.net.UnknownHostException;
--import java.util.List;
--import java.util.concurrent.ScheduledThreadPoolExecutor;
--import java.util.concurrent.ThreadPoolExecutor;
++import io.netty.buffer.ByteBuf;
++import io.netty.buffer.ByteBufInputStream;
++import io.netty.buffer.Unpooled;
++import io.netty.handler.codec.base64.Base64;
  import net.minecraft.client.Minecraft;
  import net.minecraft.client.multiplayer.ServerData;
  import net.minecraft.client.renderer.GlStateManager;
-@@ -18,9 +24,7 @@ import net.minecraft.client.renderer.texture.DynamicTexture;
- import net.minecraft.client.renderer.texture.TextureUtil;
+@@ -19,9 +25,7 @@ import net.minecraft.client.renderer.texture.TextureUtil;
+ import net.minecraft.client.resources.I18n;
  import net.minecraft.util.ResourceLocation;
  import net.minecraft.util.text.TextFormatting;
 -import org.apache.commons.lang3.Validate;
@@ -1880,7 +2366,7 @@ index 69340ee..6f734b0 100644
  
  public class ServerListEntryNormal implements GuiListExtended.IGuiListEntry
  {
-@@ -36,7 +40,7 @@ public class ServerListEntryNormal implements GuiListExtended.IGuiListEntry
+@@ -37,7 +41,7 @@ public class ServerListEntryNormal implements GuiListExtended.IGuiListEntry
      private DynamicTexture icon;
      private long lastClickTime;
  
@@ -1889,33 +2375,33 @@ index 69340ee..6f734b0 100644
      {
          this.owner = p_i45048_1_;
          this.server = serverIn;
-@@ -77,7 +81,10 @@ public class ServerListEntryNormal implements GuiListExtended.IGuiListEntry
+@@ -78,7 +82,10 @@ public class ServerListEntryNormal implements GuiListExtended.IGuiListEntry
  
-         boolean flag = this.server.version > 316;
-         boolean flag1 = this.server.version < 316;
+         boolean flag = this.server.version > 335;
+         boolean flag1 = this.server.version < 335;
 -        boolean flag2 = flag || flag1;
-+
++		
 +		// TODO: Client
 +		boolean flag2 = !WMinecraft.PROTOCOLS.containsKey(server.version);
-+        
-         this.mc.fontRendererObj.drawString(this.server.serverName, x + 32 + 3, y + 1, 16777215);
-         List<String> list = this.mc.fontRendererObj.listFormattedStringToWidth(this.server.serverMOTD, listWidth - 32 - 2);
++		
+         this.mc.fontRendererObj.drawString(this.server.serverName, p_192634_2_ + 32 + 3, p_192634_3_ + 1, 16777215);
+         List<String> list = this.mc.fontRendererObj.listFormattedStringToWidth(this.server.serverMOTD, p_192634_4_ - 32 - 2);
  
-@@ -86,7 +93,11 @@ public class ServerListEntryNormal implements GuiListExtended.IGuiListEntry
-             this.mc.fontRendererObj.drawString((String)list.get(i), x + 32 + 3, y + 12 + this.mc.fontRendererObj.FONT_HEIGHT * i, 8421504);
+@@ -87,7 +94,11 @@ public class ServerListEntryNormal implements GuiListExtended.IGuiListEntry
+             this.mc.fontRendererObj.drawString(list.get(i), p_192634_2_ + 32 + 3, p_192634_3_ + 12 + this.mc.fontRendererObj.FONT_HEIGHT * i, 8421504);
          }
- 
+ 		
 -        String s2 = flag2 ? TextFormatting.DARK_RED + this.server.gameVersion : this.server.populationInfo;
 +		// TODO: Client
 +		String s2 = flag2 ? TextFormatting.DARK_RED + this.server.gameVersion
 +			: TextFormatting.GREEN + server.gameVersion + TextFormatting.RESET
 +				+ " " + this.server.populationInfo;
-+        
++		
          int j = this.mc.fontRendererObj.getStringWidth(s2);
-         this.mc.fontRendererObj.drawString(s2, x + listWidth - j - 15 - 2, y + 1, 8421504);
+         this.mc.fontRendererObj.drawString(s2, p_192634_2_ + p_192634_4_ - j - 15 - 2, p_192634_3_ + 1, 8421504);
          int k = 0;
 diff --git a/net/minecraft/client/gui/achievement/GuiStats.java b/net/minecraft/client/gui/achievement/GuiStats.java
-index 5dced78..6debf4d 100644
+index 1f418c2..f96a2cc 100644
 --- a/net/minecraft/client/gui/achievement/GuiStats.java
 +++ b/net/minecraft/client/gui/achievement/GuiStats.java
 @@ -1,10 +1,14 @@
@@ -1945,16 +2431,16 @@ index 5dced78..6debf4d 100644
  {
 @@ -87,6 +91,11 @@ public class GuiStats extends GuiScreen implements IProgressMeter
  
-     public void createButtons()
+     public void func_193029_f()
      {
 +		// TODO: Client
 +		this.buttonList.add(new GuiButton(-1, this.width / 2 - 154,
 +			this.height - 28, 150, 20, WurstClient.INSTANCE.isEnabled()
 +				? "Disable Wurst" : "Enable Wurst"));
-+    	
-         this.buttonList.add(new GuiButton(0, this.width / 2 + 4, this.height - 28, 150, 20, I18n.format("gui.done", new Object[0])));
-         this.buttonList.add(new GuiButton(1, this.width / 2 - 160, this.height - 52, 80, 20, I18n.format("stat.generalButton", new Object[0])));
-         GuiButton guibutton = this.addButton(new GuiButton(2, this.width / 2 - 80, this.height - 52, 80, 20, I18n.format("stat.blocksButton", new Object[0])));
++		
+         this.buttonList.add(new GuiButton(0, this.width / 2 + 4, this.height - 28, 150, 20, I18n.format("gui.done")));
+         this.buttonList.add(new GuiButton(1, this.width / 2 - 160, this.height - 52, 80, 20, I18n.format("stat.generalButton")));
+         GuiButton guibutton = this.addButton(new GuiButton(2, this.width / 2 - 80, this.height - 52, 80, 20, I18n.format("stat.blocksButton")));
 @@ -116,6 +125,15 @@ public class GuiStats extends GuiScreen implements IProgressMeter
      {
          if (button.enabled)
@@ -1967,12 +2453,61 @@ index 5dced78..6debf4d 100644
 +				button.displayString = WurstClient.INSTANCE.isEnabled()
 +					? "Disable Wurst" : "Enable Wurst";
 +			}
-+        	
++			
              if (button.id == 0)
              {
                  this.mc.displayGuiScreen(this.parentScreen);
+@@ -652,7 +670,7 @@ public class GuiStats extends GuiScreen implements IProgressMeter
+             }
+         }
+ 
+-        protected void func_192637_a(int p_192637_1_, int p_192637_2_, int p_192637_3_, int p_192637_4_, int p_192637_5_, int p_192637_6_, float p_192637_7_)
++        protected void drawSlot(int p_192637_1_, int p_192637_2_, int p_192637_3_, int p_192637_4_, int p_192637_5_, int p_192637_6_, float p_192637_7_)
+         {
+             StatCrafting statcrafting = this.getSlotStat(p_192637_1_);
+             Item item = statcrafting.getItem();
+@@ -717,7 +735,7 @@ public class GuiStats extends GuiScreen implements IProgressMeter
+             GuiStats.this.drawDefaultBackground();
+         }
+ 
+-        protected void func_192637_a(int p_192637_1_, int p_192637_2_, int p_192637_3_, int p_192637_4_, int p_192637_5_, int p_192637_6_, float p_192637_7_)
++        protected void drawSlot(int p_192637_1_, int p_192637_2_, int p_192637_3_, int p_192637_4_, int p_192637_5_, int p_192637_6_, float p_192637_7_)
+         {
+             StatBase statbase = StatList.BASIC_STATS.get(p_192637_1_);
+             GuiStats.this.drawString(GuiStats.this.fontRendererObj, statbase.getStatName().getUnformattedText(), p_192637_2_ + 2, p_192637_3_ + 1, p_192637_1_ % 2 == 0 ? 16777215 : 9474192);
+@@ -878,7 +896,7 @@ public class GuiStats extends GuiScreen implements IProgressMeter
+             }
+         }
+ 
+-        protected void func_192637_a(int p_192637_1_, int p_192637_2_, int p_192637_3_, int p_192637_4_, int p_192637_5_, int p_192637_6_, float p_192637_7_)
++        protected void drawSlot(int p_192637_1_, int p_192637_2_, int p_192637_3_, int p_192637_4_, int p_192637_5_, int p_192637_6_, float p_192637_7_)
+         {
+             StatCrafting statcrafting = this.getSlotStat(p_192637_1_);
+             Item item = statcrafting.getItem();
+@@ -953,7 +971,7 @@ public class GuiStats extends GuiScreen implements IProgressMeter
+             GuiStats.this.drawDefaultBackground();
+         }
+ 
+-        protected void func_192637_a(int p_192637_1_, int p_192637_2_, int p_192637_3_, int p_192637_4_, int p_192637_5_, int p_192637_6_, float p_192637_7_)
++        protected void drawSlot(int p_192637_1_, int p_192637_2_, int p_192637_3_, int p_192637_4_, int p_192637_5_, int p_192637_6_, float p_192637_7_)
+         {
+             EntityList.EntityEggInfo entitylist$entityegginfo = this.mobs.get(p_192637_1_);
+             String s = I18n.format("entity." + EntityList.func_191302_a(entitylist$entityegginfo.spawnedID) + ".name");
+diff --git a/net/minecraft/client/gui/inventory/GuiBeacon.java b/net/minecraft/client/gui/inventory/GuiBeacon.java
+index 37480c7..266d999 100644
+--- a/net/minecraft/client/gui/inventory/GuiBeacon.java
++++ b/net/minecraft/client/gui/inventory/GuiBeacon.java
+@@ -239,7 +239,7 @@ public class GuiBeacon extends GuiContainer
+             this.iconY = iconYIn;
+         }
+ 
+-        public void func_191745_a(Minecraft p_191745_1_, int p_191745_2_, int p_191745_3_, float p_191745_4_)
++        public void drawButton(Minecraft p_191745_1_, int p_191745_2_, int p_191745_3_, float p_191745_4_)
+         {
+             if (this.visible)
+             {
 diff --git a/net/minecraft/client/gui/inventory/GuiChest.java b/net/minecraft/client/gui/inventory/GuiChest.java
-index b5448d5..8275df8 100644
+index 3c66a2c..9cdbf9d 100644
 --- a/net/minecraft/client/gui/inventory/GuiChest.java
 +++ b/net/minecraft/client/gui/inventory/GuiChest.java
 @@ -1,10 +1,15 @@
@@ -1994,7 +2529,7 @@ index b5448d5..8275df8 100644
 @@ -30,6 +35,77 @@ public class GuiChest extends GuiContainer
          this.ySize = 114 + this.inventoryRows * 18;
      }
- 
+ 	
 +	// TODO: Client
 +	@Override
 +	public void initGui()
@@ -2065,12 +2600,12 @@ index b5448d5..8275df8 100644
 +				}
 +			}).start();
 +	}
-+
++	
      /**
-      * Draw the foreground layer for the GuiContainer (everything in front of the items)
+      * Draws the screen and all the components in it.
       */
 diff --git a/net/minecraft/client/gui/inventory/GuiContainer.java b/net/minecraft/client/gui/inventory/GuiContainer.java
-index 722cc99..2e28aa8 100644
+index d97fba4..7751a53 100644
 --- a/net/minecraft/client/gui/inventory/GuiContainer.java
 +++ b/net/minecraft/client/gui/inventory/GuiContainer.java
 @@ -1,8 +1,12 @@
@@ -2096,18 +2631,18 @@ index 722cc99..2e28aa8 100644
  
  public abstract class GuiContainer extends GuiScreen
  {
-@@ -747,6 +751,9 @@ public abstract class GuiContainer extends GuiScreen
+@@ -752,6 +756,9 @@ public abstract class GuiContainer extends GuiScreen
       */
      public void onGuiClosed()
      {
 +		// TODO: Client
 +		WurstClient.INSTANCE.mods.chestEspMod.closeChest(inventorySlots);
-+    	
++		
          if (this.mc.player != null)
          {
              this.inventorySlots.onContainerClosed(this.mc.player);
 diff --git a/net/minecraft/client/gui/inventory/GuiEditSign.java b/net/minecraft/client/gui/inventory/GuiEditSign.java
-index 45afaf7..83aa1ee 100644
+index 32d1fbb..54be729 100644
 --- a/net/minecraft/client/gui/inventory/GuiEditSign.java
 +++ b/net/minecraft/client/gui/inventory/GuiEditSign.java
 @@ -1,6 +1,9 @@
@@ -2146,7 +2681,7 @@ index 45afaf7..83aa1ee 100644
 +		
          this.buttonList.clear();
          Keyboard.enableRepeatEvents(true);
-         this.doneBtn = this.addButton(new GuiButton(0, this.width / 2 - 100, this.height / 4 + 120, I18n.format("gui.done", new Object[0])));
+         this.doneBtn = this.addButton(new GuiButton(0, this.width / 2 - 100, this.height / 4 + 120, I18n.format("gui.done")));
 @@ -79,6 +92,10 @@ public class GuiEditSign extends GuiScreen
          {
              if (button.id == 0)
@@ -2158,8 +2693,97 @@ index 45afaf7..83aa1ee 100644
                  this.tileSign.markDirty();
                  this.mc.displayGuiScreen((GuiScreen)null);
              }
+diff --git a/net/minecraft/client/gui/recipebook/GuiButtonRecipe.java b/net/minecraft/client/gui/recipebook/GuiButtonRecipe.java
+index ed67c1b..76c53d5 100644
+--- a/net/minecraft/client/gui/recipebook/GuiButtonRecipe.java
++++ b/net/minecraft/client/gui/recipebook/GuiButtonRecipe.java
+@@ -55,7 +55,7 @@ public class GuiButtonRecipe extends GuiButton
+         this.yPosition = p_191770_2_;
+     }
+ 
+-    public void func_191745_a(Minecraft p_191745_1_, int p_191745_2_, int p_191745_3_, float p_191745_4_)
++    public void drawButton(Minecraft p_191745_1_, int p_191745_2_, int p_191745_3_, float p_191745_4_)
+     {
+         if (this.visible)
+         {
+diff --git a/net/minecraft/client/gui/recipebook/GuiButtonRecipeTab.java b/net/minecraft/client/gui/recipebook/GuiButtonRecipeTab.java
+index dd5daa1..5635729 100644
+--- a/net/minecraft/client/gui/recipebook/GuiButtonRecipeTab.java
++++ b/net/minecraft/client/gui/recipebook/GuiButtonRecipeTab.java
+@@ -54,7 +54,7 @@ public class GuiButtonRecipeTab extends GuiButtonToggle
+         }
+     }
+ 
+-    public void func_191745_a(Minecraft p_191745_1_, int p_191745_2_, int p_191745_3_, float p_191745_4_)
++    public void drawButton(Minecraft p_191745_1_, int p_191745_2_, int p_191745_3_, float p_191745_4_)
+     {
+         if (this.visible)
+         {
+diff --git a/net/minecraft/client/gui/recipebook/GuiRecipeBook.java b/net/minecraft/client/gui/recipebook/GuiRecipeBook.java
+index f2121ab..1e896a7 100644
+--- a/net/minecraft/client/gui/recipebook/GuiRecipeBook.java
++++ b/net/minecraft/client/gui/recipebook/GuiRecipeBook.java
+@@ -264,10 +264,10 @@ public class GuiRecipeBook extends Gui implements IRecipeUpdateListener
+ 
+             for (GuiButtonRecipeTab guibuttonrecipetab : this.field_193018_j)
+             {
+-                guibuttonrecipetab.func_191745_a(this.field_191888_F, p_191861_1_, p_191861_2_, p_191861_3_);
++                guibuttonrecipetab.drawButton(this.field_191888_F, p_191861_1_, p_191861_2_, p_191861_3_);
+             }
+ 
+-            this.field_193960_m.func_191745_a(this.field_191888_F, p_191861_1_, p_191861_2_, p_191861_3_);
++            this.field_193960_m.drawButton(this.field_191888_F, p_191861_1_, p_191861_2_, p_191861_3_);
+             this.field_193022_s.func_194191_a(i, j, p_191861_1_, p_191861_2_, p_191861_3_);
+             GlStateManager.popMatrix();
+         }
+diff --git a/net/minecraft/client/gui/recipebook/GuiRecipeOverlay.java b/net/minecraft/client/gui/recipebook/GuiRecipeOverlay.java
+index 71d2b74..63d8b0e 100644
+--- a/net/minecraft/client/gui/recipebook/GuiRecipeOverlay.java
++++ b/net/minecraft/client/gui/recipebook/GuiRecipeOverlay.java
+@@ -134,7 +134,7 @@ public class GuiRecipeOverlay extends Gui
+ 
+             for (GuiRecipeOverlay.Button guirecipeoverlay$button : this.field_193972_f)
+             {
+-                guirecipeoverlay$button.func_191745_a(this.field_191853_k, p_191842_1_, p_191842_2_, p_191842_3_);
++                guirecipeoverlay$button.drawButton(this.field_191853_k, p_191842_1_, p_191842_2_, p_191842_3_);
+             }
+ 
+             GlStateManager.popMatrix();
+@@ -202,7 +202,7 @@ public class GuiRecipeOverlay extends Gui
+             this.field_193925_q = p_i47594_5_;
+         }
+ 
+-        public void func_191745_a(Minecraft p_191745_1_, int p_191745_2_, int p_191745_3_, float p_191745_4_)
++        public void drawButton(Minecraft p_191745_1_, int p_191745_2_, int p_191745_3_, float p_191745_4_)
+         {
+             RenderHelper.enableGUIStandardItemLighting();
+             GlStateManager.enableAlpha();
+diff --git a/net/minecraft/client/gui/recipebook/RecipeBookPage.java b/net/minecraft/client/gui/recipebook/RecipeBookPage.java
+index 667886b..3cfd993 100644
+--- a/net/minecraft/client/gui/recipebook/RecipeBookPage.java
++++ b/net/minecraft/client/gui/recipebook/RecipeBookPage.java
+@@ -111,7 +111,7 @@ public class RecipeBookPage
+ 
+         for (GuiButtonRecipe guibuttonrecipe : this.field_193743_h)
+         {
+-            guibuttonrecipe.func_191745_a(this.field_193754_s, p_194191_3_, p_194191_4_, p_194191_5_);
++            guibuttonrecipe.drawButton(this.field_193754_s, p_194191_3_, p_194191_4_, p_194191_5_);
+ 
+             if (guibuttonrecipe.visible && guibuttonrecipe.isMouseOver())
+             {
+@@ -119,8 +119,8 @@ public class RecipeBookPage
+             }
+         }
+ 
+-        this.field_193741_f.func_191745_a(this.field_193754_s, p_194191_3_, p_194191_4_, p_194191_5_);
+-        this.field_193740_e.func_191745_a(this.field_193754_s, p_194191_3_, p_194191_4_, p_194191_5_);
++        this.field_193741_f.drawButton(this.field_193754_s, p_194191_3_, p_194191_4_, p_194191_5_);
++        this.field_193740_e.drawButton(this.field_193754_s, p_194191_3_, p_194191_4_, p_194191_5_);
+         this.field_194202_c.func_191842_a(p_194191_3_, p_194191_4_, p_194191_5_);
+     }
+ 
 diff --git a/net/minecraft/client/multiplayer/GuiConnecting.java b/net/minecraft/client/multiplayer/GuiConnecting.java
-index c1727b2..f5b4294 100644
+index 8faa7d2..ce7a916 100644
 --- a/net/minecraft/client/multiplayer/GuiConnecting.java
 +++ b/net/minecraft/client/multiplayer/GuiConnecting.java
 @@ -4,6 +4,10 @@ import java.io.IOException;
@@ -2187,8 +2811,8 @@ index c1727b2..f5b4294 100644
                      inetaddress = InetAddress.getByName(ip);
                      GuiConnecting.this.networkManager = NetworkManager.createNetworkManagerAndConnect(inetaddress, port, GuiConnecting.this.mc.gameSettings.isUsingNativeTransport());
                      GuiConnecting.this.networkManager.setNetHandler(new NetHandlerLoginClient(GuiConnecting.this.networkManager, GuiConnecting.this.mc, GuiConnecting.this.previousGuiScreen));
--                    GuiConnecting.this.networkManager.sendPacket(new C00Handshake(316, ip, port, EnumConnectionState.LOGIN));
-+
+-                    GuiConnecting.this.networkManager.sendPacket(new C00Handshake(335, ip, port, EnumConnectionState.LOGIN));
++					
 +					// TODO: Client
 +					GuiConnecting.this.networkManager.sendPacket(
 +						new C00Handshake(ServerHook.getProtocolVersion(), ip,
@@ -2198,10 +2822,20 @@ index c1727b2..f5b4294 100644
                  }
                  catch (UnknownHostException unknownhostexception)
 diff --git a/net/minecraft/client/multiplayer/PlayerControllerMP.java b/net/minecraft/client/multiplayer/PlayerControllerMP.java
-index 82169d6..19a134f 100644
+index d7a03f7..d263f8c 100644
 --- a/net/minecraft/client/multiplayer/PlayerControllerMP.java
 +++ b/net/minecraft/client/multiplayer/PlayerControllerMP.java
-@@ -20,15 +20,7 @@ import net.minecraft.item.ItemBlock;
+@@ -1,7 +1,8 @@
+ package net.minecraft.client.multiplayer;
+ 
+-import io.netty.buffer.Unpooled;
+ import java.util.List;
++
++import io.netty.buffer.Unpooled;
+ import net.minecraft.block.Block;
+ import net.minecraft.block.BlockCommandBlock;
+ import net.minecraft.block.BlockStructure;
+@@ -21,16 +22,7 @@ import net.minecraft.item.ItemBlock;
  import net.minecraft.item.ItemStack;
  import net.minecraft.item.ItemSword;
  import net.minecraft.network.PacketBuffer;
@@ -2213,12 +2847,13 @@ index 82169d6..19a134f 100644
 -import net.minecraft.network.play.client.CPacketPlayerDigging;
 -import net.minecraft.network.play.client.CPacketPlayerTryUseItem;
 -import net.minecraft.network.play.client.CPacketPlayerTryUseItemOnBlock;
+-import net.minecraft.network.play.client.CPacketRecipePlacement;
 -import net.minecraft.network.play.client.CPacketUseEntity;
 +import net.minecraft.network.play.client.*;
+ import net.minecraft.stats.RecipeBook;
  import net.minecraft.stats.StatisticsManager;
  import net.minecraft.util.ActionResult;
- import net.minecraft.util.EnumActionResult;
-@@ -40,6 +32,7 @@ import net.minecraft.util.math.RayTraceResult;
+@@ -44,6 +36,7 @@ import net.minecraft.util.math.RayTraceResult;
  import net.minecraft.util.math.Vec3d;
  import net.minecraft.world.GameType;
  import net.minecraft.world.World;
@@ -2226,7 +2861,7 @@ index 82169d6..19a134f 100644
  
  public class PlayerControllerMP
  {
-@@ -52,7 +45,7 @@ public class PlayerControllerMP
+@@ -56,7 +49,7 @@ public class PlayerControllerMP
      private ItemStack currentItemHittingBlock = ItemStack.field_190927_a;
  
      /** Current block damage (MP) */
@@ -2235,19 +2870,19 @@ index 82169d6..19a134f 100644
  
      /**
       * Tick counter, when it hits 4 it resets back to 0 and plays the step sound
-@@ -239,7 +232,10 @@ public class PlayerControllerMP
-             {
+@@ -244,7 +237,10 @@ public class PlayerControllerMP
+                 this.mc.func_193032_ao().func_193294_a(this.mc.world, loc, this.mc.world.getBlockState(loc), 1.0F);
                  this.connection.sendPacket(new CPacketPlayerDigging(CPacketPlayerDigging.Action.START_DESTROY_BLOCK, loc, face));
                  clickBlockCreative(this.mc, this, loc, face);
 -                this.blockHitDelay = 5;
-+
++				
 +				// TODO: Client
 +				this.blockHitDelay =
 +					WurstClient.INSTANCE.mods.fastBreakMod.isActive() ? 0 : 5;
              }
              else if (!this.isHittingBlock || !this.isHittingPosition(loc))
              {
-@@ -302,7 +298,10 @@ public class PlayerControllerMP
+@@ -309,7 +305,10 @@ public class PlayerControllerMP
          }
          else if (this.currentGameType.isCreative() && this.mc.world.getWorldBorder().contains(posBlock))
          {
@@ -2256,15 +2891,15 @@ index 82169d6..19a134f 100644
 +			this.blockHitDelay =
 +				WurstClient.INSTANCE.mods.fastBreakMod.isActive() ? 0 : 5;
 +			
+             this.mc.func_193032_ao().func_193294_a(this.mc.world, posBlock, this.mc.world.getBlockState(posBlock), 1.0F);
              this.connection.sendPacket(new CPacketPlayerDigging(CPacketPlayerDigging.Action.START_DESTROY_BLOCK, posBlock, directionFacing));
              clickBlockCreative(this.mc, this, posBlock, directionFacing);
-             return true;
-@@ -337,7 +336,13 @@ public class PlayerControllerMP
+@@ -346,7 +345,13 @@ public class PlayerControllerMP
                      this.curBlockDamageMP = 0.0F;
                      this.stepSoundTickCounter = 0.0F;
                      this.blockHitDelay = 5;
 -                }
-+                    
++					
 +					// TODO: Client
 +				}else if(WurstClient.INSTANCE.mods.fastBreakMod
 +					.shouldSpamPackets())
@@ -2274,7 +2909,7 @@ index 82169d6..19a134f 100644
  
                  this.mc.world.sendBlockBreakProgress(this.mc.player.getEntityId(), this.currentBlock, (int)(this.curBlockDamageMP * 10.0F) - 1);
                  return true;
-@@ -400,6 +405,9 @@ public class PlayerControllerMP
+@@ -409,6 +414,9 @@ public class PlayerControllerMP
  
      public EnumActionResult processRightClickBlock(EntityPlayerSP player, WorldClient worldIn, BlockPos stack, EnumFacing pos, Vec3d facing, EnumHand vec)
      {
@@ -2285,30 +2920,50 @@ index 82169d6..19a134f 100644
          ItemStack itemstack = player.getHeldItem(vec);
          float f = (float)(facing.xCoord - (double)stack.getX());
 diff --git a/net/minecraft/client/multiplayer/ServerList.java b/net/minecraft/client/multiplayer/ServerList.java
-index 4aa6328..0ece5e8 100644
+index 8a8a8b2..0acbe0c 100644
 --- a/net/minecraft/client/multiplayer/ServerList.java
 +++ b/net/minecraft/client/multiplayer/ServerList.java
-@@ -24,6 +24,12 @@ public class ServerList
+@@ -1,14 +1,17 @@
+ package net.minecraft.client.multiplayer;
+ 
+-import com.google.common.collect.Lists;
+ import java.io.File;
+ import java.util.List;
++
++import org.apache.logging.log4j.LogManager;
++import org.apache.logging.log4j.Logger;
++
++import com.google.common.collect.Lists;
++
+ import net.minecraft.client.Minecraft;
+ import net.minecraft.nbt.CompressedStreamTools;
+ import net.minecraft.nbt.NBTTagCompound;
+ import net.minecraft.nbt.NBTTagList;
+-import org.apache.logging.log4j.LogManager;
+-import org.apache.logging.log4j.Logger;
+ 
+ public class ServerList
+ {
+@@ -24,6 +27,12 @@ public class ServerList
          this.loadServerList();
      }
- 
+ 	
 +	// TODO: Client
 +	public void clearServerList()
 +	{
 +		this.servers.clear();
 +	}
-+
++	
      /**
       * Loads a list of servers from servers.dat, by running ServerData.getServerDataFromNBTCompound on each NBT compound
       * found in the "servers" tag list.
 diff --git a/net/minecraft/client/network/NetHandlerPlayClient.java b/net/minecraft/client/network/NetHandlerPlayClient.java
-index 966ee81..bc7cbde 100644
+index 7e62acd..49e3a6f 100644
 --- a/net/minecraft/client/network/NetHandlerPlayClient.java
 +++ b/net/minecraft/client/network/NetHandlerPlayClient.java
-@@ -1,11 +1,5 @@
+@@ -1,10 +1,5 @@
  package net.minecraft.client.network;
  
--import com.google.common.base.Charsets;
 -import com.google.common.collect.Maps;
 -import com.google.common.util.concurrent.FutureCallback;
 -import com.google.common.util.concurrent.Futures;
@@ -2317,31 +2972,31 @@ index 966ee81..bc7cbde 100644
  import java.io.File;
  import java.io.IOException;
  import java.io.UnsupportedEncodingException;
-@@ -16,10 +10,22 @@ import java.util.Arrays;
- import java.util.Collection;
+@@ -17,11 +12,21 @@ import java.util.Collection;
+ import java.util.Iterator;
  import java.util.List;
  import java.util.Map;
 +import java.util.Map.Entry;
  import java.util.Random;
  import java.util.UUID;
 -import java.util.Map.Entry;
+-import java.util.function.Consumer;
 +
  import javax.annotation.Nullable;
 +
 +import org.apache.logging.log4j.LogManager;
 +import org.apache.logging.log4j.Logger;
 +
-+import com.google.common.base.Charsets;
 +import com.google.common.collect.Maps;
 +import com.google.common.util.concurrent.FutureCallback;
 +import com.google.common.util.concurrent.Futures;
 +import com.mojang.authlib.GameProfile;
 +
 +import io.netty.buffer.Unpooled;
+ import net.minecraft.advancements.Advancement;
  import net.minecraft.block.Block;
  import net.minecraft.client.ClientBrandRetriever;
- import net.minecraft.client.Minecraft;
-@@ -28,22 +34,7 @@ import net.minecraft.client.audio.ISound;
+@@ -31,22 +36,7 @@ import net.minecraft.client.audio.ISound;
  import net.minecraft.client.audio.PositionedSoundRecord;
  import net.minecraft.client.entity.EntityOtherPlayerMP;
  import net.minecraft.client.entity.EntityPlayerSP;
@@ -2363,11 +3018,11 @@ index 966ee81..bc7cbde 100644
 -import net.minecraft.client.gui.MapItemRenderer;
 +import net.minecraft.client.gui.*;
  import net.minecraft.client.gui.inventory.GuiContainerCreative;
- import net.minecraft.client.multiplayer.PlayerControllerMP;
- import net.minecraft.client.multiplayer.ServerData;
-@@ -57,53 +48,19 @@ import net.minecraft.client.renderer.debug.DebugRendererPathfinding;
- import net.minecraft.client.resources.I18n;
+ import net.minecraft.client.gui.recipebook.IRecipeShownListener;
+ import net.minecraft.client.gui.toasts.RecipeToast;
+@@ -64,53 +54,19 @@ import net.minecraft.client.resources.I18n;
  import net.minecraft.client.settings.GameSettings;
+ import net.minecraft.client.util.RecipeBookClient;
  import net.minecraft.creativetab.CreativeTabs;
 -import net.minecraft.entity.Entity;
 -import net.minecraft.entity.EntityAreaEffectCloud;
@@ -2422,7 +3077,7 @@ index 966ee81..bc7cbde 100644
  import net.minecraft.init.Items;
  import net.minecraft.init.SoundEvents;
  import net.minecraft.inventory.Container;
-@@ -119,87 +76,8 @@ import net.minecraft.network.PacketBuffer;
+@@ -127,90 +83,8 @@ import net.minecraft.network.PacketBuffer;
  import net.minecraft.network.PacketThreadUtil;
  import net.minecraft.network.datasync.EntityDataManager;
  import net.minecraft.network.play.INetHandlerPlayClient;
@@ -2434,6 +3089,7 @@ index 966ee81..bc7cbde 100644
 -import net.minecraft.network.play.client.CPacketPlayer;
 -import net.minecraft.network.play.client.CPacketResourcePackStatus;
 -import net.minecraft.network.play.client.CPacketVehicleMove;
+-import net.minecraft.network.play.server.SPacketAdvancementInfo;
 -import net.minecraft.network.play.server.SPacketAnimation;
 -import net.minecraft.network.play.server.SPacketBlockAction;
 -import net.minecraft.network.play.server.SPacketBlockBreakAnim;
@@ -2476,10 +3132,12 @@ index 966ee81..bc7cbde 100644
 -import net.minecraft.network.play.server.SPacketPlayerListHeaderFooter;
 -import net.minecraft.network.play.server.SPacketPlayerListItem;
 -import net.minecraft.network.play.server.SPacketPlayerPosLook;
+-import net.minecraft.network.play.server.SPacketRecipeBook;
 -import net.minecraft.network.play.server.SPacketRemoveEntityEffect;
 -import net.minecraft.network.play.server.SPacketResourcePackSend;
 -import net.minecraft.network.play.server.SPacketRespawn;
 -import net.minecraft.network.play.server.SPacketScoreboardObjective;
+-import net.minecraft.network.play.server.SPacketSelectAdvancementsTab;
 -import net.minecraft.network.play.server.SPacketServerDifficulty;
 -import net.minecraft.network.play.server.SPacketSetExperience;
 -import net.minecraft.network.play.server.SPacketSetPassengers;
@@ -2512,13 +3170,14 @@ index 966ee81..bc7cbde 100644
  import net.minecraft.pathfinding.Path;
  import net.minecraft.potion.Potion;
  import net.minecraft.potion.PotionEffect;
-@@ -213,17 +91,7 @@ import net.minecraft.scoreboard.Team;
- import net.minecraft.stats.Achievement;
- import net.minecraft.stats.AchievementList;
+@@ -223,18 +97,7 @@ import net.minecraft.scoreboard.Scoreboard;
+ import net.minecraft.scoreboard.Team;
+ import net.minecraft.stats.RecipeBook;
  import net.minecraft.stats.StatBase;
 -import net.minecraft.tileentity.TileEntity;
 -import net.minecraft.tileentity.TileEntityBanner;
 -import net.minecraft.tileentity.TileEntityBeacon;
+-import net.minecraft.tileentity.TileEntityBed;
 -import net.minecraft.tileentity.TileEntityCommandBlock;
 -import net.minecraft.tileentity.TileEntityEndGateway;
 -import net.minecraft.tileentity.TileEntityFlowerPot;
@@ -2531,7 +3190,7 @@ index 966ee81..bc7cbde 100644
  import net.minecraft.util.EnumFacing;
  import net.minecraft.util.EnumHand;
  import net.minecraft.util.EnumParticleTypes;
-@@ -243,8 +111,9 @@ import net.minecraft.world.WorldProviderSurface;
+@@ -254,8 +117,9 @@ import net.minecraft.world.WorldProviderSurface;
  import net.minecraft.world.WorldSettings;
  import net.minecraft.world.chunk.Chunk;
  import net.minecraft.world.storage.MapData;
@@ -2543,7 +3202,7 @@ index 966ee81..bc7cbde 100644
  
  public class NetHandlerPlayClient implements INetHandlerPlayClient
  {
-@@ -872,12 +741,24 @@ public class NetHandlerPlayClient implements INetHandlerPlayClient
+@@ -885,12 +749,24 @@ public class NetHandlerPlayClient implements INetHandlerPlayClient
          }
          else
          {
@@ -2551,13 +3210,13 @@ index 966ee81..bc7cbde 100644
 +            this.gameController.displayGuiScreen(new GuiDisconnected(new GuiMultiplayer(new GuiWurstMainMenu()), "disconnect.lost", reason));
 +        }
      }
-+    
++	
 +	// TODO: Client
 +	public void sendPacketBypass(Packet packet)
 +	{
 +		this.netManager.sendPacket(packet);
  	}
- 
+ 	
      public void sendPacket(Packet<?> packetIn)
      {
 +		// TODO: Client
@@ -2570,13 +3229,31 @@ index 966ee81..bc7cbde 100644
      }
  
 diff --git a/net/minecraft/client/network/NetworkPlayerInfo.java b/net/minecraft/client/network/NetworkPlayerInfo.java
-index 3d77aef..f9c1eae 100644
+index 630dd7a..aa6f635 100644
 --- a/net/minecraft/client/network/NetworkPlayerInfo.java
 +++ b/net/minecraft/client/network/NetworkPlayerInfo.java
-@@ -53,6 +53,14 @@ public class NetworkPlayerInfo
+@@ -1,12 +1,15 @@
+ package net.minecraft.client.network;
+ 
++import java.util.Map;
++
++import javax.annotation.Nullable;
++
+ import com.google.common.base.MoreObjects;
+ import com.google.common.collect.Maps;
+ import com.mojang.authlib.GameProfile;
+ import com.mojang.authlib.minecraft.MinecraftProfileTexture;
+ import com.mojang.authlib.minecraft.MinecraftProfileTexture.Type;
+-import java.util.Map;
+-import javax.annotation.Nullable;
++
+ import net.minecraft.client.Minecraft;
+ import net.minecraft.client.resources.DefaultPlayerSkin;
+ import net.minecraft.client.resources.SkinManager;
+@@ -53,6 +56,14 @@ public class NetworkPlayerInfo
          this.displayName = entry.getDisplayName();
      }
- 
+ 	
 +	// TODO: Client
 +	public String getPlayerNameForReal()
 +	{
@@ -2584,12 +3261,12 @@ index 3d77aef..f9c1eae 100644
 +			: ScorePlayerTeam.formatPlayerName(getPlayerTeam(),
 +				getGameProfile().getName());
 +	}
-+
++	
      /**
       * Returns the GameProfile for the player represented by this NetworkPlayerInfo instance
       */
 diff --git a/net/minecraft/client/renderer/BlockFluidRenderer.java b/net/minecraft/client/renderer/BlockFluidRenderer.java
-index 7d6a21e..19a73b1 100644
+index e417cb5..7eea389 100644
 --- a/net/minecraft/client/renderer/BlockFluidRenderer.java
 +++ b/net/minecraft/client/renderer/BlockFluidRenderer.java
 @@ -13,6 +13,8 @@ import net.minecraft.util.EnumFacing;
@@ -2602,10 +3279,10 @@ index 7d6a21e..19a73b1 100644
  public class BlockFluidRenderer
  {
 @@ -40,6 +42,12 @@ public class BlockFluidRenderer
-     public boolean renderFluid(IBlockAccess blockAccess, IBlockState blockStateIn, BlockPos blockPosIn, VertexBuffer worldRendererIn)
+     public boolean renderFluid(IBlockAccess blockAccess, IBlockState blockStateIn, BlockPos blockPosIn, BufferBuilder worldRendererIn)
      {
          BlockLiquid blockliquid = (BlockLiquid)blockStateIn.getBlock();
-+
++		
 +		// TODO: Client
 +		if(WurstClient.INSTANCE.mods.xRayMod.isActive()
 +			&& !XRayUtils.isXRayBlock(blockliquid))
@@ -2615,7 +3292,7 @@ index 7d6a21e..19a73b1 100644
          TextureAtlasSprite[] atextureatlassprite = flag ? this.atlasSpritesLava : this.atlasSpritesWater;
          int i = this.blockColors.colorMultiplier(blockStateIn, blockAccess, blockPosIn, 0);
 diff --git a/net/minecraft/client/renderer/BlockModelRenderer.java b/net/minecraft/client/renderer/BlockModelRenderer.java
-index 25829f8..5161edc 100644
+index 9708719..cc9fda2 100644
 --- a/net/minecraft/client/renderer/BlockModelRenderer.java
 +++ b/net/minecraft/client/renderer/BlockModelRenderer.java
 @@ -2,7 +2,9 @@ package net.minecraft.client.renderer;
@@ -2639,7 +3316,7 @@ index 25829f8..5161edc 100644
  {
 @@ -32,6 +36,11 @@ public class BlockModelRenderer
  
-     public boolean renderModel(IBlockAccess blockAccessIn, IBakedModel modelIn, IBlockState blockStateIn, BlockPos blockPosIn, VertexBuffer buffer, boolean checkSides)
+     public boolean renderModel(IBlockAccess blockAccessIn, IBakedModel modelIn, IBlockState blockStateIn, BlockPos blockPosIn, BufferBuilder buffer, boolean checkSides)
      {
 +		// TODO: Client
 +		if(WurstClient.INSTANCE.mods.xRayMod.isActive()
@@ -2652,18 +3329,18 @@ index 25829f8..5161edc 100644
 @@ -73,8 +82,11 @@ public class BlockModelRenderer
  
          List<BakedQuad> list1 = modelIn.getQuads(stateIn, (EnumFacing)null, rand);
- 
+ 		
 -        if (!list1.isEmpty())
 +		// TODO: Client
 +		if(!list1.isEmpty() && (!WurstClient.INSTANCE.mods.xRayMod.isActive()
 +			|| XRayUtils.isXRayBlock(stateIn.getBlock())))
-         {
+ 		{
 +			
              this.renderQuadsSmooth(worldIn, stateIn, posIn, buffer, list1, afloat, bitset, blockmodelrenderer$ambientocclusionface);
              flag = true;
          }
 diff --git a/net/minecraft/client/renderer/EntityRenderer.java b/net/minecraft/client/renderer/EntityRenderer.java
-index c3f154a..7ec8c7f 100644
+index 438b8aa..05c1034 100644
 --- a/net/minecraft/client/renderer/EntityRenderer.java
 +++ b/net/minecraft/client/renderer/EntityRenderer.java
 @@ -1,8 +1,5 @@
@@ -2675,7 +3352,7 @@ index c3f154a..7ec8c7f 100644
  import java.awt.Graphics;
  import java.awt.image.BufferedImage;
  import java.awt.image.ImageObserver;
-@@ -11,8 +8,21 @@ import java.io.IOException;
+@@ -10,8 +7,21 @@ import java.io.IOException;
  import java.nio.FloatBuffer;
  import java.util.List;
  import java.util.Random;
@@ -2697,7 +3374,7 @@ index c3f154a..7ec8c7f 100644
  import net.minecraft.block.Block;
  import net.minecraft.block.BlockBed;
  import net.minecraft.block.material.Material;
-@@ -51,15 +61,7 @@ import net.minecraft.init.MobEffects;
+@@ -50,15 +60,7 @@ import net.minecraft.init.MobEffects;
  import net.minecraft.init.SoundEvents;
  import net.minecraft.inventory.IInventory;
  import net.minecraft.item.ItemStack;
@@ -2714,7 +3391,7 @@ index c3f154a..7ec8c7f 100644
  import net.minecraft.util.math.AxisAlignedBB;
  import net.minecraft.util.math.BlockPos;
  import net.minecraft.util.math.MathHelper;
-@@ -68,12 +70,9 @@ import net.minecraft.util.math.Vec3d;
+@@ -67,12 +69,9 @@ import net.minecraft.util.math.Vec3d;
  import net.minecraft.world.GameType;
  import net.minecraft.world.World;
  import net.minecraft.world.biome.Biome;
@@ -2730,7 +3407,7 @@ index c3f154a..7ec8c7f 100644
  
  public class EntityRenderer implements IResourceManagerReloadListener
  {
-@@ -185,10 +184,10 @@ public class EntityRenderer implements IResourceManagerReloadListener
+@@ -184,10 +183,10 @@ public class EntityRenderer implements IResourceManagerReloadListener
      private int field_190567_ac;
      private float field_190568_ad;
      private float field_190569_ae;
@@ -2744,7 +3421,7 @@ index c3f154a..7ec8c7f 100644
      private boolean useShader;
      private int frameCount;
  
-@@ -267,7 +266,7 @@ public class EntityRenderer implements IResourceManagerReloadListener
+@@ -266,7 +265,7 @@ public class EntityRenderer implements IResourceManagerReloadListener
          }
      }
  
@@ -2753,7 +3430,7 @@ index c3f154a..7ec8c7f 100644
      {
          try
          {
-@@ -554,6 +553,10 @@ public class EntityRenderer implements IResourceManagerReloadListener
+@@ -553,6 +552,10 @@ public class EntityRenderer implements IResourceManagerReloadListener
              if (useFOVSetting)
              {
                  f = this.mc.gameSettings.fovSetting;
@@ -2764,7 +3441,7 @@ index c3f154a..7ec8c7f 100644
                  f = f * (this.fovModifierHandPrev + (this.fovModifierHand - this.fovModifierHandPrev) * partialTicks);
              }
  
-@@ -576,6 +579,10 @@ public class EntityRenderer implements IResourceManagerReloadListener
+@@ -575,6 +578,10 @@ public class EntityRenderer implements IResourceManagerReloadListener
  
      private void hurtCameraEffect(float partialTicks)
      {
@@ -2775,10 +3452,10 @@ index c3f154a..7ec8c7f 100644
          if (this.mc.getRenderViewEntity() instanceof EntityLivingBase)
          {
              EntityLivingBase entitylivingbase = (EntityLivingBase)this.mc.getRenderViewEntity();
-@@ -766,15 +773,20 @@ public class EntityRenderer implements IResourceManagerReloadListener
+@@ -765,15 +772,20 @@ public class EntityRenderer implements IResourceManagerReloadListener
  
          this.hurtCameraEffect(partialTicks);
- 
+ 		
 -        if (this.mc.gameSettings.viewBobbing)
 +		// TODO: Client
 +		if(this.mc.gameSettings.viewBobbing
@@ -2789,7 +3466,7 @@ index c3f154a..7ec8c7f 100644
          }
  
          float f1 = this.mc.player.prevTimeInPortal + (this.mc.player.timeInPortal - this.mc.player.prevTimeInPortal) * partialTicks;
- 
+ 		
 -        if (f1 > 0.0F)
 +		// TODO: Client
 +		if(f1 > 0.0F && !WurstClient.INSTANCE.mods.antiBlindMod.isActive())
@@ -2802,7 +3479,7 @@ index c3f154a..7ec8c7f 100644
          }
  
          this.getMouseOver(partialTicks);
-+        
++		
 +		// TODO: Client
 +		if(!WurstClient.INSTANCE.mods.caveFinderMod.isActive())
 +			
@@ -2814,7 +3491,7 @@ index c3f154a..7ec8c7f 100644
 @@ -1485,6 +1502,9 @@ public class EntityRenderer implements IResourceManagerReloadListener
  
          this.mc.mcProfiler.endStartSection("hand");
- 
+ 		
 +		// TODO: Client
 +		WurstClient.INSTANCE.events.fire(new RenderEvent(partialTicks));
 +		
@@ -2824,7 +3501,7 @@ index c3f154a..7ec8c7f 100644
 @@ -1872,8 +1892,12 @@ public class EntityRenderer implements IResourceManagerReloadListener
          this.fogColorBlue *= f13;
          double d1 = (entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * (double)partialTicks) * world.provider.getVoidFogYFactor();
- 
+ 		
 -        if (entity instanceof EntityLivingBase && ((EntityLivingBase)entity).isPotionActive(MobEffects.BLINDNESS))
 +		// TODO: Client
 +		if(entity instanceof EntityLivingBase
@@ -2838,7 +3515,7 @@ index c3f154a..7ec8c7f 100644
 @@ -1952,8 +1976,12 @@ public class EntityRenderer implements IResourceManagerReloadListener
          GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
          IBlockState iblockstate = ActiveRenderInfo.getBlockStateAtEntityViewpoint(this.mc.world, entity, partialTicks);
- 
+ 		
 -        if (entity instanceof EntityLivingBase && ((EntityLivingBase)entity).isPotionActive(MobEffects.BLINDNESS))
 +		// TODO: Client
 +		if(entity instanceof EntityLivingBase
@@ -2885,7 +3562,7 @@ index c3f154a..7ec8c7f 100644
          GlStateManager.rotate(-viewerYaw, 0.0F, 1.0F, 0.0F);
          GlStateManager.rotate((float)(isThirdPersonFrontal ? -1 : 1) * viewerPitch, 1.0F, 0.0F, 0.0F);
 -        GlStateManager.scale(-0.025F, -0.025F, 0.025F);
-+        
++		
 +		// TODO: Client
 +		float scale = 0.025F;
 +		if(WurstClient.INSTANCE.mods.nameTagsMod.isActive())
@@ -2896,12 +3573,12 @@ index c3f154a..7ec8c7f 100644
 +				scale *= distance / 10;
 +		}
 +		GlStateManager.scale(-scale, -scale, scale);
-+        
++		
          GlStateManager.disableLighting();
          GlStateManager.depthMask(false);
  
 diff --git a/net/minecraft/client/renderer/InventoryEffectRenderer.java b/net/minecraft/client/renderer/InventoryEffectRenderer.java
-index 1b60b1c..e2b8028 100644
+index 036bc7e..0517694 100644
 --- a/net/minecraft/client/renderer/InventoryEffectRenderer.java
 +++ b/net/minecraft/client/renderer/InventoryEffectRenderer.java
 @@ -1,12 +1,19 @@
@@ -2941,23 +3618,26 @@ index 1b60b1c..e2b8028 100644
 +				while(Keyboard.next())
 +					handleKeyboardInput();
 +	}
-+
++	
      /**
       * Adds the buttons (and other controls) to the screen in question. Called when the GUI is displayed and when the
       * window resizes, the buttonList is cleared beforehand.
 diff --git a/net/minecraft/client/renderer/ItemRenderer.java b/net/minecraft/client/renderer/ItemRenderer.java
-index 8f5a3ee..5158f74 100644
+index 46fdf71..45fec5a 100644
 --- a/net/minecraft/client/renderer/ItemRenderer.java
 +++ b/net/minecraft/client/renderer/ItemRenderer.java
-@@ -1,6 +1,7 @@
+@@ -1,7 +1,9 @@
  package net.minecraft.client.renderer;
  
- import com.google.common.base.Objects;
+-import com.google.common.base.MoreObjects;
+ import java.util.Objects;
++
++import com.google.common.base.MoreObjects;
 +
  import net.minecraft.block.Block;
  import net.minecraft.block.material.Material;
  import net.minecraft.block.state.IBlockState;
-@@ -27,6 +28,7 @@ import net.minecraft.util.ResourceLocation;
+@@ -28,6 +30,7 @@ import net.minecraft.util.ResourceLocation;
  import net.minecraft.util.math.BlockPos;
  import net.minecraft.util.math.MathHelper;
  import net.minecraft.world.storage.MapData;
@@ -2965,30 +3645,30 @@ index 8f5a3ee..5158f74 100644
  
  public class ItemRenderer
  {
-@@ -527,6 +529,10 @@ public class ItemRenderer
+@@ -528,6 +531,10 @@ public class ItemRenderer
       */
      private void renderWaterOverlayTexture(float partialTicks)
      {
 +		// TODO: Client
 +		if(WurstClient.INSTANCE.mods.noOverlayMod.isActive())
 +			return;
-+    	
++		
          this.mc.getTextureManager().bindTexture(RES_UNDERWATER_OVERLAY);
          Tessellator tessellator = Tessellator.getInstance();
-         VertexBuffer vertexbuffer = tessellator.getBuffer();
-@@ -559,6 +565,10 @@ public class ItemRenderer
+         BufferBuilder bufferbuilder = tessellator.getBuffer();
+@@ -560,6 +567,10 @@ public class ItemRenderer
       */
-     private void renderFireInFirstPerson(float partialTicks)
+     private void renderFireInFirstPerson()
      {
 +		// TODO: Client
 +		if(WurstClient.INSTANCE.mods.noOverlayMod.isActive())
 +			return;
-+    	
++		
          Tessellator tessellator = Tessellator.getInstance();
-         VertexBuffer vertexbuffer = tessellator.getBuffer();
+         BufferBuilder bufferbuilder = tessellator.getBuffer();
          GlStateManager.color(1.0F, 1.0F, 1.0F, 0.9F);
 diff --git a/net/minecraft/client/renderer/chunk/VisGraph.java b/net/minecraft/client/renderer/chunk/VisGraph.java
-index 342c491..82819fc 100644
+index d1e6307..9a5421f 100644
 --- a/net/minecraft/client/renderer/chunk/VisGraph.java
 +++ b/net/minecraft/client/renderer/chunk/VisGraph.java
 @@ -1,13 +1,16 @@
@@ -3018,12 +3698,12 @@ index 342c491..82819fc 100644
 +			|| WurstClient.INSTANCE.mods.freecamMod.isActive()
 +			|| WurstClient.INSTANCE.mods.caveFinderMod.isActive())
 +			return;
-+    	
++		
          this.bitSet.set(getIndex(pos), true);
          --this.empty;
      }
 diff --git a/net/minecraft/client/renderer/entity/Render.java b/net/minecraft/client/renderer/entity/Render.java
-index 3e98276..7e0a20a 100644
+index 1149867..51d52eb 100644
 --- a/net/minecraft/client/renderer/entity/Render.java
 +++ b/net/minecraft/client/renderer/entity/Render.java
 @@ -1,6 +1,7 @@
@@ -3054,7 +3734,7 @@ index 3e98276..7e0a20a 100644
              boolean flag1 = this.renderManager.options.thirdPersonView == 2;
              float f2 = entityIn.height + 0.5F - (flag ? 0.25F : 0.0F);
              int i = "deadmau5".equals(str) ? -10 : 0;
-+
++			
 +			// TODO: Client
 +			if(entityIn != null
 +				&& WurstClient.INSTANCE.friends.contains(entityIn.getName()))
@@ -3079,7 +3759,7 @@ index 3e98276..7e0a20a 100644
          }
      }
 diff --git a/net/minecraft/client/renderer/entity/RenderLivingBase.java b/net/minecraft/client/renderer/entity/RenderLivingBase.java
-index dae1f8a..78e5a4d 100644
+index ed184c7..446aed6 100644
 --- a/net/minecraft/client/renderer/entity/RenderLivingBase.java
 +++ b/net/minecraft/client/renderer/entity/RenderLivingBase.java
 @@ -1,8 +1,13 @@
@@ -3107,24 +3787,24 @@ index dae1f8a..78e5a4d 100644
  
  public abstract class RenderLivingBase<T extends EntityLivingBase> extends Render<T>
  {
-@@ -232,7 +236,11 @@ public abstract class RenderLivingBase<T extends EntityLivingBase> extends Rende
+@@ -234,7 +238,11 @@ public abstract class RenderLivingBase<T extends EntityLivingBase> extends Rende
      protected void renderModel(T entitylivingbaseIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor)
      {
-         boolean flag = !entitylivingbaseIn.isInvisible() || this.renderOutlines;
+         boolean flag = this.func_193115_c(entitylivingbaseIn);
 -        boolean flag1 = !flag && !entitylivingbaseIn.isInvisibleToPlayer(Minecraft.getMinecraft().player);
-+        
++		
 +		// TODO: Client
 +		boolean flag1 = !flag && (!entitylivingbaseIn
 +			.isInvisibleToPlayer(Minecraft.getMinecraft().player)
 +			|| WurstClient.INSTANCE.mods.trueSightMod.isActive());
- 
+ 		
          if (flag || flag1)
          {
 diff --git a/net/minecraft/client/renderer/entity/RenderManager.java b/net/minecraft/client/renderer/entity/RenderManager.java
-index b745a5f..d84d386 100644
+index cabc9c3..b0c92af 100644
 --- a/net/minecraft/client/renderer/entity/RenderManager.java
 +++ b/net/minecraft/client/renderer/entity/RenderManager.java
-@@ -122,9 +122,9 @@ public class RenderManager
+@@ -121,9 +121,9 @@ public class RenderManager
  
      /** Renders fonts */
      private FontRenderer textRenderer;
@@ -3138,7 +3818,7 @@ index b745a5f..d84d386 100644
  
      /** Reference to the World object. */
 diff --git a/net/minecraft/client/renderer/texture/TextureUtil.java b/net/minecraft/client/renderer/texture/TextureUtil.java
-index b143a59..c19a734 100644
+index 0596993..f920b22 100644
 --- a/net/minecraft/client/renderer/texture/TextureUtil.java
 +++ b/net/minecraft/client/renderer/texture/TextureUtil.java
 @@ -295,7 +295,7 @@ public class TextureUtil
@@ -3151,7 +3831,7 @@ index b143a59..c19a734 100644
          GlStateManager.bindTexture(p_94277_0_);
      }
 diff --git a/net/minecraft/client/resources/SkinManager.java b/net/minecraft/client/resources/SkinManager.java
-index 5826984..2a01cd2 100644
+index 5aac33b..9a55f9f 100644
 --- a/net/minecraft/client/resources/SkinManager.java
 +++ b/net/minecraft/client/resources/SkinManager.java
 @@ -1,14 +1,5 @@
@@ -3200,18 +3880,18 @@ index 5826984..2a01cd2 100644
 @@ -136,6 +140,9 @@ public class SkinManager
                      map.putAll(SkinManager.this.sessionService.getTextures(profile, false));
                  }
- 
+ 				
 +				// TODO: Client
 +				CapesHook.checkCape(profile, map);
-+
++				
                  Minecraft.getMinecraft().addScheduledTask(new Runnable()
                  {
                      public void run()
 diff --git a/net/minecraft/client/settings/KeyBinding.java b/net/minecraft/client/settings/KeyBinding.java
-index d935c1d..8c9f231 100644
+index 2a1862d..a59b5f0 100644
 --- a/net/minecraft/client/settings/KeyBinding.java
 +++ b/net/minecraft/client/settings/KeyBinding.java
-@@ -19,7 +19,7 @@ public class KeyBinding implements Comparable<KeyBinding>
+@@ -21,7 +21,7 @@ public class KeyBinding implements Comparable<KeyBinding>
      private int keyCode;
  
      /** Is the key held down? */
@@ -3221,7 +3901,7 @@ index d935c1d..8c9f231 100644
  
      public static void onTick(int keyCode)
 diff --git a/net/minecraft/crash/CrashReport.java b/net/minecraft/crash/CrashReport.java
-index e403195..ad82a56 100644
+index 79d9768..052290c 100644
 --- a/net/minecraft/crash/CrashReport.java
 +++ b/net/minecraft/crash/CrashReport.java
 @@ -1,6 +1,5 @@
@@ -3229,9 +3909,9 @@ index e403195..ad82a56 100644
  
 -import com.google.common.collect.Lists;
  import java.io.File;
- import java.io.FileWriter;
- import java.io.PrintWriter;
-@@ -11,13 +10,18 @@ import java.lang.management.RuntimeMXBean;
+ import java.io.FileOutputStream;
+ import java.io.OutputStreamWriter;
+@@ -13,13 +12,18 @@ import java.nio.charset.StandardCharsets;
  import java.text.SimpleDateFormat;
  import java.util.Date;
  import java.util.List;
@@ -3252,11 +3932,11 @@ index e403195..ad82a56 100644
  public class CrashReport
  {
      private static final Logger LOGGER = LogManager.getLogger();
-@@ -59,6 +63,11 @@ public class CrashReport
-                 return "1.11.2";
+@@ -61,6 +65,11 @@ public class CrashReport
+                 return "1.12";
              }
          });
-+        
++		
 +		// TODO: Client
 +		this.theReportCategory.setDetail("Wurst Client Version",
 +			() -> WurstClient.VERSION);
@@ -3264,32 +3944,20 @@ index e403195..ad82a56 100644
          this.theReportCategory.setDetail("Operating System", new ICrashReportDetail<String>()
          {
              public String call()
-@@ -229,7 +238,11 @@ public class CrashReport
+@@ -231,7 +240,10 @@ public class CrashReport
      public String getCompleteReport()
      {
          StringBuilder stringbuilder = new StringBuilder();
 -        stringbuilder.append("---- Minecraft Crash Report ----\n");
-+
++		
 +		// TODO: Client
-+		stringbuilder.append("```\n");
 +		stringbuilder.append("---- Wurst Client Crash Report ----\n");
 +		
          stringbuilder.append("// ");
          stringbuilder.append(getWittyComment());
          stringbuilder.append("\n\n");
-@@ -249,6 +262,10 @@ public class CrashReport
- 
-         stringbuilder.append("\n\n");
-         this.getSectionsInStringBuilder(stringbuilder);
-+
-+		// TODO: Client
-+		stringbuilder.append("\n```");
-+		
-         return stringbuilder.toString();
-     }
- 
 diff --git a/net/minecraft/entity/Entity.java b/net/minecraft/entity/Entity.java
-index 6fabb5c..47d2fe8 100644
+index be70b3a..4d95cba 100644
 --- a/net/minecraft/entity/Entity.java
 +++ b/net/minecraft/entity/Entity.java
 @@ -1,8 +1,5 @@
@@ -3315,10 +3983,10 @@ index 6fabb5c..47d2fe8 100644
 +import com.google.common.collect.Lists;
 +import com.google.common.collect.Sets;
 +
+ import net.minecraft.advancements.CriteriaTriggers;
  import net.minecraft.block.Block;
  import net.minecraft.block.BlockFence;
- import net.minecraft.block.BlockFenceGate;
-@@ -21,6 +27,7 @@ import net.minecraft.block.material.EnumPushReaction;
+@@ -22,6 +28,7 @@ import net.minecraft.block.material.EnumPushReaction;
  import net.minecraft.block.material.Material;
  import net.minecraft.block.state.IBlockState;
  import net.minecraft.block.state.pattern.BlockPattern;
@@ -3326,7 +3994,7 @@ index 6fabb5c..47d2fe8 100644
  import net.minecraft.command.CommandResultStats;
  import net.minecraft.command.ICommandSender;
  import net.minecraft.crash.CrashReport;
-@@ -49,18 +56,7 @@ import net.minecraft.network.datasync.EntityDataManager;
+@@ -50,18 +57,7 @@ import net.minecraft.network.datasync.EntityDataManager;
  import net.minecraft.scoreboard.ScorePlayerTeam;
  import net.minecraft.scoreboard.Team;
  import net.minecraft.server.MinecraftServer;
@@ -3346,7 +4014,7 @@ index 6fabb5c..47d2fe8 100644
  import net.minecraft.util.datafix.DataFixer;
  import net.minecraft.util.datafix.FixTypes;
  import net.minecraft.util.datafix.IDataFixer;
-@@ -79,8 +75,8 @@ import net.minecraft.world.Explosion;
+@@ -80,8 +76,8 @@ import net.minecraft.world.Explosion;
  import net.minecraft.world.Teleporter;
  import net.minecraft.world.World;
  import net.minecraft.world.WorldServer;
@@ -3357,7 +4025,7 @@ index 6fabb5c..47d2fe8 100644
  
  public abstract class Entity implements ICommandSender
  {
-@@ -134,7 +130,7 @@ public abstract class Entity implements ICommandSender
+@@ -135,7 +131,7 @@ public abstract class Entity implements ICommandSender
      public float prevRotationPitch;
  
      /** Axis aligned bounding box. */
@@ -3366,7 +4034,7 @@ index 6fabb5c..47d2fe8 100644
      public boolean onGround;
  
      /**
-@@ -152,7 +148,7 @@ public abstract class Entity implements ICommandSender
+@@ -153,7 +149,7 @@ public abstract class Entity implements ICommandSender
       */
      public boolean isCollided;
      public boolean velocityChanged;
@@ -3375,7 +4043,7 @@ index 6fabb5c..47d2fe8 100644
      private boolean isOutsideBorder;
  
      /**
-@@ -710,16 +706,29 @@ public abstract class Entity implements ICommandSender
+@@ -720,16 +716,29 @@ public abstract class Entity implements ICommandSender
      /**
       * Tries to move the entity towards the specified location.
       */
@@ -3401,7 +4069,7 @@ index 6fabb5c..47d2fe8 100644
 +				this.setEntityBoundingBox(
 +					this.getEntityBoundingBox().offset(x, y, z));
  			this.resetPositionToBB();
-         }
+ 		}
          else
          {
 -            if (x == MoverType.PISTON)
@@ -3409,7 +4077,7 @@ index 6fabb5c..47d2fe8 100644
              {
                  long i = this.world.getTotalWorldTime();
  
-@@ -729,43 +738,43 @@ public abstract class Entity implements ICommandSender
+@@ -739,43 +748,43 @@ public abstract class Entity implements ICommandSender
                      this.field_191506_aJ = i;
                  }
  
@@ -3465,7 +4133,7 @@ index 6fabb5c..47d2fe8 100644
                      {
                          return;
                      }
-@@ -780,143 +789,149 @@ public abstract class Entity implements ICommandSender
+@@ -790,143 +799,149 @@ public abstract class Entity implements ICommandSender
              if (this.isInWeb)
              {
                  this.isInWeb = false;
@@ -3486,7 +4154,7 @@ index 6fabb5c..47d2fe8 100644
 +            double d2 = x;
 +            double d3 = y;
 +            double d4 = z;
- 
+ 			
 -            if ((x == MoverType.SELF || x == MoverType.PLAYER) && this.onGround && this.isSneaking() && this instanceof EntityPlayer)
 +			// TODO: Client
 +			if((moverType == MoverType.SELF || moverType == MoverType.PLAYER)
@@ -3666,7 +4334,7 @@ index 6fabb5c..47d2fe8 100644
                  int j1 = 0;
  
                  for (int k1 = list.size(); j1 < k1; ++j1)
-@@ -944,7 +959,7 @@ public abstract class Entity implements ICommandSender
+@@ -954,7 +969,7 @@ public abstract class Entity implements ICommandSender
  
                  axisalignedbb2 = axisalignedbb2.offset(0.0D, 0.0D, d19);
                  AxisAlignedBB axisalignedbb4 = this.getEntityBoundingBox();
@@ -3675,7 +4343,7 @@ index 6fabb5c..47d2fe8 100644
                  int l2 = 0;
  
                  for (int i3 = list.size(); l2 < i3; ++l2)
-@@ -976,16 +991,16 @@ public abstract class Entity implements ICommandSender
+@@ -986,16 +1001,16 @@ public abstract class Entity implements ICommandSender
  
                  if (d23 > d9)
                  {
@@ -3698,7 +4366,7 @@ index 6fabb5c..47d2fe8 100644
                      this.setEntityBoundingBox(axisalignedbb4);
                  }
  
-@@ -993,16 +1008,16 @@ public abstract class Entity implements ICommandSender
+@@ -1003,16 +1018,16 @@ public abstract class Entity implements ICommandSender
  
                  for (int k4 = list.size(); j4 < k4; ++j4)
                  {
@@ -3721,7 +4389,7 @@ index 6fabb5c..47d2fe8 100644
                      this.setEntityBoundingBox(axisalignedbb1);
                  }
              }
-@@ -1010,8 +1025,8 @@ public abstract class Entity implements ICommandSender
+@@ -1020,8 +1035,8 @@ public abstract class Entity implements ICommandSender
              this.world.theProfiler.endSection();
              this.world.theProfiler.startSection("rest");
              this.resetPositionToBB();
@@ -3732,7 +4400,7 @@ index 6fabb5c..47d2fe8 100644
              this.onGround = this.isCollidedVertically && d3 < 0.0D;
              this.isCollided = this.isCollidedHorizontally || this.isCollidedVertically;
              int j6 = MathHelper.floor(this.posX);
-@@ -1033,21 +1048,21 @@ public abstract class Entity implements ICommandSender
+@@ -1043,21 +1058,21 @@ public abstract class Entity implements ICommandSender
                  }
              }
  
@@ -3758,7 +4426,7 @@ index 6fabb5c..47d2fe8 100644
              {
                  block.onLanded(this.world, this);
              }
-@@ -2460,9 +2475,14 @@ public abstract class Entity implements ICommandSender
+@@ -2493,9 +2508,14 @@ public abstract class Entity implements ICommandSender
       */
      public void setVelocity(double x, double y, double z)
      {
@@ -3776,8 +4444,27 @@ index 6fabb5c..47d2fe8 100644
      }
  
      public void handleStatusUpdate(byte id)
+diff --git a/net/minecraft/entity/EntityLiving.java b/net/minecraft/entity/EntityLiving.java
+index 534b403..ecf4103 100644
+--- a/net/minecraft/entity/EntityLiving.java
++++ b/net/minecraft/entity/EntityLiving.java
+@@ -619,12 +619,12 @@ public abstract class EntityLiving extends EntityLivingBase
+ 
+     public void func_191989_p(float p_191989_1_)
+     {
+-        this.field_191988_bg = p_191989_1_;
++        this.moveForward = p_191989_1_;
+     }
+ 
+     public void setMoveForward(float amount)
+     {
+-        this.moveForward = amount;
++        this.notMoveForward = amount;
+     }
+ 
+     public void setMoveStrafing(float amount)
 diff --git a/net/minecraft/entity/EntityLivingBase.java b/net/minecraft/entity/EntityLivingBase.java
-index f5f6c95..b64f131 100644
+index 3e6bec2..56d157c 100644
 --- a/net/minecraft/entity/EntityLivingBase.java
 +++ b/net/minecraft/entity/EntityLivingBase.java
 @@ -1,7 +1,5 @@
@@ -3801,10 +4488,10 @@ index f5f6c95..b64f131 100644
 +import com.google.common.base.Objects;
 +import com.google.common.collect.Maps;
 +
+ import net.minecraft.advancements.CriteriaTriggers;
  import net.minecraft.block.Block;
  import net.minecraft.block.BlockLadder;
- import net.minecraft.block.BlockTrapDoor;
-@@ -54,25 +60,14 @@ import net.minecraft.potion.Potion;
+@@ -55,25 +61,14 @@ import net.minecraft.potion.Potion;
  import net.minecraft.potion.PotionEffect;
  import net.minecraft.potion.PotionUtils;
  import net.minecraft.stats.StatList;
@@ -3832,19 +4519,29 @@ index f5f6c95..b64f131 100644
  
  public abstract class EntityLivingBase extends Entity
  {
-@@ -1926,6 +1921,11 @@ public abstract class EntityLivingBase extends Entity
+@@ -170,8 +165,8 @@ public abstract class EntityLivingBase extends Entity
+     /** used to check whether entity is jumping. */
+     protected boolean isJumping;
+     public float moveStrafing;
++    public float notMoveForward;
+     public float moveForward;
+-    public float field_191988_bg;
+     public float randomYawVelocity;
+ 
+     /**
+@@ -2007,6 +2002,11 @@ public abstract class EntityLivingBase extends Entity
      {
          this.motionY = (double)this.getJumpUpwardsMotion();
-         
+ 		
 +		// TODO: Client
 +		if(this instanceof EntityPlayer)
 +			this.motionY +=
 +				WurstClient.INSTANCE.mods.highJumpMod.getAdditionalJumpMotion();
-+
++		
          if (this.isPotionActive(MobEffects.JUMP_BOOST))
          {
              this.motionY += (double)((float)(this.getActivePotionEffect(MobEffects.JUMP_BOOST).getAmplifier() + 1) * 0.1F);
-@@ -1966,8 +1966,15 @@ public abstract class EntityLivingBase extends Entity
+@@ -2044,8 +2044,15 @@ public abstract class EntityLivingBase extends Entity
      {
          if (this.isServerWorld() || this.canPassengerSteer())
          {
@@ -3861,23 +4558,97 @@ index f5f6c95..b64f131 100644
                  if (!this.isInLava() || this instanceof EntityPlayer && ((EntityPlayer)this).capabilities.isFlying)
                  {
                      if (this.isElytraFlying())
+@@ -2570,7 +2577,7 @@ public abstract class EntityLivingBase extends Entity
+         {
+             this.isJumping = false;
+             this.moveStrafing = 0.0F;
+-            this.field_191988_bg = 0.0F;
++            this.moveForward = 0.0F;
+             this.randomYawVelocity = 0.0F;
+         }
+         else if (this.isServerWorld())
+@@ -2607,10 +2614,10 @@ public abstract class EntityLivingBase extends Entity
+         this.world.theProfiler.endSection();
+         this.world.theProfiler.startSection("travel");
+         this.moveStrafing *= 0.98F;
+-        this.field_191988_bg *= 0.98F;
++        this.moveForward *= 0.98F;
+         this.randomYawVelocity *= 0.9F;
+         this.updateElytra();
+-        this.func_191986_a(this.moveStrafing, this.moveForward, this.field_191988_bg);
++        this.func_191986_a(this.moveStrafing, this.notMoveForward, this.moveForward);
+         this.world.theProfiler.endSection();
+         this.world.theProfiler.startSection("push");
+         this.collideWithNearbyEntities();
+diff --git a/net/minecraft/entity/item/EntityMinecart.java b/net/minecraft/entity/item/EntityMinecart.java
+index dfb7ea2..09f0de6 100644
+--- a/net/minecraft/entity/item/EntityMinecart.java
++++ b/net/minecraft/entity/item/EntityMinecart.java
+@@ -543,7 +543,7 @@ public abstract class EntityMinecart extends Entity implements IWorldNameable
+ 
+         if (entity instanceof EntityLivingBase)
+         {
+-            double d6 = (double)((EntityLivingBase)entity).field_191988_bg;
++            double d6 = (double)((EntityLivingBase)entity).moveForward;
+ 
+             if (d6 > 0.0D)
+             {
+diff --git a/net/minecraft/entity/monster/EntitySlime.java b/net/minecraft/entity/monster/EntitySlime.java
+index 7b6f32b..19ef3bd 100644
+--- a/net/minecraft/entity/monster/EntitySlime.java
++++ b/net/minecraft/entity/monster/EntitySlime.java
+@@ -625,7 +625,7 @@ public class EntitySlime extends EntityLiving implements IMob
+                     else
+                     {
+                         this.slime.moveStrafing = 0.0F;
+-                        this.slime.field_191988_bg = 0.0F;
++                        this.slime.moveForward = 0.0F;
+                         this.entity.setAIMoveSpeed(0.0F);
+                     }
+                 }
+diff --git a/net/minecraft/entity/passive/AbstractHorse.java b/net/minecraft/entity/passive/AbstractHorse.java
+index b64b9f7..5684895 100644
+--- a/net/minecraft/entity/passive/AbstractHorse.java
++++ b/net/minecraft/entity/passive/AbstractHorse.java
+@@ -889,7 +889,7 @@ public abstract class AbstractHorse extends EntityAnimal implements IInventoryCh
+             this.renderYawOffset = this.rotationYaw;
+             this.rotationYawHead = this.renderYawOffset;
+             p_191986_1_ = entitylivingbase.moveStrafing * 0.5F;
+-            p_191986_3_ = entitylivingbase.field_191988_bg;
++            p_191986_3_ = entitylivingbase.moveForward;
+ 
+             if (p_191986_3_ <= 0.0F)
+             {
+diff --git a/net/minecraft/entity/passive/EntityBat.java b/net/minecraft/entity/passive/EntityBat.java
+index 52b812c..9cb045a 100644
+--- a/net/minecraft/entity/passive/EntityBat.java
++++ b/net/minecraft/entity/passive/EntityBat.java
+@@ -181,7 +181,7 @@ public class EntityBat extends EntityAmbientCreature
+             this.motionZ += (Math.signum(d2) * 0.5D - this.motionZ) * 0.10000000149011612D;
+             float f = (float)(MathHelper.atan2(this.motionZ, this.motionX) * (180D / Math.PI)) - 90.0F;
+             float f1 = MathHelper.wrapDegrees(f - this.rotationYaw);
+-            this.field_191988_bg = 0.5F;
++            this.moveForward = 0.5F;
+             this.rotationYaw += f1;
+ 
+             if (this.rand.nextInt(100) == 0 && this.world.getBlockState(blockpos1).isNormalCube())
 diff --git a/net/minecraft/entity/player/EntityPlayer.java b/net/minecraft/entity/player/EntityPlayer.java
-index 14a3ccd..f0812fd 100644
+index c9f07d5..6529a8a 100644
 --- a/net/minecraft/entity/player/EntityPlayer.java
 +++ b/net/minecraft/entity/player/EntityPlayer.java
-@@ -1,26 +1,23 @@
+@@ -1,27 +1,23 @@
  package net.minecraft.entity.player;
  
--import com.google.common.base.Charsets;
+-import com.google.common.base.Predicate;
 -import com.google.common.collect.Lists;
 -import com.mojang.authlib.GameProfile;
- import java.util.Collection;
+ import java.nio.charset.StandardCharsets;
  import java.util.List;
  import java.util.UUID;
 +
  import javax.annotation.Nullable;
 +
-+import com.google.common.base.Charsets;
++import com.google.common.base.Predicate;
 +import com.google.common.collect.Lists;
 +import com.mojang.authlib.GameProfile;
 +
@@ -3895,12 +4666,13 @@ index 14a3ccd..f0812fd 100644
 -import net.minecraft.entity.EnumCreatureAttribute;
 -import net.minecraft.entity.IEntityMultiPart;
 -import net.minecraft.entity.IMerchant;
+-import net.minecraft.entity.MultiPartEntityPart;
 -import net.minecraft.entity.SharedMonsterAttributes;
 +import net.minecraft.entity.*;
  import net.minecraft.entity.ai.attributes.IAttributeInstance;
- import net.minecraft.entity.boss.EntityDragonPart;
  import net.minecraft.entity.item.EntityBoat;
-@@ -65,16 +62,7 @@ import net.minecraft.tileentity.CommandBlockBaseLogic;
+ import net.minecraft.entity.item.EntityItem;
+@@ -62,17 +58,7 @@ import net.minecraft.tileentity.CommandBlockBaseLogic;
  import net.minecraft.tileentity.TileEntityCommandBlock;
  import net.minecraft.tileentity.TileEntitySign;
  import net.minecraft.tileentity.TileEntityStructure;
@@ -3912,13 +4684,14 @@ index 14a3ccd..f0812fd 100644
 -import net.minecraft.util.EnumHandSide;
 -import net.minecraft.util.EnumParticleTypes;
 -import net.minecraft.util.FoodStats;
+-import net.minecraft.util.ResourceLocation;
 -import net.minecraft.util.SoundCategory;
 -import net.minecraft.util.SoundEvent;
 +import net.minecraft.util.*;
  import net.minecraft.util.datafix.DataFixer;
  import net.minecraft.util.datafix.DataFixesManager;
  import net.minecraft.util.datafix.FixTypes;
-@@ -92,6 +80,8 @@ import net.minecraft.world.IInteractionObject;
+@@ -90,13 +76,15 @@ import net.minecraft.world.IInteractionObject;
  import net.minecraft.world.LockCode;
  import net.minecraft.world.World;
  import net.minecraft.world.WorldServer;
@@ -3927,18 +4700,26 @@ index 14a3ccd..f0812fd 100644
  
  @SuppressWarnings("incomplete-switch")
  public abstract class EntityPlayer extends EntityLivingBase
-@@ -674,6 +664,10 @@ public abstract class EntityPlayer extends EntityLivingBase
+ {
+     private static final DataParameter<Float> ABSORPTION = EntityDataManager.<Float>createKey(EntityPlayer.class, DataSerializers.FLOAT);
+     private static final DataParameter<Integer> PLAYER_SCORE = EntityDataManager.<Integer>createKey(EntityPlayer.class, DataSerializers.VARINT);
+-    protected static final DataParameter<Byte> PLAYER_MODEL_FLAG = EntityDataManager.<Byte>createKey(EntityPlayer.class, DataSerializers.BYTE);
++    public static final DataParameter<Byte> PLAYER_MODEL_FLAG = EntityDataManager.<Byte>createKey(EntityPlayer.class, DataSerializers.BYTE);
+     protected static final DataParameter<Byte> MAIN_HAND = EntityDataManager.<Byte>createKey(EntityPlayer.class, DataSerializers.BYTE);
+     protected static final DataParameter<NBTTagCompound> field_192032_bt = EntityDataManager.<NBTTagCompound>createKey(EntityPlayer.class, DataSerializers.field_192734_n);
+     protected static final DataParameter<NBTTagCompound> field_192033_bu = EntityDataManager.<NBTTagCompound>createKey(EntityPlayer.class, DataSerializers.field_192734_n);
+@@ -688,6 +676,10 @@ public abstract class EntityPlayer extends EntityLivingBase
       */
      public void onDeath(DamageSource cause)
      {
 +		// TODO: Client
 +		if(this.equals(Minecraft.getMinecraft().player) && WurstBot.isEnabled())
 +			Minecraft.getMinecraft().displayGuiScreen(null);
-+    	
++		
          super.onDeath(cause);
          this.setSize(0.2F, 0.2F);
          this.setPosition(this.posX, this.posY, this.posZ);
-@@ -2365,7 +2359,9 @@ public abstract class EntityPlayer extends EntityLivingBase
+@@ -2384,7 +2376,9 @@ public abstract class EntityPlayer extends EntityLivingBase
  
      public boolean isPushedByWater()
      {
@@ -3949,6 +4730,19 @@ index 14a3ccd..f0812fd 100644
      }
  
      public Scoreboard getWorldScoreboard()
+diff --git a/net/minecraft/entity/player/EntityPlayerMP.java b/net/minecraft/entity/player/EntityPlayerMP.java
+index 7de9a36..77ace65 100644
+--- a/net/minecraft/entity/player/EntityPlayerMP.java
++++ b/net/minecraft/entity/player/EntityPlayerMP.java
+@@ -1123,7 +1123,7 @@ public class EntityPlayerMP extends EntityPlayer implements IContainerListener
+ 
+             if (forward >= -1.0F && forward <= 1.0F)
+             {
+-                this.field_191988_bg = forward;
++                this.moveForward = forward;
+             }
+ 
+             this.isJumping = jumping;
 diff --git a/net/minecraft/item/ItemSword.java b/net/minecraft/item/ItemSword.java
 index aad852c..babf178 100644
 --- a/net/minecraft/item/ItemSword.java
@@ -3963,7 +4757,7 @@ index aad852c..babf178 100644
  
      public ItemSword(Item.ToolMaterial material)
 diff --git a/net/minecraft/item/ItemTool.java b/net/minecraft/item/ItemTool.java
-index 27cb20a..c89b552 100644
+index e0d1aae..0059f98 100644
 --- a/net/minecraft/item/ItemTool.java
 +++ b/net/minecraft/item/ItemTool.java
 @@ -18,7 +18,7 @@ public class ItemTool extends Item
@@ -3976,10 +4770,10 @@ index 27cb20a..c89b552 100644
  
      /** The material this tool is made from. */
 diff --git a/net/minecraft/network/NetworkManager.java b/net/minecraft/network/NetworkManager.java
-index 20fd7bb..185a55e 100644
+index 2de7347..37d899e 100644
 --- a/net/minecraft/network/NetworkManager.java
 +++ b/net/minecraft/network/NetworkManager.java
-@@ -1,18 +1,25 @@
+@@ -1,17 +1,25 @@
  package net.minecraft.network;
  
 +import java.net.InetAddress;
@@ -4005,7 +4799,6 @@ index 20fd7bb..185a55e 100644
 -import io.netty.channel.ChannelException;
 -import io.netty.channel.ChannelFuture;
 -import io.netty.channel.ChannelFutureListener;
--import io.netty.channel.ChannelHandler;
 -import io.netty.channel.ChannelHandlerContext;
 -import io.netty.channel.ChannelInitializer;
 -import io.netty.channel.ChannelOption;
@@ -4015,7 +4808,7 @@ index 20fd7bb..185a55e 100644
  import io.netty.channel.epoll.Epoll;
  import io.netty.channel.epoll.EpollEventLoopGroup;
  import io.netty.channel.epoll.EpollSocketChannel;
-@@ -27,24 +34,14 @@ import io.netty.handler.timeout.TimeoutException;
+@@ -26,23 +34,13 @@ import io.netty.handler.timeout.TimeoutException;
  import io.netty.util.AttributeKey;
  import io.netty.util.concurrent.Future;
  import io.netty.util.concurrent.GenericFutureListener;
@@ -4029,7 +4822,6 @@ index 20fd7bb..185a55e 100644
  import net.minecraft.util.ITickable;
  import net.minecraft.util.LazyLoadBase;
  import net.minecraft.util.text.ITextComponent;
- import net.minecraft.util.text.TextComponentString;
  import net.minecraft.util.text.TextComponentTranslation;
 -import org.apache.commons.lang3.ArrayUtils;
 -import org.apache.commons.lang3.Validate;
@@ -4042,11 +4834,11 @@ index 20fd7bb..185a55e 100644
  
  public class NetworkManager extends SimpleChannelInboundHandler < Packet<? >>
  {
-@@ -134,6 +131,16 @@ public class NetworkManager extends SimpleChannelInboundHandler < Packet<? >>
+@@ -132,6 +130,16 @@ public class NetworkManager extends SimpleChannelInboundHandler < Packet<? >>
          if (p_exceptionCaught_2_ instanceof TimeoutException)
          {
              textcomponenttranslation = new TextComponentTranslation("disconnect.timeout", new Object[0]);
-+
++			
 +			// TODO: Client
 +		}else if(p_exceptionCaught_2_ instanceof NullPointerException)
 +		{
@@ -4059,7 +4851,7 @@ index 20fd7bb..185a55e 100644
          }
          else
          {
-@@ -148,6 +155,12 @@ public class NetworkManager extends SimpleChannelInboundHandler < Packet<? >>
+@@ -146,6 +154,12 @@ public class NetworkManager extends SimpleChannelInboundHandler < Packet<? >>
      {
          if (this.channel.isOpen())
          {
@@ -4103,47 +4895,21 @@ index 6118ac7..1b703a6 100644
      }
  
      public void performEffect(EntityLivingBase entityIn)
-diff --git a/net/minecraft/realms/Realms.java b/net/minecraft/realms/Realms.java
-index fb12035..43791cd 100644
---- a/net/minecraft/realms/Realms.java
-+++ b/net/minecraft/realms/Realms.java
-@@ -1,19 +1,21 @@
- package net.minecraft.realms;
+diff --git a/net/minecraft/realms/RealmsButton.java b/net/minecraft/realms/RealmsButton.java
+index f5010ee..41dd1b3 100644
+--- a/net/minecraft/realms/RealmsButton.java
++++ b/net/minecraft/realms/RealmsButton.java
+@@ -62,7 +62,7 @@ public class RealmsButton
  
--import com.google.common.util.concurrent.ListenableFuture;
--import com.mojang.authlib.GameProfile;
--import com.mojang.util.UUIDTypeAdapter;
- import java.io.File;
- import java.io.FileInputStream;
- import java.io.FileOutputStream;
- import java.net.Proxy;
-+
-+import com.google.common.util.concurrent.ListenableFuture;
-+import com.mojang.authlib.GameProfile;
-+import com.mojang.util.UUIDTypeAdapter;
-+
- import net.minecraft.client.Minecraft;
--import net.minecraft.client.gui.GuiMainMenu;
- import net.minecraft.client.settings.GameSettings;
- import net.minecraft.nbt.CompressedStreamTools;
- import net.minecraft.nbt.NBTTagCompound;
- import net.minecraft.util.Session;
- import net.minecraft.world.GameType;
-+import net.wurstclient.gui.main.GuiWurstMainMenu;
- 
- public class Realms
- {
-@@ -116,7 +118,7 @@ public class Realms
- 
-     public static boolean inTitleScreen()
+     public void render(int p_render_1_, int p_render_2_, float p_render_3_)
      {
--        return Minecraft.getMinecraft().currentScreen != null && Minecraft.getMinecraft().currentScreen instanceof GuiMainMenu;
-+        return Minecraft.getMinecraft().currentScreen != null && Minecraft.getMinecraft().currentScreen instanceof GuiWurstMainMenu;
+-        this.proxy.func_191745_a(Minecraft.getMinecraft(), p_render_1_, p_render_2_, p_render_3_);
++        this.proxy.drawButton(Minecraft.getMinecraft(), p_render_1_, p_render_2_, p_render_3_);
      }
  
-     public static void deletePlayerTag(File p_deletePlayerTag_0_)
+     public void clicked(int p_clicked_1_, int p_clicked_2_)
 diff --git a/net/minecraft/tileentity/TileEntitySign.java b/net/minecraft/tileentity/TileEntitySign.java
-index e7175b6..12b968e 100644
+index 0048480..319c8e2 100644
 --- a/net/minecraft/tileentity/TileEntitySign.java
 +++ b/net/minecraft/tileentity/TileEntitySign.java
 @@ -20,7 +20,7 @@ import net.minecraft.world.World;
@@ -4155,15 +4921,73 @@ index e7175b6..12b968e 100644
  
      /**
       * The index of the line currently being edited. Only used on client side, but defined on both. Note this is only
+diff --git a/net/minecraft/util/MovementInput.java b/net/minecraft/util/MovementInput.java
+index 019e231..b2072b8 100644
+--- a/net/minecraft/util/MovementInput.java
++++ b/net/minecraft/util/MovementInput.java
+@@ -8,7 +8,7 @@ public class MovementInput
+      * The speed at which the player is strafing. Postive numbers to the left and negative to the right.
+      */
+     public float moveStrafe;
+-    public float field_192832_b;
++    public float moveForward;
+     public boolean forwardKeyDown;
+     public boolean backKeyDown;
+     public boolean leftKeyDown;
+@@ -22,6 +22,6 @@ public class MovementInput
+ 
+     public Vec2f getMoveVector()
+     {
+-        return new Vec2f(this.moveStrafe, this.field_192832_b);
++        return new Vec2f(this.moveStrafe, this.moveForward);
+     }
+ }
+diff --git a/net/minecraft/util/MovementInputFromOptions.java b/net/minecraft/util/MovementInputFromOptions.java
+index 91fdc7c..ef62e62 100644
+--- a/net/minecraft/util/MovementInputFromOptions.java
++++ b/net/minecraft/util/MovementInputFromOptions.java
+@@ -14,11 +14,11 @@ public class MovementInputFromOptions extends MovementInput
+     public void updatePlayerMoveState()
+     {
+         this.moveStrafe = 0.0F;
+-        this.field_192832_b = 0.0F;
++        this.moveForward = 0.0F;
+ 
+         if (this.gameSettings.keyBindForward.isKeyDown())
+         {
+-            ++this.field_192832_b;
++            ++this.moveForward;
+             this.forwardKeyDown = true;
+         }
+         else
+@@ -28,7 +28,7 @@ public class MovementInputFromOptions extends MovementInput
+ 
+         if (this.gameSettings.keyBindBack.isKeyDown())
+         {
+-            --this.field_192832_b;
++            --this.moveForward;
+             this.backKeyDown = true;
+         }
+         else
+@@ -62,7 +62,7 @@ public class MovementInputFromOptions extends MovementInput
+         if (this.sneak)
+         {
+             this.moveStrafe = (float)((double)this.moveStrafe * 0.3D);
+-            this.field_192832_b = (float)((double)this.field_192832_b * 0.3D);
++            this.moveForward = (float)((double)this.moveForward * 0.3D);
+         }
+     }
+ }
 diff --git a/net/minecraft/util/ScreenShotHelper.java b/net/minecraft/util/ScreenShotHelper.java
-index 1d00975..fded78b 100644
+index 733f91e..eb7d8e2 100644
 --- a/net/minecraft/util/ScreenShotHelper.java
 +++ b/net/minecraft/util/ScreenShotHelper.java
-@@ -6,7 +6,13 @@ import java.nio.IntBuffer;
+@@ -6,8 +6,14 @@ import java.nio.IntBuffer;
  import java.text.DateFormat;
  import java.text.SimpleDateFormat;
  import java.util.Date;
 +
+ import javax.annotation.Nullable;
  import javax.imageio.ImageIO;
 +
 +import org.apache.logging.log4j.LogManager;
@@ -4173,7 +4997,7 @@ index 1d00975..fded78b 100644
  import net.minecraft.client.renderer.GlStateManager;
  import net.minecraft.client.renderer.OpenGlHelper;
  import net.minecraft.client.renderer.texture.TextureUtil;
-@@ -15,9 +21,7 @@ import net.minecraft.util.text.ITextComponent;
+@@ -16,9 +22,7 @@ import net.minecraft.util.text.ITextComponent;
  import net.minecraft.util.text.TextComponentString;
  import net.minecraft.util.text.TextComponentTranslation;
  import net.minecraft.util.text.event.ClickEvent;
@@ -4184,49 +5008,67 @@ index 1d00975..fded78b 100644
  
  public class ScreenShotHelper
  {
-@@ -65,6 +69,11 @@ public class ScreenShotHelper
+@@ -66,6 +70,11 @@ public class ScreenShotHelper
  
-             ImageIO.write(bufferedimage, "png", (File)file2);
+             ImageIO.write(bufferedimage, "png", file2);
              ITextComponent itextcomponent = new TextComponentString(file2.getName());
-+            
++			
 +			// TODO: Client
 +			if(WurstClient.INSTANCE.isEnabled())
 +				file2 = file2.getParentFile();
-+            
++			
              itextcomponent.getStyle().setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, file2.getAbsolutePath()));
              itextcomponent.getStyle().setUnderlined(Boolean.valueOf(true));
              return new TextComponentTranslation("screenshot.success", new Object[] {itextcomponent});
 diff --git a/net/minecraft/util/Timer.java b/net/minecraft/util/Timer.java
-index f224815..3f36d2d 100644
+index 4e75e64..3b76b53 100644
 --- a/net/minecraft/util/Timer.java
 +++ b/net/minecraft/util/Timer.java
-@@ -2,6 +2,7 @@ package net.minecraft.util;
+@@ -1,6 +1,7 @@
+ package net.minecraft.util;
  
  import net.minecraft.client.Minecraft;
- import net.minecraft.util.math.MathHelper;
 +import net.wurstclient.WurstClient;
  
  public class Timer
  {
-@@ -65,6 +66,9 @@ public class Timer
+@@ -8,7 +9,7 @@ public class Timer
+      * How many full ticks have turned over since the last call to updateTimer(), capped at 10.
+      */
+     public int elapsedTicks;
+-    public float field_194147_b;
++    public float renderPartialTicks;
+     public float field_194148_c;
+ 
+     /**
+@@ -28,11 +29,14 @@ public class Timer
       */
      public void updateTimer()
      {
 +		// TODO: Client
-+		timerSpeed = WurstClient.INSTANCE.mods.timerMod.getTimerSpeed();
++		float timerSpeed = WurstClient.INSTANCE.mods.timerMod.getTimerSpeed();
 +		
          long i = Minecraft.getSystemTime();
-         long j = i - this.lastSyncSysClock;
-         long k = System.nanoTime() / 1000000L;
+-        this.field_194148_c = (float)(i - this.lastSyncSysClock) / this.field_194149_e;
++        this.field_194148_c = (float)(i - this.lastSyncSysClock) / this.field_194149_e * timerSpeed;
+         this.lastSyncSysClock = i;
+-        this.field_194147_b += this.field_194148_c;
+-        this.elapsedTicks = (int)this.field_194147_b;
+-        this.field_194147_b -= (float)this.elapsedTicks;
++        this.renderPartialTicks += this.field_194148_c;
++        this.elapsedTicks = (int)this.renderPartialTicks;
++        this.renderPartialTicks -= (float)this.elapsedTicks;
+     }
+ }
 diff --git a/net/minecraft/world/World.java b/net/minecraft/world/World.java
-index e142f54..dc0828b 100644
+index 93b65ae..d49df6c 100644
 --- a/net/minecraft/world/World.java
 +++ b/net/minecraft/world/World.java
 @@ -1,16 +1,19 @@
  package net.minecraft.world;
  
 -import com.google.common.base.Function;
--import com.google.common.base.Objects;
+-import com.google.common.base.MoreObjects;
 -import com.google.common.base.Predicate;
 -import com.google.common.collect.Lists;
  import java.util.Calendar;
@@ -4239,14 +5081,14 @@ index e142f54..dc0828b 100644
  import javax.annotation.Nullable;
 +
 +import com.google.common.base.Function;
-+import com.google.common.base.Objects;
++import com.google.common.base.MoreObjects;
 +import com.google.common.base.Predicate;
 +import com.google.common.collect.Lists;
 +
+ import net.minecraft.advancements.AdvancementManager;
+ import net.minecraft.advancements.FunctionManager;
  import net.minecraft.block.Block;
- import net.minecraft.block.BlockLiquid;
- import net.minecraft.block.BlockObserver;
-@@ -32,14 +35,7 @@ import net.minecraft.profiler.Profiler;
+@@ -34,14 +37,7 @@ import net.minecraft.profiler.Profiler;
  import net.minecraft.scoreboard.Scoreboard;
  import net.minecraft.server.MinecraftServer;
  import net.minecraft.tileentity.TileEntity;
@@ -4262,15 +5104,15 @@ index e142f54..dc0828b 100644
  import net.minecraft.util.math.AxisAlignedBB;
  import net.minecraft.util.math.BlockPos;
  import net.minecraft.util.math.MathHelper;
-@@ -56,6 +52,7 @@ import net.minecraft.world.storage.ISaveHandler;
- import net.minecraft.world.storage.MapStorage;
+@@ -59,6 +55,7 @@ import net.minecraft.world.storage.MapStorage;
  import net.minecraft.world.storage.WorldInfo;
+ import net.minecraft.world.storage.WorldSavedData;
  import net.minecraft.world.storage.loot.LootTableManager;
 +import net.wurstclient.WurstClient;
  
  public abstract class World implements IBlockAccess
  {
-@@ -1572,11 +1569,21 @@ public abstract class World implements IBlockAccess
+@@ -1577,11 +1574,21 @@ public abstract class World implements IBlockAccess
       */
      public float getCelestialAngle(float partialTicks)
      {
@@ -4292,7 +5134,7 @@ index e142f54..dc0828b 100644
          return this.provider.getMoonPhase(this.worldInfo.getWorldTime());
      }
  
-@@ -3606,6 +3613,10 @@ public abstract class World implements IBlockAccess
+@@ -3658,6 +3665,10 @@ public abstract class World implements IBlockAccess
       */
      public float getRainStrength(float delta)
      {
