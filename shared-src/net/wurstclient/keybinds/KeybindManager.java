@@ -35,8 +35,8 @@ public class KeybindManager
 		bind("H", ".t /home");
 		bind("J", ".t jesus");
 		bind("K", ".t multiaura");
-		bind("L", ".t nuker");
 		bind("LCONTROL", ".t navigator");
+		bind("N", ".t nuker");
 		bind("R", ".t killaura");
 		bind("RSHIFT", ".t navigator");
 		bind("U", ".t freecam");
