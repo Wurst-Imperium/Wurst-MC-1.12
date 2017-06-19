@@ -9,7 +9,6 @@ package net.wurstclient.features.special_features;
 
 import java.lang.reflect.Field;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.TreeMap;
 
 import net.wurstclient.features.Spf;
@@ -17,14 +16,7 @@ import net.wurstclient.features.Spf;
 public final class SpfManager
 {
 	private final TreeMap<String, Spf> features =
-		new TreeMap<>(new Comparator<String>()
-		{
-			@Override
-			public int compare(String o1, String o2)
-			{
-				return o1.compareToIgnoreCase(o2);
-			}
-		});
+		new TreeMap<>((o1, o2) -> o1.compareToIgnoreCase(o2));
 	
 	public final BookHackSpf bookHackSpf = new BookHackSpf();
 	public final ChangelogSpf changelogSpf = new ChangelogSpf();
