@@ -46,6 +46,8 @@ public enum WurstClient
 	
 	public void startClient()
 	{
+		Fonts.loadFonts();
+		
 		events = new EventManager();
 		mods = new ModManager();
 		commands = new CmdManager();
@@ -62,7 +64,6 @@ public enum WurstClient
 		files.init();
 		
 		navigator.sortFeatures();
-		Fonts.loadFonts();
 		updater.checkForUpdate();
 		analytics =
 			new AnalyticsManager("UA-52838431-5", "client.wurstclient.net");
