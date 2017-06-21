@@ -9,9 +9,8 @@ package net.wurstclient.ai;
 
 import java.util.ArrayList;
 
-import org.lwjgl.input.Keyboard;
-
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.settings.GameSettings;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -73,7 +72,7 @@ public abstract class PathProcessor
 	{
 		// reset keys
 		for(KeyBinding key : controls)
-			key.pressed = Keyboard.isKeyDown(key.getKeyCode());
+			key.pressed = GameSettings.isKeyDown(key);
 	}
 	
 	public int getIndex()
