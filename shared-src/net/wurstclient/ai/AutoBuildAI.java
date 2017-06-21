@@ -53,9 +53,6 @@ public class AutoBuildAI
 		// process path
 		processor.process();
 		
-		if(processor.isFailed())
-			failed = true;
-		
 		if(processor.isDone())
 			done = true;
 	}

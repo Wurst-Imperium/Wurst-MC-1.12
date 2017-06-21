@@ -61,9 +61,6 @@ public class GotoAI
 		// process path
 		processor.process();
 		
-		if(processor.isFailed())
-			failed = true;
-		
 		if(processor.isDone())
 			done = true;
 	}

@@ -26,7 +26,6 @@ public abstract class PathProcessor
 	protected final ArrayList<PathPos> path;
 	protected int index;
 	protected boolean done;
-	protected boolean failed;
 	
 	private final KeyBinding[] controls = new KeyBinding[]{
 		mc.gameSettings.keyBindForward, mc.gameSettings.keyBindBack,
@@ -83,10 +82,5 @@ public abstract class PathProcessor
 	public final boolean isDone()
 	{
 		return done;
-	}
-	
-	public final boolean isFailed()
-	{
-		return failed;
 	}
 }

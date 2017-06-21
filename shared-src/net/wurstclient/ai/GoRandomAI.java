@@ -53,7 +53,7 @@ public class GoRandomAI
 		}
 		
 		// process path
-		if(!processor.isFailed() && !processor.isDone())
+		if(!processor.isDone())
 			processor.process();
 		else
 			pathFinder = new RandomPathFinder(pathFinder);

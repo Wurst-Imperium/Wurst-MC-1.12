@@ -51,15 +51,13 @@ public class FollowAI
 		}
 		
 		// process path
-		if(!processor.isFailed() && !processor.isDone())
+		if(!processor.isDone())
 			processor.process();
 		else
 		{
 			processor.lockControls();
 			
-			if(processor.isFailed())
-				failed = true;
-			else if(processor.isDone())
+			if(processor.isDone())
 				done = true;
 		}
 		
