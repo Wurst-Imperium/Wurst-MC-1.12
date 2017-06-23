@@ -7,8 +7,6 @@
  */
 package net.wurstclient.features.commands;
 
-import static org.lwjgl.opengl.GL11.*;
-
 import org.lwjgl.opengl.GL11;
 
 import net.minecraft.client.gui.Gui;
@@ -25,18 +23,14 @@ import net.wurstclient.features.HelpPage;
 public final class TacoCmd extends Cmd
 	implements GUIRenderListener, UpdateListener
 {
-	private static final ResourceLocation tacoTexture1 =
-		new ResourceLocation("wurst/dancingtaco1.png");
-	private static final ResourceLocation tacoTexture2 =
-		new ResourceLocation("wurst/dancingtaco2.png");
-	private static final ResourceLocation tacoTexture3 =
-		new ResourceLocation("wurst/dancingtaco3.png");
-	private static final ResourceLocation tacoTexture4 =
-		new ResourceLocation("wurst/dancingtaco4.png");
-	private static final ResourceLocation[] tacoTextures =
-		{tacoTexture1, tacoTexture2, tacoTexture3, tacoTexture4};
+	private final ResourceLocation[] tacos =
+		{new ResourceLocation("wurst/dancingtaco1.png"),
+			new ResourceLocation("wurst/dancingtaco2.png"),
+			new ResourceLocation("wurst/dancingtaco3.png"),
+			new ResourceLocation("wurst/dancingtaco4.png")};
+	
+	private boolean enabled;
 	private int ticks = 0;
-	private boolean toggled;
 	
 	public TacoCmd()
 	{
@@ -50,8 +44,9 @@ public final class TacoCmd extends Cmd
 	{
 		if(args.length != 0)
 			syntaxError("Tacos don't need arguments!");
-		toggled = !toggled;
-		if(toggled)
+		
+		enabled = !enabled;
+		if(enabled)
 		{
 			wurst.events.add(GUIRenderListener.class, this);
 			wurst.events.add(UpdateListener.class, this);
@@ -77,31 +72,30 @@ public final class TacoCmd extends Cmd
 	@Override
 	public void onRenderGUI()
 	{
-		glEnable(GL_BLEND);
-		glDisable(GL_CULL_FACE);
-		glEnable(GL_TEXTURE_2D);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		ScaledResolution screenRes = new ScaledResolution(mc);
-		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		if(ticks >= 32)
-			ticks = 0;
-		mc.getTextureManager().bindTexture(tacoTextures[ticks / 8]);
-		int x = screenRes.getScaledWidth() / 2 - 32 + 76;
-		int y = screenRes.getScaledHeight() - 32 - 19;
+		GL11.glEnable(GL11.GL_BLEND);
+		GL11.glDisable(GL11.GL_CULL_FACE);
+		GL11.glEnable(GL11.GL_TEXTURE_2D);
+		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+		GL11.glColor4f(1, 1, 1, 1);
+		
+		mc.getTextureManager().bindTexture(tacos[ticks / 8]);
+		ScaledResolution sr = new ScaledResolution(mc);
+		int x = sr.getScaledWidth() / 2 - 32 + 76;
+		int y = sr.getScaledHeight() - 32 - 19;
 		int w = 64;
 		int h = 32;
-		float fw = 64;
-		float fh = 32;
-		float u = 0;
-		float v = 0;
-		Gui.drawModalRectWithCustomSizedTexture(x, y, u, v, w, h, fw, fh);
-		glEnable(GL_CULL_FACE);
-		glDisable(GL_BLEND);
+		Gui.drawModalRectWithCustomSizedTexture(x, y, 0, 0, w, h, w, h);
+		
+		GL11.glEnable(GL11.GL_CULL_FACE);
+		GL11.glDisable(GL11.GL_BLEND);
 	}
 	
 	@Override
 	public void onUpdate()
 	{
-		ticks++;
+		if(ticks >= 31)
+			ticks = 0;
+		else
+			ticks++;
 	}
 }
