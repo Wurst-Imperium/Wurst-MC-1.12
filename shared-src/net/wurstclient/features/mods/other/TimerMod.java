@@ -42,7 +42,7 @@ public final class TimerMod extends Mod
 			break;
 			
 			default:
-			speed.unlock();
+			speed.resetUsableMax();
 			break;
 		}
 	}
