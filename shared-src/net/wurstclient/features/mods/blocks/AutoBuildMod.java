@@ -220,8 +220,7 @@ public final class AutoBuildMod extends Mod
 				|| eyesPos.squareDistanceTo(new Vec3d(pos).addVector(0.5, 0.5,
 					0.5)) > (mode.getSelected() == 0 ? 30.25 : 14.0625))
 			{
-				if(ai != null && (ai.isFailed() || ai.isDone()
-					|| !ai.getGoal().equals(pos)))
+				if(ai != null && (ai.isDone() || !ai.getGoal().equals(pos)))
 				{
 					ai.stop();
 					ai = null;

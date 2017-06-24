@@ -15,7 +15,6 @@ public class AutoBuildAI
 	private PathProcessor processor;
 	
 	private boolean done;
-	private boolean failed;
 	
 	public AutoBuildAI(BlockPos goal)
 	{
@@ -66,11 +65,6 @@ public class AutoBuildAI
 	public final boolean isDone()
 	{
 		return done;
-	}
-	
-	public final boolean isFailed()
-	{
-		return failed;
 	}
 	
 	public BlockPos getGoal()
