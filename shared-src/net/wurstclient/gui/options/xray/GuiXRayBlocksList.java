@@ -72,7 +72,8 @@ public class GuiXRayBlocksList extends GuiSlot
 	}
 	
 	@Override
-	protected void drawSlot(int id, int x, int y, int var4, int var5, int var6, float partialTicks)
+	protected void drawSlot(int id, int x, int y, int var4, int var5, int var6,
+		float partialTicks)
 	{
 		Block block = blocks.get(id);
 		ItemStack itemStack = new ItemStack(Item.getItemFromBlock(block));
