@@ -30,16 +30,16 @@ public class WalkPathProcessor extends PathProcessor
 		// get positions
 		BlockPos pos = new BlockPos(WMinecraft.getPlayer());
 		BlockPos nextPos = path.get(index);
+		int posIndex = path.indexOf(pos);
 		
 		// update index
-		if(pos.equals(nextPos))
+		if(pos.equals(nextPos) || posIndex > index)
 		{
-			index++;
+			index = posIndex + 1;
 			
 			// disable when done
 			if(index >= path.size())
 				done = true;
-			
 			return;
 		}
 		
