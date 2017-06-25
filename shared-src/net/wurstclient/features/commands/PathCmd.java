@@ -11,7 +11,6 @@ import static org.lwjgl.opengl.GL11.*;
 
 import java.util.ArrayList;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.util.math.BlockPos;
 import net.wurstclient.ai.PathFinder;
 import net.wurstclient.ai.PathPos;
@@ -152,37 +151,35 @@ public final class PathCmd extends Cmd implements UpdateListener, RenderListener
 		{
 			void renderArrow(BlockPos start, BlockPos end)
 			{
-				double x = start.getX() + 0.5
-					- Minecraft.getMinecraft().getRenderManager().renderPosX;
-				double y = start.getY() + 0.5
-					- Minecraft.getMinecraft().getRenderManager().renderPosY;
-				double z = start.getZ() + 0.5
-					- Minecraft.getMinecraft().getRenderManager().renderPosZ;
+				int startX = start.getX();
+				int startY = start.getY();
+				int startZ = start.getZ();
 				
-				double nextX = end.getX() + 0.5
-					- Minecraft.getMinecraft().getRenderManager().renderPosX;
-				double nextY = end.getY() + 0.5
-					- Minecraft.getMinecraft().getRenderManager().renderPosY;
-				double nextZ = end.getZ() + 0.5
-					- Minecraft.getMinecraft().getRenderManager().renderPosZ;
-				
-				glBegin(GL_LINES);
-				{
-					glVertex3d(x, y, z);
-					glVertex3d(nextX, nextY, nextZ);
-				}
-				glEnd();
+				int endX = end.getX();
+				int endY = end.getY();
+				int endZ = end.getZ();
 				
 				glPushMatrix();
-				glTranslated(nextX, nextY, nextZ);
-				glScaled(1D / 16D, 1D / 16D, 1D / 16D);
-				glRotated(Math.toDegrees(Math.atan2(nextY - y, z - nextZ)) + 90,
-					1, 0, 0);
+				
+				glBegin(GL_LINES);
+				{
+					glVertex3d(startX, startY, startZ);
+					glVertex3d(endX, endY, endZ);
+				}
+				glEnd();
+				
+				glTranslated(endX, endY, endZ);
+				double scale = 1 / 16D;
+				glScaled(scale, scale, scale);
+				
 				glRotated(
-					Math.toDegrees(Math.atan2(nextX - x,
-						Math.sqrt(
-							Math.pow(y - nextY, 2) + Math.pow(z - nextZ, 2)))),
+					Math.toDegrees(Math.atan2(endY - startY, startZ - endZ))
+						+ 90,
+					1, 0, 0);
+				glRotated(Math.toDegrees(Math.atan2(endX - startX, Math.sqrt(
+					Math.pow(endY - startY, 2) + Math.pow(endZ - startZ, 2)))),
 					0, 0, 1);
+				
 				glBegin(GL_LINES);
 				{
 					glVertex3d(0, 2, 1);
@@ -216,21 +213,17 @@ public final class PathCmd extends Cmd implements UpdateListener, RenderListener
 					glVertex3d(0, 2, 1);
 				}
 				glEnd();
+				
 				glPopMatrix();
 			}
 			
 			void renderNode(BlockPos pos)
 			{
-				double x = pos.getX() + 0.5
-					- Minecraft.getMinecraft().getRenderManager().renderPosX;
-				double y = pos.getY() + 0.5
-					- Minecraft.getMinecraft().getRenderManager().renderPosY;
-				double z = pos.getZ() + 0.5
-					- Minecraft.getMinecraft().getRenderManager().renderPosZ;
-				
 				glPushMatrix();
-				glTranslated(x, y, z);
+				
+				glTranslated(pos.getX(), pos.getY(), pos.getZ());
 				glScaled(0.1, 0.1, 0.1);
+				
 				glBegin(GL_LINES);
 				{
 					// middle part
@@ -273,6 +266,7 @@ public final class PathCmd extends Cmd implements UpdateListener, RenderListener
 					glVertex3d(0, 0, 1);
 				}
 				glEnd();
+				
 				glPopMatrix();
 			}
 		}
@@ -288,6 +282,12 @@ public final class PathCmd extends Cmd implements UpdateListener, RenderListener
 			glDisable(GL_DEPTH_TEST);
 		glDisable(GL_CULL_FACE);
 		glDepthMask(false);
+		
+		glPushMatrix();
+		glTranslated(-mc.getRenderManager().renderPosX,
+			-mc.getRenderManager().renderPosY,
+			-mc.getRenderManager().renderPosZ);
+		glTranslated(0.5, 0.5, 0.5);
 		
 		if(debugMode.isChecked())
 		{
@@ -337,6 +337,8 @@ public final class PathCmd extends Cmd implements UpdateListener, RenderListener
 			BlockPos nextPos = path.get(i + 1);
 			renderer.renderArrow(pos, nextPos);
 		}
+		
+		glPopMatrix();
 		
 		// GL resets
 		glEnable(GL_TEXTURE_2D);
