@@ -49,7 +49,7 @@ public final class FollowCmd extends Cmd
 			if(wurst.mods.followMod.isEnabled())
 				wurst.mods.followMod.setEnabled(false);
 			Entity entity =
-				EntityUtils.getEntityWithName(args[0], targetSettings);
+				EntityUtils.getClosestEntityWithName(args[0], targetSettings);
 			if(entity == null)
 				error("Entity \"" + args[0] + "\" could not be found.");
 			wurst.mods.followMod.setEntity(entity);

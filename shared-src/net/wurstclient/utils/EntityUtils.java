@@ -8,7 +8,6 @@
 package net.wurstclient.utils;
 
 import java.util.ArrayList;
-import java.util.UUID;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityAgeable;
@@ -227,24 +226,25 @@ public class EntityUtils
 		return closestEnemy;
 	}
 	
-	public static Entity getEntityWithName(String name, TargetSettings settings)
+	public static Entity getClosestEntityWithName(String name,
+		TargetSettings settings)
 	{
+		Entity closestEntity = null;
+		
 		for(Entity entity : WMinecraft.getWorld().loadedEntityList)
-			if(isCorrectEntity(entity, settings)
-				&& entity.getName().equalsIgnoreCase(name))
-				return entity;
+		{
+			if(!isCorrectEntity(entity, settings))
+				continue;
+			if(!entity.getName().equalsIgnoreCase(name))
+				continue;
 			
-		return null;
-	}
-	
-	public static Entity getEntityWithId(UUID id, TargetSettings settings)
-	{
-		for(Entity entity : WMinecraft.getWorld().loadedEntityList)
-			if(isCorrectEntity(entity, settings)
-				&& entity.getUniqueID().equals(id))
-				return entity;
-			
-		return null;
+			if(closestEntity == null || WMinecraft.getPlayer()
+				.getDistanceSqToEntity(entity) < WMinecraft.getPlayer()
+					.getDistanceSqToEntity(closestEntity))
+				closestEntity = entity;
+		}
+		
+		return closestEntity;
 	}
 	
 	public static class TargetSettings

@@ -170,7 +170,7 @@ public abstract class Cmd extends Feature
 		}else if(args.length == 1)
 		{
 			Entity entity =
-				EntityUtils.getEntityWithName(args[0], targetSettings);
+				EntityUtils.getClosestEntityWithName(args[0], targetSettings);
 			if(entity == null)
 				error("Entity \"" + args[0] + "\" could not be found.");
 			BlockPos blockPos = new BlockPos(entity);

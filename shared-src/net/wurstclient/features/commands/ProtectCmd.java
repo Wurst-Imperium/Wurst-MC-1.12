@@ -50,7 +50,7 @@ public final class ProtectCmd extends Cmd
 			if(wurst.mods.protectMod.isEnabled())
 				wurst.mods.protectMod.setEnabled(false);
 			Entity entity =
-				EntityUtils.getEntityWithName(args[0], targetSettings);
+				EntityUtils.getClosestEntityWithName(args[0], targetSettings);
 			if(entity == null)
 				error("Entity \"" + args[0] + "\" could not be found.");
 			wurst.mods.protectMod.setEnabled(true);
