@@ -23,11 +23,12 @@ import net.wurstclient.utils.EntityUtils.TargetSettings;
 @HelpPage("Commands/path")
 public final class PathCmd extends Cmd implements UpdateListener, RenderListener
 {
-	private PathFinder pathFinder;
-	private boolean enabled;
-	private BlockPos lastGoal;
+	private final CheckboxSetting debugMode =
+		new CheckboxSetting("Debug mode", false);
+	private final CheckboxSetting depthTest =
+		new CheckboxSetting("Depth test", false);
 	
-	private TargetSettings targetSettings = new TargetSettings()
+	private final TargetSettings targetSettings = new TargetSettings()
 	{
 		@Override
 		public boolean targetFriends()
@@ -42,9 +43,10 @@ public final class PathCmd extends Cmd implements UpdateListener, RenderListener
 		}
 	};
 	
-	public CheckboxSetting debugMode = new CheckboxSetting("Debug mode", false);
-	public CheckboxSetting depthTest = new CheckboxSetting("Depth test", false);
+	private PathFinder pathFinder;
+	private boolean enabled;
 	private long startTime;
+	private BlockPos lastGoal;
 	
 	public PathCmd()
 	{
@@ -147,5 +149,15 @@ public final class PathCmd extends Cmd implements UpdateListener, RenderListener
 	public BlockPos getLastGoal()
 	{
 		return lastGoal;
+	}
+	
+	public boolean isDebugMode()
+	{
+		return debugMode.isChecked();
+	}
+	
+	public boolean isDepthTest()
+	{
+		return depthTest.isChecked();
 	}
 }
