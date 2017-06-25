@@ -28,7 +28,12 @@ public class WalkPathProcessor extends PathProcessor
 	public void process()
 	{
 		// get positions
-		BlockPos pos = new BlockPos(WMinecraft.getPlayer());
+		BlockPos pos;
+		if(WMinecraft.getPlayer().onGround)
+			pos = new BlockPos(WMinecraft.getPlayer().posX,
+				WMinecraft.getPlayer().posY + 0.5, WMinecraft.getPlayer().posZ);
+		else
+			pos = new BlockPos(WMinecraft.getPlayer());
 		BlockPos nextPos = path.get(index);
 		int posIndex = path.indexOf(pos);
 		
