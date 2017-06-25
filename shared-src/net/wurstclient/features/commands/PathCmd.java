@@ -7,8 +7,6 @@
  */
 package net.wurstclient.features.commands;
 
-import static org.lwjgl.opengl.GL11.*;
-
 import java.util.ArrayList;
 
 import net.minecraft.util.math.BlockPos;
@@ -26,7 +24,6 @@ import net.wurstclient.utils.EntityUtils.TargetSettings;
 public final class PathCmd extends Cmd implements UpdateListener, RenderListener
 {
 	private PathFinder pathFinder;
-	private ArrayList<PathPos> path;
 	private boolean enabled;
 	private BlockPos lastGoal;
 	
@@ -106,9 +103,6 @@ public final class PathCmd extends Cmd implements UpdateListener, RenderListener
 		}
 		pathFinder = new PathFinder(goal);
 		
-		// clear path
-		path = new ArrayList<>();
-		
 		// start
 		enabled = true;
 		wurst.events.add(UpdateListener.class, this);
@@ -127,6 +121,7 @@ public final class PathCmd extends Cmd implements UpdateListener, RenderListener
 		// stop if done or failed
 		if(foundPath || pathFinder.isFailed())
 		{
+			ArrayList<PathPos> path = new ArrayList<>();
 			if(foundPath)
 				path = pathFinder.formatPath();
 			else
@@ -137,7 +132,7 @@ public final class PathCmd extends Cmd implements UpdateListener, RenderListener
 			System.out.println("Done after " + passedTime + "ms");
 			if(debugMode.isChecked())
 				System.out.println("Length: " + path.size() + ", processed: "
-					+ pathFinder.getProcessedBlocks().size() + ", queue: "
+					+ pathFinder.countProcessedBlocks() + ", queue: "
 					+ pathFinder.getQueueSize() + ", cost: "
 					+ pathFinder.getCost(pathFinder.getCurrentPos()));
 		}
@@ -146,206 +141,7 @@ public final class PathCmd extends Cmd implements UpdateListener, RenderListener
 	@Override
 	public void onRender(float partialTicks)
 	{
-		// helper class
-		class Renderer
-		{
-			void renderArrow(BlockPos start, BlockPos end)
-			{
-				int startX = start.getX();
-				int startY = start.getY();
-				int startZ = start.getZ();
-				
-				int endX = end.getX();
-				int endY = end.getY();
-				int endZ = end.getZ();
-				
-				glPushMatrix();
-				
-				glBegin(GL_LINES);
-				{
-					glVertex3d(startX, startY, startZ);
-					glVertex3d(endX, endY, endZ);
-				}
-				glEnd();
-				
-				glTranslated(endX, endY, endZ);
-				double scale = 1 / 16D;
-				glScaled(scale, scale, scale);
-				
-				glRotated(
-					Math.toDegrees(Math.atan2(endY - startY, startZ - endZ))
-						+ 90,
-					1, 0, 0);
-				glRotated(Math.toDegrees(Math.atan2(endX - startX, Math.sqrt(
-					Math.pow(endY - startY, 2) + Math.pow(endZ - startZ, 2)))),
-					0, 0, 1);
-				
-				glBegin(GL_LINES);
-				{
-					glVertex3d(0, 2, 1);
-					glVertex3d(-1, 2, 0);
-					
-					glVertex3d(-1, 2, 0);
-					glVertex3d(0, 2, -1);
-					
-					glVertex3d(0, 2, -1);
-					glVertex3d(1, 2, 0);
-					
-					glVertex3d(1, 2, 0);
-					glVertex3d(0, 2, 1);
-					
-					glVertex3d(1, 2, 0);
-					glVertex3d(-1, 2, 0);
-					
-					glVertex3d(0, 2, 1);
-					glVertex3d(0, 2, -1);
-					
-					glVertex3d(0, 0, 0);
-					glVertex3d(1, 2, 0);
-					
-					glVertex3d(0, 0, 0);
-					glVertex3d(-1, 2, 0);
-					
-					glVertex3d(0, 0, 0);
-					glVertex3d(0, 2, -1);
-					
-					glVertex3d(0, 0, 0);
-					glVertex3d(0, 2, 1);
-				}
-				glEnd();
-				
-				glPopMatrix();
-			}
-			
-			void renderNode(BlockPos pos)
-			{
-				glPushMatrix();
-				
-				glTranslated(pos.getX(), pos.getY(), pos.getZ());
-				glScaled(0.1, 0.1, 0.1);
-				
-				glBegin(GL_LINES);
-				{
-					// middle part
-					glVertex3d(0, 0, 1);
-					glVertex3d(-1, 0, 0);
-					
-					glVertex3d(-1, 0, 0);
-					glVertex3d(0, 0, -1);
-					
-					glVertex3d(0, 0, -1);
-					glVertex3d(1, 0, 0);
-					
-					glVertex3d(1, 0, 0);
-					glVertex3d(0, 0, 1);
-					
-					// top part
-					glVertex3d(0, 1, 0);
-					glVertex3d(1, 0, 0);
-					
-					glVertex3d(0, 1, 0);
-					glVertex3d(-1, 0, 0);
-					
-					glVertex3d(0, 1, 0);
-					glVertex3d(0, 0, -1);
-					
-					glVertex3d(0, 1, 0);
-					glVertex3d(0, 0, 1);
-					
-					// bottom part
-					glVertex3d(0, -1, 0);
-					glVertex3d(1, 0, 0);
-					
-					glVertex3d(0, -1, 0);
-					glVertex3d(-1, 0, 0);
-					
-					glVertex3d(0, -1, 0);
-					glVertex3d(0, 0, -1);
-					
-					glVertex3d(0, -1, 0);
-					glVertex3d(0, 0, 1);
-				}
-				glEnd();
-				
-				glPopMatrix();
-			}
-		}
-		Renderer renderer = new Renderer();
-		int renderedThings = 0;
-		
-		// GL settings
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		glEnable(GL_BLEND);
-		glEnable(GL_LINE_SMOOTH);
-		glDisable(GL_TEXTURE_2D);
-		if(!depthTest.isChecked())
-			glDisable(GL_DEPTH_TEST);
-		glDisable(GL_CULL_FACE);
-		glDepthMask(false);
-		
-		glPushMatrix();
-		glTranslated(-mc.getRenderManager().renderPosX,
-			-mc.getRenderManager().renderPosY,
-			-mc.getRenderManager().renderPosZ);
-		glTranslated(0.5, 0.5, 0.5);
-		
-		if(debugMode.isChecked())
-		{
-			// queue (yellow)
-			glLineWidth(2.0F);
-			glColor4f(1F, 1F, 0F, 0.75F);
-			PathPos[] queue = pathFinder.getQueuedBlocks();
-			for(PathPos element : queue)
-			{
-				if(renderedThings >= 5000)
-					break;
-				
-				renderer.renderNode(element);
-				renderedThings++;
-			}
-			
-			// processed (red)
-			glLineWidth(2.0F);
-			for(PathPos pos : pathFinder.getProcessedBlocks())
-			{
-				if(renderedThings >= 5000)
-					break;
-				
-				if(pos.isJumping())
-					glColor4f(1F, 0F, 1F, 0.75F);
-				else
-					glColor4f(1F, 0F, 0F, 0.75F);
-				
-				renderer.renderArrow(pathFinder.getPrevPos(pos), pos);
-				renderedThings++;
-			}
-		}
-		
-		// path (blue)
-		if(debugMode.isChecked())
-		{
-			glLineWidth(4.0F);
-			glColor4f(0F, 0F, 1F, 0.75F);
-		}else
-		{
-			glLineWidth(2.0F);
-			glColor4f(0F, 1F, 0F, 0.75F);
-		}
-		for(int i = 0; i < path.size() - 1; i++)
-		{
-			BlockPos pos = path.get(i);
-			BlockPos nextPos = path.get(i + 1);
-			renderer.renderArrow(pos, nextPos);
-		}
-		
-		glPopMatrix();
-		
-		// GL resets
-		glEnable(GL_TEXTURE_2D);
-		glEnable(GL_DEPTH_TEST);
-		glDepthMask(true);
-		glDisable(GL_BLEND);
-		glDisable(GL_LINE_SMOOTH);
+		pathFinder.renderPath(debugMode.isChecked(), depthTest.isChecked());
 	}
 	
 	public BlockPos getLastGoal()

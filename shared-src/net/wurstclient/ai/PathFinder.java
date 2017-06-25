@@ -10,10 +10,13 @@ package net.wurstclient.ai;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Set;
+import java.util.Map.Entry;
+
+import org.lwjgl.opengl.GL11;
 
 import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
+import net.minecraft.client.Minecraft;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.wurstclient.WurstClient;
@@ -414,14 +417,9 @@ public class PathFinder
 		return goal;
 	}
 	
-	public Set<PathPos> getProcessedBlocks()
+	public int countProcessedBlocks()
 	{
-		return prevPosMap.keySet();
-	}
-	
-	public PathPos[] getQueuedBlocks()
-	{
-		return queue.toArray();
+		return prevPosMap.keySet().size();
 	}
 	
 	public int getQueueSize()
@@ -432,11 +430,6 @@ public class PathFinder
 	public float getCost(BlockPos pos)
 	{
 		return costMap.get(pos);
-	}
-	
-	public BlockPos getPrevPos(BlockPos pos)
-	{
-		return prevPosMap.get(pos);
 	}
 	
 	public boolean isDone()
@@ -479,6 +472,81 @@ public class PathFinder
 		Collections.reverse(path);
 		
 		return path;
+	}
+	
+	public void renderPath(boolean debugMode, boolean depthTest)
+	{
+		// GL settings
+		GL11.glEnable(GL11.GL_BLEND);
+		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+		GL11.glDisable(GL11.GL_CULL_FACE);
+		GL11.glDisable(GL11.GL_TEXTURE_2D);
+		GL11.glEnable(GL11.GL_LINE_SMOOTH);
+		if(!depthTest)
+			GL11.glDisable(GL11.GL_DEPTH_TEST);
+		GL11.glDepthMask(false);
+		
+		GL11.glPushMatrix();
+		GL11.glTranslated(
+			-Minecraft.getMinecraft().getRenderManager().renderPosX,
+			-Minecraft.getMinecraft().getRenderManager().renderPosY,
+			-Minecraft.getMinecraft().getRenderManager().renderPosZ);
+		GL11.glTranslated(0.5, 0.5, 0.5);
+		
+		if(debugMode)
+		{
+			int renderedThings = 0;
+			
+			// queue (yellow)
+			GL11.glLineWidth(2);
+			GL11.glColor4f(1, 1, 0, 0.75F);
+			for(PathPos element : queue.toArray())
+			{
+				if(renderedThings >= 5000)
+					break;
+				
+				PathRenderer.renderNode(element);
+				renderedThings++;
+			}
+			
+			// processed (red)
+			GL11.glLineWidth(2);
+			for(Entry<PathPos, PathPos> entry : prevPosMap.entrySet())
+			{
+				if(renderedThings >= 5000)
+					break;
+				
+				if(entry.getKey().isJumping())
+					GL11.glColor4f(1, 0, 1, 0.75F);
+				else
+					GL11.glColor4f(1, 0, 0, 0.75F);
+				
+				PathRenderer.renderArrow(entry.getValue(), entry.getKey());
+				renderedThings++;
+			}
+		}
+		
+		// path (blue)
+		if(debugMode)
+		{
+			GL11.glLineWidth(4);
+			GL11.glColor4f(0, 0, 1, 0.75F);
+		}else
+		{
+			GL11.glLineWidth(2);
+			GL11.glColor4f(0, 1, 0, 0.75F);
+		}
+		for(int i = 0; i < path.size() - 1; i++)
+			PathRenderer.renderArrow(path.get(i), path.get(i + 1));
+		
+		GL11.glPopMatrix();
+		
+		// GL resets
+		GL11.glDisable(GL11.GL_BLEND);
+		GL11.glEnable(GL11.GL_TEXTURE_2D);
+		GL11.glDisable(GL11.GL_LINE_SMOOTH);
+		GL11.glEnable(GL11.GL_DEPTH_TEST);
+		GL11.glDepthMask(true);
 	}
 	
 	public boolean isPathStillValid(int index)
