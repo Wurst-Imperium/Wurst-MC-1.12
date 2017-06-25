@@ -208,8 +208,8 @@ public final class ProtectMod extends Mod implements UpdateListener
 				return;
 			
 			// attack enemy
-			EntityUtils.prepareAttack();
-			EntityUtils.attackEntity(enemy);
+			WPlayer.prepareAttack();
+			WPlayer.attackEntity(enemy);
 			
 			// reset timer
 			updateLastMS();

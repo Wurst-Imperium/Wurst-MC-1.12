@@ -165,11 +165,11 @@ public final class MultiAuraMod extends Mod implements UpdateListener
 			return;
 		
 		// attack entities
-		EntityUtils.prepareAttack();
+		WPlayer.prepareAttack();
 		for(Entity entity : entities)
 		{
 			RotationUtils.faceEntityPacket(entity);
-			EntityUtils.attackEntity(entity);
+			WPlayer.attackEntity(entity);
 		}
 		
 		// reset timer

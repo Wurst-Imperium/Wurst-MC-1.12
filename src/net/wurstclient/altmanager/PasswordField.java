@@ -71,12 +71,12 @@ public class PasswordField extends Gui
 	public PasswordField(FontRenderer fontrendererObj, int x, int y,
 		int par5Width, int par6Height)
 	{
-		this.id = new Random().nextInt();
-		this.fontRendererInstance = fontrendererObj;
-		this.xPosition = x;
-		this.yPosition = y;
-		this.width = par5Width;
-		this.height = par6Height;
+		id = new Random().nextInt();
+		fontRendererInstance = fontrendererObj;
+		xPosition = x;
+		yPosition = y;
+		width = par5Width;
+		height = par6Height;
 	}
 	
 	/**
@@ -84,7 +84,7 @@ public class PasswordField extends Gui
 	 */
 	public void setGuiResponder(GuiPageButtonList.GuiResponder guiResponderIn)
 	{
-		this.guiResponder = guiResponderIn;
+		guiResponder = guiResponderIn;
 	}
 	
 	/**
@@ -92,7 +92,7 @@ public class PasswordField extends Gui
 	 */
 	public void updateCursorCounter()
 	{
-		++this.cursorCounter;
+		++cursorCounter;
 	}
 	
 	/**
@@ -100,17 +100,14 @@ public class PasswordField extends Gui
 	 */
 	public void setText(String textIn)
 	{
-		if(this.validator.apply(textIn))
+		if(validator.apply(textIn))
 		{
-			if(textIn.length() > this.maxStringLength)
-			{
-				this.text = textIn.substring(0, this.maxStringLength);
-			}else
-			{
-				this.text = textIn;
-			}
+			if(textIn.length() > maxStringLength)
+				text = textIn.substring(0, maxStringLength);
+			else
+				text = textIn;
 			
-			this.setCursorPositionEnd();
+			setCursorPositionEnd();
 		}
 	}
 	
@@ -119,7 +116,7 @@ public class PasswordField extends Gui
 	 */
 	public String getText()
 	{
-		return this.text;
+		return text;
 	}
 	
 	/**
@@ -127,16 +124,14 @@ public class PasswordField extends Gui
 	 */
 	public String getSelectedText()
 	{
-		int i = this.cursorPosition < this.selectionEnd ? this.cursorPosition
-			: this.selectionEnd;
-		int j = this.cursorPosition < this.selectionEnd ? this.selectionEnd
-			: this.cursorPosition;
-		return this.text.substring(i, j);
+		int i = cursorPosition < selectionEnd ? cursorPosition : selectionEnd;
+		int j = cursorPosition < selectionEnd ? selectionEnd : cursorPosition;
+		return text.substring(i, j);
 	}
 	
 	public void setValidator(Predicate<String> theValidator)
 	{
-		this.validator = theValidator;
+		validator = theValidator;
 	}
 	
 	/**
@@ -147,16 +142,12 @@ public class PasswordField extends Gui
 	{
 		String s = "";
 		String s1 = ChatAllowedCharacters.filterAllowedCharacters(textToWrite);
-		int i = this.cursorPosition < this.selectionEnd ? this.cursorPosition
-			: this.selectionEnd;
-		int j = this.cursorPosition < this.selectionEnd ? this.selectionEnd
-			: this.cursorPosition;
-		int k = this.maxStringLength - this.text.length() - (i - j);
+		int i = cursorPosition < selectionEnd ? cursorPosition : selectionEnd;
+		int j = cursorPosition < selectionEnd ? selectionEnd : cursorPosition;
+		int k = maxStringLength - text.length() - (i - j);
 		
-		if(!this.text.isEmpty())
-		{
-			s = s + this.text.substring(0, i);
-		}
+		if(!text.isEmpty())
+			s = s + text.substring(0, i);
 		
 		int l;
 		
@@ -170,25 +161,21 @@ public class PasswordField extends Gui
 			l = s1.length();
 		}
 		
-		if(!this.text.isEmpty() && j < this.text.length())
-		{
-			s = s + this.text.substring(j);
-		}
+		if(!text.isEmpty() && j < text.length())
+			s = s + text.substring(j);
 		
-		if(this.validator.apply(s))
+		if(validator.apply(s))
 		{
-			this.text = s;
-			this.moveCursorBy(i - this.selectionEnd + l);
-			this.func_190516_a(this.id, this.text);
+			text = s;
+			moveCursorBy(i - selectionEnd + l);
+			func_190516_a(id, text);
 		}
 	}
 	
 	public void func_190516_a(int p_190516_1_, String p_190516_2_)
 	{
-		if(this.guiResponder != null)
-		{
-			this.guiResponder.setEntryValue(p_190516_1_, p_190516_2_);
-		}
+		if(guiResponder != null)
+			guiResponder.setEntryValue(p_190516_1_, p_190516_2_);
 	}
 	
 	/**
@@ -198,17 +185,11 @@ public class PasswordField extends Gui
 	 */
 	public void deleteWords(int num)
 	{
-		if(!this.text.isEmpty())
-		{
-			if(this.selectionEnd != this.cursorPosition)
-			{
-				this.writeText("");
-			}else
-			{
-				this.deleteFromCursor(
-					this.getNthWordFromCursor(num) - this.cursorPosition);
-			}
-		}
+		if(!text.isEmpty())
+			if(selectionEnd != cursorPosition)
+				writeText("");
+			else
+				deleteFromCursor(getNthWordFromCursor(num) - cursorPosition);
 	}
 	
 	/**
@@ -218,46 +199,37 @@ public class PasswordField extends Gui
 	 */
 	public void deleteFromCursor(int num)
 	{
-		if(!this.text.isEmpty())
-		{
-			if(this.selectionEnd != this.cursorPosition)
-			{
-				this.writeText("");
-			}else
+		if(!text.isEmpty())
+			if(selectionEnd != cursorPosition)
+				writeText("");
+			else
 			{
 				boolean flag = num < 0;
-				int i = flag ? this.cursorPosition + num : this.cursorPosition;
-				int j = flag ? this.cursorPosition : this.cursorPosition + num;
+				int i = flag ? cursorPosition + num : cursorPosition;
+				int j = flag ? cursorPosition : cursorPosition + num;
 				String s = "";
 				
 				if(i >= 0)
-				{
-					s = this.text.substring(0, i);
-				}
+					s = text.substring(0, i);
 				
-				if(j < this.text.length())
-				{
-					s = s + this.text.substring(j);
-				}
+				if(j < text.length())
+					s = s + text.substring(j);
 				
-				if(this.validator.apply(s))
+				if(validator.apply(s))
 				{
-					this.text = s;
+					text = s;
 					
 					if(flag)
-					{
-						this.moveCursorBy(num);
-					}
+						moveCursorBy(num);
 					
-					this.func_190516_a(this.id, this.text);
+					func_190516_a(id, text);
 				}
 			}
-		}
 	}
 	
 	public int getId()
 	{
-		return this.id;
+		return id;
 	}
 	
 	/**
@@ -266,7 +238,7 @@ public class PasswordField extends Gui
 	 */
 	public int getNthWordFromCursor(int numWords)
 	{
-		return this.getNthWordFromPos(numWords, this.getCursorPosition());
+		return getNthWordFromPos(numWords, getCursorPosition());
 	}
 	
 	/**
@@ -275,7 +247,7 @@ public class PasswordField extends Gui
 	 */
 	public int getNthWordFromPos(int n, int pos)
 	{
-		return this.getNthWordFromPosWS(n, pos, true);
+		return getNthWordFromPosWS(n, pos, true);
 	}
 	
 	/**
@@ -289,35 +261,24 @@ public class PasswordField extends Gui
 		int j = Math.abs(n);
 		
 		for(int k = 0; k < j; ++k)
-		{
 			if(!flag)
 			{
-				int l = this.text.length();
-				i = this.text.indexOf(32, i);
+				int l = text.length();
+				i = text.indexOf(32, i);
 				
 				if(i == -1)
-				{
 					i = l;
-				}else
-				{
-					while(skipWs && i < l && this.text.charAt(i) == ' ')
-					{
+				else
+					while(skipWs && i < l && text.charAt(i) == ' ')
 						++i;
-					}
-				}
 			}else
 			{
-				while(skipWs && i > 0 && this.text.charAt(i - 1) == ' ')
-				{
+				while(skipWs && i > 0 && text.charAt(i - 1) == ' ')
 					--i;
-				}
 				
-				while(i > 0 && this.text.charAt(i - 1) != ' ')
-				{
+				while(i > 0 && text.charAt(i - 1) != ' ')
 					--i;
-				}
 			}
-		}
 		
 		return i;
 	}
@@ -328,7 +289,7 @@ public class PasswordField extends Gui
 	 */
 	public void moveCursorBy(int num)
 	{
-		this.setCursorPosition(this.selectionEnd + num);
+		setCursorPosition(selectionEnd + num);
 	}
 	
 	/**
@@ -336,10 +297,10 @@ public class PasswordField extends Gui
 	 */
 	public void setCursorPosition(int pos)
 	{
-		this.cursorPosition = pos;
-		int i = this.text.length();
-		this.cursorPosition = MathHelper.clamp(this.cursorPosition, 0, i);
-		this.setSelectionPos(this.cursorPosition);
+		cursorPosition = pos;
+		int i = text.length();
+		cursorPosition = MathHelper.clamp(cursorPosition, 0, i);
+		setSelectionPos(cursorPosition);
 	}
 	
 	/**
@@ -347,7 +308,7 @@ public class PasswordField extends Gui
 	 */
 	public void setCursorPositionZero()
 	{
-		this.setCursorPosition(0);
+		setCursorPosition(0);
 	}
 	
 	/**
@@ -355,7 +316,7 @@ public class PasswordField extends Gui
 	 */
 	public void setCursorPositionEnd()
 	{
-		this.setCursorPosition(this.text.length());
+		setCursorPosition(text.length());
 	}
 	
 	/**
@@ -363,62 +324,49 @@ public class PasswordField extends Gui
 	 */
 	public boolean textboxKeyTyped(char typedChar, int keyCode)
 	{
-		if(!this.isFocused)
-		{
+		if(!isFocused)
 			return false;
-		}else if(GuiScreen.isKeyComboCtrlA(keyCode))
+		else if(GuiScreen.isKeyComboCtrlA(keyCode))
 		{
-			this.setCursorPositionEnd();
-			this.setSelectionPos(0);
+			setCursorPositionEnd();
+			setSelectionPos(0);
 			return true;
 		}else if(GuiScreen.isKeyComboCtrlC(keyCode))
 		{
-			GuiScreen.setClipboardString(this.getSelectedText());
+			GuiScreen.setClipboardString(getSelectedText());
 			return true;
 		}else if(GuiScreen.isKeyComboCtrlV(keyCode))
 		{
-			if(this.isEnabled)
-			{
-				this.writeText(GuiScreen.getClipboardString());
-			}
+			if(isEnabled)
+				writeText(GuiScreen.getClipboardString());
 			
 			return true;
 		}else if(GuiScreen.isKeyComboCtrlX(keyCode))
 		{
-			GuiScreen.setClipboardString(this.getSelectedText());
+			GuiScreen.setClipboardString(getSelectedText());
 			
-			if(this.isEnabled)
-			{
-				this.writeText("");
-			}
+			if(isEnabled)
+				writeText("");
 			
 			return true;
 		}else
-		{
 			switch(keyCode)
 			{
 				case 14:
 				if(GuiScreen.isCtrlKeyDown())
 				{
-					if(this.isEnabled)
-					{
-						this.deleteWords(-1);
-					}
-				}else if(this.isEnabled)
-				{
-					this.deleteFromCursor(-1);
-				}
+					if(isEnabled)
+						deleteWords(-1);
+				}else if(isEnabled)
+					deleteFromCursor(-1);
 				
 				return true;
 				
 				case 199:
 				if(GuiScreen.isShiftKeyDown())
-				{
-					this.setSelectionPos(0);
-				}else
-				{
-					this.setCursorPositionZero();
-				}
+					setSelectionPos(0);
+				else
+					setCursorPositionZero();
 				
 				return true;
 				
@@ -426,20 +374,14 @@ public class PasswordField extends Gui
 				if(GuiScreen.isShiftKeyDown())
 				{
 					if(GuiScreen.isCtrlKeyDown())
-					{
-						this.setSelectionPos(
-							this.getNthWordFromPos(-1, this.getSelectionEnd()));
-					}else
-					{
-						this.setSelectionPos(this.getSelectionEnd() - 1);
-					}
+						setSelectionPos(
+							getNthWordFromPos(-1, getSelectionEnd()));
+					else
+						setSelectionPos(getSelectionEnd() - 1);
 				}else if(GuiScreen.isCtrlKeyDown())
-				{
-					this.setCursorPosition(this.getNthWordFromCursor(-1));
-				}else
-				{
-					this.moveCursorBy(-1);
-				}
+					setCursorPosition(getNthWordFromCursor(-1));
+				else
+					moveCursorBy(-1);
 				
 				return true;
 				
@@ -447,63 +389,45 @@ public class PasswordField extends Gui
 				if(GuiScreen.isShiftKeyDown())
 				{
 					if(GuiScreen.isCtrlKeyDown())
-					{
-						this.setSelectionPos(
-							this.getNthWordFromPos(1, this.getSelectionEnd()));
-					}else
-					{
-						this.setSelectionPos(this.getSelectionEnd() + 1);
-					}
+						setSelectionPos(
+							getNthWordFromPos(1, getSelectionEnd()));
+					else
+						setSelectionPos(getSelectionEnd() + 1);
 				}else if(GuiScreen.isCtrlKeyDown())
-				{
-					this.setCursorPosition(this.getNthWordFromCursor(1));
-				}else
-				{
-					this.moveCursorBy(1);
-				}
+					setCursorPosition(getNthWordFromCursor(1));
+				else
+					moveCursorBy(1);
 				
 				return true;
 				
 				case 207:
 				if(GuiScreen.isShiftKeyDown())
-				{
-					this.setSelectionPos(this.text.length());
-				}else
-				{
-					this.setCursorPositionEnd();
-				}
+					setSelectionPos(text.length());
+				else
+					setCursorPositionEnd();
 				
 				return true;
 				
 				case 211:
 				if(GuiScreen.isCtrlKeyDown())
 				{
-					if(this.isEnabled)
-					{
-						this.deleteWords(1);
-					}
-				}else if(this.isEnabled)
-				{
-					this.deleteFromCursor(1);
-				}
+					if(isEnabled)
+						deleteWords(1);
+				}else if(isEnabled)
+					deleteFromCursor(1);
 				
 				return true;
 				
 				default:
 				if(ChatAllowedCharacters.isAllowedCharacter(typedChar))
 				{
-					if(this.isEnabled)
-					{
-						this.writeText(Character.toString(typedChar));
-					}
+					if(isEnabled)
+						writeText(Character.toString(typedChar));
 					
 					return true;
 				}else
-				{
 					return false;
-				}
 			}
-		}
 	}
 	
 	/**
@@ -512,34 +436,27 @@ public class PasswordField extends Gui
 	 */
 	public boolean mouseClicked(int mouseX, int mouseY, int mouseButton)
 	{
-		boolean flag = mouseX >= this.xPosition
-			&& mouseX < this.xPosition + this.width && mouseY >= this.yPosition
-			&& mouseY < this.yPosition + this.height;
+		boolean flag = mouseX >= xPosition && mouseX < xPosition + width
+			&& mouseY >= yPosition && mouseY < yPosition + height;
 		
-		if(this.canLoseFocus)
-		{
-			this.setFocused(flag);
-		}
+		if(canLoseFocus)
+			setFocused(flag);
 		
-		if(this.isFocused && flag && mouseButton == 0)
+		if(isFocused && flag && mouseButton == 0)
 		{
-			int i = mouseX - this.xPosition;
+			int i = mouseX - xPosition;
 			
-			if(this.enableBackgroundDrawing)
-			{
+			if(enableBackgroundDrawing)
 				i -= 4;
-			}
 			
-			String s = this.fontRendererInstance.trimStringToWidth(
-				this.text.substring(this.lineScrollOffset), this.getWidth());
-			this.setCursorPosition(
-				this.fontRendererInstance.trimStringToWidth(s, i).length()
-					+ this.lineScrollOffset);
+			String s = fontRendererInstance.trimStringToWidth(
+				text.substring(lineScrollOffset), getWidth());
+			setCursorPosition(
+				fontRendererInstance.trimStringToWidth(s, i).length()
+					+ lineScrollOffset);
 			return true;
 		}else
-		{
 			return false;
-		}
 	}
 	
 	/**
@@ -547,36 +464,30 @@ public class PasswordField extends Gui
 	 */
 	public void drawTextBox()
 	{
-		if(this.getVisible())
+		if(getVisible())
 		{
-			if(this.getEnableBackgroundDrawing())
+			if(getEnableBackgroundDrawing())
 			{
-				drawRect(this.xPosition - 1, this.yPosition - 1,
-					this.xPosition + this.width + 1,
-					this.yPosition + this.height + 1, -6250336);
-				drawRect(this.xPosition, this.yPosition,
-					this.xPosition + this.width, this.yPosition + this.height,
-					-16777216);
+				drawRect(xPosition - 1, yPosition - 1, xPosition + width + 1,
+					yPosition + height + 1, -6250336);
+				drawRect(xPosition, yPosition, xPosition + width,
+					yPosition + height, -16777216);
 			}
 			
-			int i = this.isEnabled ? this.enabledColor : this.disabledColor;
-			int j = this.cursorPosition - this.lineScrollOffset;
-			int k = this.selectionEnd - this.lineScrollOffset;
-			String s = this.fontRendererInstance.trimStringToWidth(
-				this.text.substring(this.lineScrollOffset), this.getWidth());
+			int i = isEnabled ? enabledColor : disabledColor;
+			int j = cursorPosition - lineScrollOffset;
+			int k = selectionEnd - lineScrollOffset;
+			String s = fontRendererInstance.trimStringToWidth(
+				text.substring(lineScrollOffset), getWidth());
 			boolean flag = j >= 0 && j <= s.length();
-			boolean flag1 =
-				this.isFocused && this.cursorCounter / 6 % 2 == 0 && flag;
-			int l = this.enableBackgroundDrawing ? this.xPosition + 4
-				: this.xPosition;
-			int i1 = this.enableBackgroundDrawing
-				? this.yPosition + (this.height - 8) / 2 : this.yPosition;
+			boolean flag1 = isFocused && cursorCounter / 6 % 2 == 0 && flag;
+			int l = enableBackgroundDrawing ? xPosition + 4 : xPosition;
+			int i1 = enableBackgroundDrawing ? yPosition + (height - 8) / 2
+				: yPosition;
 			int j1 = l;
 			
 			if(k > s.length())
-			{
 				k = s.length();
-			}
 			
 			if(!s.isEmpty())
 			{
@@ -584,49 +495,38 @@ public class PasswordField extends Gui
 				String stars = "";
 				for(int i2 = 0; i2 < s1.length(); i2++)
 					stars = stars.concat("*");
-				j1 = this.fontRendererInstance.drawStringWithShadow(stars,
-					(float)l, (float)i1, i);
+				j1 = fontRendererInstance.drawStringWithShadow(stars, l, i1, i);
 			}
 			
-			boolean flag2 = this.cursorPosition < this.text.length()
-				|| this.text.length() >= this.getMaxStringLength();
+			boolean flag2 = cursorPosition < text.length()
+				|| text.length() >= getMaxStringLength();
 			int k1 = j1;
 			
 			if(!flag)
-			{
-				k1 = j > 0 ? l + this.width : l;
-			}else if(flag2)
+				k1 = j > 0 ? l + width : l;
+			else if(flag2)
 			{
 				k1 = j1 - 1;
 				--j1;
 			}
 			
 			if(!s.isEmpty() && flag && j < s.length())
-			{
-				j1 = this.fontRendererInstance.drawStringWithShadow(
-					s.substring(j), (float)j1, (float)i1, i);
-			}
+				j1 = fontRendererInstance.drawStringWithShadow(s.substring(j),
+					j1, i1, i);
 			
 			if(flag1)
-			{
 				if(flag2)
-				{
 					Gui.drawRect(k1, i1 - 1, k1 + 1,
-						i1 + 1 + this.fontRendererInstance.FONT_HEIGHT,
-						-3092272);
-				}else
-				{
-					this.fontRendererInstance.drawStringWithShadow("_",
-						(float)k1, (float)i1, i);
-				}
-			}
-			
+						i1 + 1 + fontRendererInstance.FONT_HEIGHT, -3092272);
+				else
+					fontRendererInstance.drawStringWithShadow("_", k1, i1, i);
+				
 			if(k != j)
 			{
-				int l1 = l + this.fontRendererInstance
-					.getStringWidth(s.substring(0, k));
-				this.drawCursorVertical(k1, i1 - 1, l1 - 1,
-					i1 + 1 + this.fontRendererInstance.FONT_HEIGHT);
+				int l1 =
+					l + fontRendererInstance.getStringWidth(s.substring(0, k));
+				drawCursorVertical(k1, i1 - 1, l1 - 1,
+					i1 + 1 + fontRendererInstance.FONT_HEIGHT);
 			}
 		}
 	}
@@ -650,15 +550,11 @@ public class PasswordField extends Gui
 			endY = j;
 		}
 		
-		if(endX > this.xPosition + this.width)
-		{
-			endX = this.xPosition + this.width;
-		}
+		if(endX > xPosition + width)
+			endX = xPosition + width;
 		
-		if(startX > this.xPosition + this.width)
-		{
-			startX = this.xPosition + this.width;
-		}
+		if(startX > xPosition + width)
+			startX = xPosition + width;
 		
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferbuilder = tessellator.getBuffer();
@@ -667,10 +563,10 @@ public class PasswordField extends Gui
 		GlStateManager.enableColorLogic();
 		GlStateManager.colorLogicOp(GlStateManager.LogicOp.OR_REVERSE);
 		bufferbuilder.begin(7, DefaultVertexFormats.POSITION);
-		bufferbuilder.pos((double)startX, (double)endY, 0.0D).endVertex();
-		bufferbuilder.pos((double)endX, (double)endY, 0.0D).endVertex();
-		bufferbuilder.pos((double)endX, (double)startY, 0.0D).endVertex();
-		bufferbuilder.pos((double)startX, (double)startY, 0.0D).endVertex();
+		bufferbuilder.pos(startX, endY, 0.0D).endVertex();
+		bufferbuilder.pos(endX, endY, 0.0D).endVertex();
+		bufferbuilder.pos(endX, startY, 0.0D).endVertex();
+		bufferbuilder.pos(startX, startY, 0.0D).endVertex();
 		tessellator.draw();
 		GlStateManager.disableColorLogic();
 		GlStateManager.enableTexture2D();
@@ -683,12 +579,10 @@ public class PasswordField extends Gui
 	 */
 	public void setMaxStringLength(int length)
 	{
-		this.maxStringLength = length;
+		maxStringLength = length;
 		
-		if(this.text.length() > length)
-		{
-			this.text = this.text.substring(0, length);
-		}
+		if(text.length() > length)
+			text = text.substring(0, length);
 	}
 	
 	/**
@@ -697,7 +591,7 @@ public class PasswordField extends Gui
 	 */
 	public int getMaxStringLength()
 	{
-		return this.maxStringLength;
+		return maxStringLength;
 	}
 	
 	/**
@@ -705,7 +599,7 @@ public class PasswordField extends Gui
 	 */
 	public int getCursorPosition()
 	{
-		return this.cursorPosition;
+		return cursorPosition;
 	}
 	
 	/**
@@ -714,7 +608,7 @@ public class PasswordField extends Gui
 	 */
 	public boolean getEnableBackgroundDrawing()
 	{
-		return this.enableBackgroundDrawing;
+		return enableBackgroundDrawing;
 	}
 	
 	/**
@@ -723,7 +617,7 @@ public class PasswordField extends Gui
 	 */
 	public void setEnableBackgroundDrawing(boolean enableBackgroundDrawingIn)
 	{
-		this.enableBackgroundDrawing = enableBackgroundDrawingIn;
+		enableBackgroundDrawing = enableBackgroundDrawingIn;
 	}
 	
 	/**
@@ -732,7 +626,7 @@ public class PasswordField extends Gui
 	 */
 	public void setTextColor(int color)
 	{
-		this.enabledColor = color;
+		enabledColor = color;
 	}
 	
 	/**
@@ -741,7 +635,7 @@ public class PasswordField extends Gui
 	 */
 	public void setDisabledTextColour(int color)
 	{
-		this.disabledColor = color;
+		disabledColor = color;
 	}
 	
 	/**
@@ -749,17 +643,13 @@ public class PasswordField extends Gui
 	 */
 	public void setFocused(boolean isFocusedIn)
 	{
-		if(isFocusedIn && !this.isFocused)
-		{
-			this.cursorCounter = 0;
-		}
+		if(isFocusedIn && !isFocused)
+			cursorCounter = 0;
 		
-		this.isFocused = isFocusedIn;
+		isFocused = isFocusedIn;
 		
 		if(Minecraft.getMinecraft().currentScreen != null)
-		{
 			Minecraft.getMinecraft().currentScreen.func_193975_a(isFocusedIn);
-		}
 	}
 	
 	/**
@@ -767,7 +657,7 @@ public class PasswordField extends Gui
 	 */
 	public boolean isFocused()
 	{
-		return this.isFocused;
+		return isFocused;
 	}
 	
 	/**
@@ -776,7 +666,7 @@ public class PasswordField extends Gui
 	 */
 	public void setEnabled(boolean enabled)
 	{
-		this.isEnabled = enabled;
+		isEnabled = enabled;
 	}
 	
 	/**
@@ -785,7 +675,7 @@ public class PasswordField extends Gui
 	 */
 	public int getSelectionEnd()
 	{
-		return this.selectionEnd;
+		return selectionEnd;
 	}
 	
 	/**
@@ -794,7 +684,7 @@ public class PasswordField extends Gui
 	 */
 	public int getWidth()
 	{
-		return this.getEnableBackgroundDrawing() ? this.width - 8 : this.width;
+		return getEnableBackgroundDrawing() ? width - 8 : width;
 	}
 	
 	/**
@@ -805,48 +695,36 @@ public class PasswordField extends Gui
 	 */
 	public void setSelectionPos(int position)
 	{
-		int i = this.text.length();
+		int i = text.length();
 		
 		if(position > i)
-		{
 			position = i;
-		}
 		
 		if(position < 0)
-		{
 			position = 0;
-		}
 		
-		this.selectionEnd = position;
+		selectionEnd = position;
 		
-		if(this.fontRendererInstance != null)
+		if(fontRendererInstance != null)
 		{
-			if(this.lineScrollOffset > i)
-			{
-				this.lineScrollOffset = i;
-			}
+			if(lineScrollOffset > i)
+				lineScrollOffset = i;
 			
-			int j = this.getWidth();
-			String s = this.fontRendererInstance.trimStringToWidth(
-				this.text.substring(this.lineScrollOffset), j);
-			int k = s.length() + this.lineScrollOffset;
+			int j = getWidth();
+			String s = fontRendererInstance
+				.trimStringToWidth(text.substring(lineScrollOffset), j);
+			int k = s.length() + lineScrollOffset;
 			
-			if(position == this.lineScrollOffset)
-			{
-				this.lineScrollOffset -= this.fontRendererInstance
-					.trimStringToWidth(this.text, j, true).length();
-			}
+			if(position == lineScrollOffset)
+				lineScrollOffset -= fontRendererInstance
+					.trimStringToWidth(text, j, true).length();
 			
 			if(position > k)
-			{
-				this.lineScrollOffset += position - k;
-			}else if(position <= this.lineScrollOffset)
-			{
-				this.lineScrollOffset -= this.lineScrollOffset - position;
-			}
+				lineScrollOffset += position - k;
+			else if(position <= lineScrollOffset)
+				lineScrollOffset -= lineScrollOffset - position;
 			
-			this.lineScrollOffset =
-				MathHelper.clamp(this.lineScrollOffset, 0, i);
+			lineScrollOffset = MathHelper.clamp(lineScrollOffset, 0, i);
 		}
 	}
 	
@@ -856,7 +734,7 @@ public class PasswordField extends Gui
 	 */
 	public void setCanLoseFocus(boolean canLoseFocusIn)
 	{
-		this.canLoseFocus = canLoseFocusIn;
+		canLoseFocus = canLoseFocusIn;
 	}
 	
 	/**
@@ -864,7 +742,7 @@ public class PasswordField extends Gui
 	 */
 	public boolean getVisible()
 	{
-		return this.visible;
+		return visible;
 	}
 	
 	/**
@@ -872,6 +750,6 @@ public class PasswordField extends Gui
 	 */
 	public void setVisible(boolean isVisible)
 	{
-		this.visible = isVisible;
+		visible = isVisible;
 	}
 }

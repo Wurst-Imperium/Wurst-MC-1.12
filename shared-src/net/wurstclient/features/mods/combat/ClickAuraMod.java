@@ -184,9 +184,9 @@ public final class ClickAuraMod extends Mod
 			return;
 		
 		// attack entity
-		EntityUtils.prepareAttack();
+		WPlayer.prepareAttack();
 		RotationUtils.faceVectorPacketInstant(entity.boundingBox.getCenter());
-		EntityUtils.attackEntity(entity);
+		WPlayer.attackEntity(entity);
 		
 		// reset timer
 		updateLastMS();

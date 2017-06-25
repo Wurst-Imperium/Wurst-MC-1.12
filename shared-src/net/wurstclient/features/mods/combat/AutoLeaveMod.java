@@ -11,6 +11,7 @@ import net.minecraft.network.play.client.CPacketChatMessage;
 import net.minecraft.network.play.client.CPacketPlayer;
 import net.wurstclient.compatibility.WConnection;
 import net.wurstclient.compatibility.WMinecraft;
+import net.wurstclient.compatibility.WPlayer;
 import net.wurstclient.events.listeners.UpdateListener;
 import net.wurstclient.features.Category;
 import net.wurstclient.features.Feature;
@@ -20,7 +21,6 @@ import net.wurstclient.features.SearchTags;
 import net.wurstclient.settings.ModeSetting;
 import net.wurstclient.settings.SliderSetting;
 import net.wurstclient.settings.SliderSetting.ValueDisplay;
-import net.wurstclient.utils.EntityUtils;
 
 @SearchTags({"AutoDisconnect", "auto leave", "auto disconnect"})
 @HelpPage("Mods/AutoLeave")
@@ -104,7 +104,7 @@ public final class AutoLeaveMod extends Mod implements UpdateListener
 			break;
 			
 			case 3:
-			EntityUtils.sendAttackPacket(WMinecraft.getPlayer());
+			WPlayer.sendAttackPacket(WMinecraft.getPlayer());
 			break;
 		}
 		

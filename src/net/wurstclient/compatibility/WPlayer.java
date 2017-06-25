@@ -7,11 +7,15 @@
  */
 package net.wurstclient.compatibility;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.play.client.CPacketAnimation;
+import net.minecraft.network.play.client.CPacketUseEntity;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.EnumHand;
+import net.wurstclient.WurstClient;
 
 public final class WPlayer
 {
@@ -23,6 +27,28 @@ public final class WPlayer
 	public static void swingArmPacket()
 	{
 		WConnection.sendPacket(new CPacketAnimation(EnumHand.MAIN_HAND));
+	}
+	
+	public static void prepareAttack()
+	{
+		// AutoSword
+		WurstClient.INSTANCE.mods.autoSwordMod.setSlot();
+		
+		// Criticals
+		WurstClient.INSTANCE.mods.criticalsMod.doCritical();
+	}
+	
+	public static void attackEntity(Entity entity)
+	{
+		Minecraft.getMinecraft().playerController
+			.attackEntity(WMinecraft.getPlayer(), entity);
+		swingArmClient();
+	}
+	
+	public static void sendAttackPacket(Entity entity)
+	{
+		WConnection
+			.sendPacket(new CPacketUseEntity(entity, EnumHand.MAIN_HAND));
 	}
 	
 	public static float getCooldown()

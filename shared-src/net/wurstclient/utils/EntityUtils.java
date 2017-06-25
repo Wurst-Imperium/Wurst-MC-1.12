@@ -10,8 +10,6 @@ package net.wurstclient.utils;
 import java.util.ArrayList;
 import java.util.UUID;
 
-import net.minecraft.block.BlockChest;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityAgeable;
 import net.minecraft.entity.EntityFlying;
@@ -23,46 +21,12 @@ import net.minecraft.entity.monster.EntitySlime;
 import net.minecraft.entity.passive.EntityAmbientCreature;
 import net.minecraft.entity.passive.EntityWaterMob;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.network.play.client.CPacketUseEntity;
-import net.minecraft.tileentity.TileEntityChest;
-import net.minecraft.util.EnumHand;
 import net.wurstclient.WurstClient;
-import net.wurstclient.compatibility.WConnection;
 import net.wurstclient.compatibility.WMinecraft;
-import net.wurstclient.compatibility.WPlayer;
 
 public class EntityUtils
 {
-	private static final WurstClient wurst = WurstClient.INSTANCE;
-	private static final Minecraft mc = Minecraft.getMinecraft();
-	
 	public static final TargetSettings DEFAULT_SETTINGS = new TargetSettings();
-	
-	public static void prepareAttack()
-	{
-		// AutoSword
-		wurst.mods.autoSwordMod.setSlot();
-		
-		// Criticals
-		wurst.mods.criticalsMod.doCritical();
-	}
-	
-	public static void attackEntity(Entity entity)
-	{
-		mc.playerController.attackEntity(WMinecraft.getPlayer(), entity);
-		WPlayer.swingArmClient();
-	}
-	
-	public static void sendAttackPacket(Entity entity)
-	{
-		WConnection
-			.sendPacket(new CPacketUseEntity(entity, EnumHand.MAIN_HAND));
-	}
-	
-	public static boolean isTrappedChest(TileEntityChest chest)
-	{
-		return chest.getChestType() == BlockChest.Type.TRAP;
-	}
 	
 	public static boolean isCorrectEntity(Entity en, TargetSettings settings)
 	{

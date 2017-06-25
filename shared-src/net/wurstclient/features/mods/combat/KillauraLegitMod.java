@@ -157,7 +157,7 @@ public final class KillauraLegitMod extends Mod implements UpdateListener
 			WMinecraft.getPlayer().jump();
 		
 		// attack entity
-		EntityUtils.attackEntity(entity);
+		WPlayer.attackEntity(entity);
 		
 		// reset timer
 		updateLastMS();

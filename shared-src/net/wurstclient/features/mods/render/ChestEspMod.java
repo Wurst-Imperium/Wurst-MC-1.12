@@ -23,13 +23,13 @@ import net.minecraft.util.math.BlockPos;
 import net.wurstclient.compatibility.WBlock;
 import net.wurstclient.compatibility.WItem;
 import net.wurstclient.compatibility.WMinecraft;
+import net.wurstclient.compatibility.WTileEntity;
 import net.wurstclient.events.listeners.RenderListener;
 import net.wurstclient.events.listeners.UpdateListener;
 import net.wurstclient.features.Category;
 import net.wurstclient.features.Feature;
 import net.wurstclient.features.Mod;
 import net.wurstclient.features.SearchTags;
-import net.wurstclient.utils.EntityUtils;
 import net.wurstclient.utils.RenderUtils;
 
 @SearchTags({"ChestFinder", "StorageESP", "chest esp", "chest finder",
@@ -135,7 +135,7 @@ public final class ChestEspMod extends Mod
 					bb = bb.union(WBlock
 						.getBoundingBox(chest.adjacentChestZNeg.getPos()));
 				
-				boolean trapped = EntityUtils.isTrappedChest(chest);
+				boolean trapped = WTileEntity.isTrappedChest(chest);
 				
 				// add to appropriate list
 				if(emptyChests.contains(chest.getPos()))

@@ -129,10 +129,10 @@ public final class KillauraMod extends Mod implements UpdateListener
 			return;
 		
 		// attack entity
-		EntityUtils.prepareAttack();
+		WPlayer.prepareAttack();
 		if(!RotationUtils.faceEntityPacket(entity))
 			return;
-		EntityUtils.attackEntity(entity);
+		WPlayer.attackEntity(entity);
 		
 		// reset timer
 		updateLastMS();

@@ -137,8 +137,8 @@ public final class TriggerBotMod extends Mod implements UpdateListener
 			return;
 		
 		// attack entity
-		EntityUtils.prepareAttack();
-		EntityUtils.attackEntity(mc.objectMouseOver.entityHit);
+		WPlayer.prepareAttack();
+		WPlayer.attackEntity(mc.objectMouseOver.entityHit);
 		
 		// reset timer
 		updateLastMS();

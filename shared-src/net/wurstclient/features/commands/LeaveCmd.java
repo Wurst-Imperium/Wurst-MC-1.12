@@ -11,12 +11,12 @@ import net.minecraft.network.play.client.CPacketChatMessage;
 import net.minecraft.network.play.client.CPacketPlayer;
 import net.wurstclient.compatibility.WConnection;
 import net.wurstclient.compatibility.WMinecraft;
+import net.wurstclient.compatibility.WPlayer;
 import net.wurstclient.events.ChatOutputEvent;
 import net.wurstclient.features.Cmd;
 import net.wurstclient.features.HelpPage;
 import net.wurstclient.files.ConfigFiles;
 import net.wurstclient.utils.ChatUtils;
-import net.wurstclient.utils.EntityUtils;
 
 @HelpPage("Commands/leave")
 public final class LeaveCmd extends Cmd
@@ -88,7 +88,7 @@ public final class LeaveCmd extends Cmd
 			break;
 			
 			case 3:
-			EntityUtils.sendAttackPacket(WMinecraft.getPlayer());
+			WPlayer.sendAttackPacket(WMinecraft.getPlayer());
 			break;
 			
 			default:
