@@ -7,13 +7,15 @@
  */
 package net.wurstclient.features.mods.other;
 
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
+import net.minecraft.block.BlockWorkbench;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
-import net.wurstclient.compatibility.WBlock;
+import net.minecraft.util.math.BlockPos;
 import net.wurstclient.compatibility.WMinecraft;
 import net.wurstclient.compatibility.WPlayerController;
 import net.wurstclient.events.listeners.UpdateListener;
@@ -149,9 +151,15 @@ public final class AutoEatMod extends Mod implements UpdateListener
 				return false;
 			
 			// clickable blocks
-			if(mc.objectMouseOver.getBlockPos() != null && WBlock.getBlock(
-				mc.objectMouseOver.getBlockPos()) instanceof BlockContainer)
-				return false;
+			BlockPos pos = mc.objectMouseOver.getBlockPos();
+			if(pos != null)
+			{
+				Block block =
+					WMinecraft.getWorld().getBlockState(pos).getBlock();
+				if(block instanceof BlockContainer
+					|| block instanceof BlockWorkbench)
+					return false;
+			}
 		}
 		
 		return true;
