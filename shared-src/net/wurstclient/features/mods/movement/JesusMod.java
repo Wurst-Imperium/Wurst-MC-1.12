@@ -140,7 +140,7 @@ public final class JesusMod extends Mod
 		WConnection.sendPacketBypass(newPacket);
 	}
 	
-	private boolean isOverLiquid()
+	public boolean isOverLiquid()
 	{
 		boolean foundLiquid = false;
 		boolean foundSolid = false;

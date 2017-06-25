@@ -97,6 +97,13 @@ public class WalkPathProcessor extends PathProcessor
 				// walk off the edge
 				if(WMinecraft.getPlayer().onGround)
 					mc.gameSettings.keyBindForward.pressed = true;
+				
+				// manually swim down if using Jesus
+				if(wurst.mods.jesusMod.isActive()
+					&& (WMinecraft.getPlayer().isInWater()
+						|| WMinecraft.getPlayer().isInLava()
+						|| wurst.mods.jesusMod.isOverLiquid()))
+					mc.gameSettings.keyBindSneak.pressed = true;
 			}
 	}
 	
