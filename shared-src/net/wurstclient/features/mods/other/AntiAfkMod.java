@@ -131,6 +131,7 @@ public final class AntiAfkMod extends Mod
 				&& !pathFinder.isPathStillValid(processor.getIndex()))
 			{
 				pathFinder = new PathFinder(pathFinder);
+				pathFinder.setFallingAllowed(false);
 				return;
 			}
 			
