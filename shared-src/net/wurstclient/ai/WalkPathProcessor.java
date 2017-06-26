@@ -34,7 +34,7 @@ public class WalkPathProcessor extends PathProcessor
 				WMinecraft.getPlayer().posY + 0.5, WMinecraft.getPlayer().posZ);
 		else
 			pos = new BlockPos(WMinecraft.getPlayer());
-		BlockPos nextPos = path.get(index);
+		PathPos nextPos = path.get(index);
 		int posIndex = path.indexOf(pos);
 		
 		// update index
@@ -82,8 +82,9 @@ public class WalkPathProcessor extends PathProcessor
 		{
 			mc.gameSettings.keyBindForward.pressed = true;
 			
-			if(WMinecraft.getPlayer().isInWater()
-				&& WMinecraft.getPlayer().posY < nextPos.getY())
+			if(index > 0 && path.get(index - 1).isJumping()
+				|| WMinecraft.getPlayer().isInWater()
+					&& WMinecraft.getPlayer().posY < nextPos.getY())
 				mc.gameSettings.keyBindJump.pressed = true;
 			
 			// vertical movement
@@ -106,10 +107,7 @@ public class WalkPathProcessor extends PathProcessor
 					// directional jump
 					if(index < path.size() - 1
 						&& !nextPos.up().equals(path.get(index + 1)))
-					{
-						facePosition(path.get(index + 1));
-						mc.gameSettings.keyBindForward.pressed = true;
-					}
+						index++;
 					
 					// jump up
 					mc.gameSettings.keyBindJump.pressed = true;
