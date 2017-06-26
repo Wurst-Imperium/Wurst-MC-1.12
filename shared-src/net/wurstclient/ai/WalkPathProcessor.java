@@ -13,6 +13,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockLadder;
 import net.minecraft.block.BlockVine;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.wurstclient.compatibility.WBlock;
 import net.wurstclient.compatibility.WMinecraft;
 import net.wurstclient.utils.RotationUtils;
@@ -60,6 +61,10 @@ public class WalkPathProcessor extends PathProcessor
 		
 		// face next position
 		facePosition(nextPos);
+		
+		if(Math.abs(RotationUtils.getHorizontalAngleToClientRotation(
+			new Vec3d(nextPos).addVector(0.5, 0.5, 0.5))) > 90)
+			return;
 		
 		if(wurst.mods.jesusMod.isActive())
 		{

@@ -192,6 +192,16 @@ public class RotationUtils
 		return angle;
 	}
 	
+	public static float getHorizontalAngleToClientRotation(Vec3d vec)
+	{
+		float[] needed = getNeededRotations(vec);
+		
+		float angle =
+			WMath.wrapDegrees(WMinecraft.getPlayer().rotationYaw) - needed[0];
+		
+		return angle;
+	}
+	
 	public static float getAngleToServerRotation(Vec3d vec)
 	{
 		float[] needed = getNeededRotations(vec);
