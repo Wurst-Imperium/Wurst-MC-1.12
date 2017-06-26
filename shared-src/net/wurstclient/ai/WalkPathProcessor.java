@@ -61,12 +61,21 @@ public class WalkPathProcessor extends PathProcessor
 		// face next position
 		facePosition(nextPos);
 		
-		// wait for Jesus to swim up
-		if(wurst.mods.jesusMod.isActive()
-			&& WMinecraft.getPlayer().posY < nextPos.getY()
-			&& (WMinecraft.getPlayer().isInWater()
-				|| WMinecraft.getPlayer().isInLava()))
-			return;
+		if(wurst.mods.jesusMod.isActive())
+		{
+			// wait for Jesus to swim up
+			if(WMinecraft.getPlayer().posY < nextPos.getY()
+				&& (WMinecraft.getPlayer().isInWater()
+					|| WMinecraft.getPlayer().isInLava()))
+				return;
+			
+			// manually swim down if using Jesus
+			if(WMinecraft.getPlayer().posY - nextPos.getY() > 0.5
+				&& (WMinecraft.getPlayer().isInWater()
+					|| WMinecraft.getPlayer().isInLava()
+					|| wurst.mods.jesusMod.isOverLiquid()))
+				mc.gameSettings.keyBindSneak.pressed = true;
+		}
 		
 		// horizontal movement
 		if(pos.getX() != nextPos.getX() || pos.getZ() != nextPos.getZ())
@@ -117,13 +126,6 @@ public class WalkPathProcessor extends PathProcessor
 				// walk off the edge
 				if(WMinecraft.getPlayer().onGround)
 					mc.gameSettings.keyBindForward.pressed = true;
-				
-				// manually swim down if using Jesus
-				if(wurst.mods.jesusMod.isActive()
-					&& (WMinecraft.getPlayer().isInWater()
-						|| WMinecraft.getPlayer().isInLava()
-						|| wurst.mods.jesusMod.isOverLiquid()))
-					mc.gameSettings.keyBindSneak.pressed = true;
 			}
 	}
 	
