@@ -7,12 +7,14 @@
  */
 package net.wurstclient.features.mods.other;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.wurstclient.ai.PathFinder;
+import net.wurstclient.ai.PathPos;
 import net.wurstclient.ai.PathProcessor;
 import net.wurstclient.compatibility.WMinecraft;
 import net.wurstclient.events.listeners.RenderListener;
@@ -38,7 +40,7 @@ public final class AntiAfkMod extends Mod
 	private BlockPos start;
 	private BlockPos nextBlock;
 	
-	private PathFinder pathFinder;
+	private RandomPathFinder pathFinder;
 	private PathProcessor processor;
 	
 	public AntiAfkMod()
@@ -60,10 +62,7 @@ public final class AntiAfkMod extends Mod
 	{
 		start = new BlockPos(WMinecraft.getPlayer());
 		nextBlock = null;
-		pathFinder = new PathFinder(start.add(random.nextInt(33) - 16,
-			random.nextInt(33) - 16, random.nextInt(33) - 16));
-		pathFinder.setThinkTime(10);
-		pathFinder.setFallingAllowed(false);
+		pathFinder = new RandomPathFinder(start);
 		
 		wurst.events.add(UpdateListener.class, this);
 		wurst.events.add(RenderListener.class, this);
@@ -130,8 +129,7 @@ public final class AntiAfkMod extends Mod
 			if(processor != null
 				&& !pathFinder.isPathStillValid(processor.getIndex()))
 			{
-				pathFinder = new PathFinder(pathFinder);
-				pathFinder.setFallingAllowed(false);
+				pathFinder = new RandomPathFinder(pathFinder);
 				return;
 			}
 			
@@ -139,12 +137,7 @@ public final class AntiAfkMod extends Mod
 			if(!processor.isDone())
 				processor.process();
 			else
-			{
-				pathFinder = new PathFinder(start.add(random.nextInt(33) - 16,
-					random.nextInt(33) - 16, random.nextInt(33) - 16));
-				pathFinder.setThinkTime(10);
-				pathFinder.setFallingAllowed(false);
-			}
+				pathFinder = new RandomPathFinder(start);
 			
 			// wait 2 - 3 seconds (40 - 60 ticks)
 			if(processor.isDone())
@@ -190,5 +183,29 @@ public final class AntiAfkMod extends Mod
 		
 		PathCmd pathCmd = wurst.commands.pathCmd;
 		pathFinder.renderPath(pathCmd.isDebugMode(), pathCmd.isDepthTest());
+	}
+	
+	private class RandomPathFinder extends PathFinder
+	{
+		public RandomPathFinder(BlockPos goal)
+		{
+			super(goal.add(random.nextInt(33) - 16, random.nextInt(33) - 16,
+				random.nextInt(33) - 16));
+			setThinkTime(10);
+			setFallingAllowed(false);
+		}
+		
+		public RandomPathFinder(PathFinder pathFinder)
+		{
+			super(pathFinder);
+			setFallingAllowed(false);
+		}
+		
+		@Override
+		public ArrayList<PathPos> formatPath()
+		{
+			failed = true;
+			return super.formatPath();
+		}
 	}
 }
