@@ -35,8 +35,8 @@ public class PathFinder
 		creativeFlying || wurst.mods.flightMod.isActive();
 	private final boolean immuneToFallDamage =
 		invulnerable || wurst.mods.noFallMod.isActive();
-	private final boolean noSlowdownActive =
-		wurst.mods.noSlowdownMod.isActive();
+	private final boolean noWaterSlowdown =
+		wurst.mods.noSlowdownMod.blockWaterSlowness();
 	private final boolean jesus = wurst.mods.jesusMod.isActive();
 	private final boolean spider = wurst.mods.spiderMod.isActive();
 	protected boolean fallingAllowed = true;
@@ -346,7 +346,7 @@ public class PathFinder
 	private boolean canFlyAt(BlockPos pos)
 	{
 		return flying
-			|| !noSlowdownActive && WBlock.getMaterial(pos) == Material.WATER;
+			|| !noWaterSlowdown && WBlock.getMaterial(pos) == Material.WATER;
 	}
 	
 	private boolean canClimbUpAt(BlockPos pos)
@@ -386,23 +386,30 @@ public class PathFinder
 	
 	private float getCost(BlockPos current, BlockPos next)
 	{
-		float cost = 1F;
+		float[] costs = {0.5F, 0.5F};
+		BlockPos[] positions = new BlockPos[]{current, next};
+		
+		for(int i = 0; i < positions.length; i++)
+		{
+			Material material = WBlock.getMaterial(positions[i]);
+			
+			// liquids
+			if(material == Material.WATER && !noWaterSlowdown)
+				costs[i] *= 1.3164437838225804F;
+			else if(material == Material.LAVA)
+				costs[i] *= 4.539515393656079F;
+			
+			// soul sand
+			if(!canFlyAt(positions[i]) && WBlock
+				.getBlock(positions[i].down()) instanceof BlockSoulSand)
+				costs[i] *= 2.5F;
+		}
+		
+		float cost = costs[0] + costs[1];
 		
 		// diagonal movement
 		if(current.getX() != next.getX() && current.getZ() != next.getZ())
 			cost *= 1.4142135623730951F;
-		
-		// liquids
-		Material nextMaterial = WBlock.getMaterial(next);
-		if(nextMaterial == Material.WATER && !noSlowdownActive)
-			cost *= 1.3164437838225804F;
-		else if(nextMaterial == Material.LAVA)
-			cost *= 4.539515393656079F;
-		
-		// soul sand
-		if(!canFlyAt(next)
-			&& WBlock.getBlock(next.down()) instanceof BlockSoulSand)
-			cost *= 2.5F;
 		
 		return cost;
 	}
@@ -568,7 +575,7 @@ public class PathFinder
 			|| flying != (creativeFlying || wurst.mods.flightMod.isActive())
 			|| immuneToFallDamage != (invulnerable
 				|| wurst.mods.noFallMod.isActive())
-			|| noSlowdownActive != wurst.mods.noSlowdownMod.isActive()
+			|| noWaterSlowdown != wurst.mods.noSlowdownMod.blockWaterSlowness()
 			|| jesus != wurst.mods.jesusMod.isActive()
 			|| spider != wurst.mods.spiderMod.isActive())
 			return false;
