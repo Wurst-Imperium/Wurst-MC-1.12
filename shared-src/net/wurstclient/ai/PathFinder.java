@@ -40,6 +40,7 @@ public class PathFinder
 	private final boolean jesus = wurst.mods.jesusMod.isActive();
 	private final boolean spider = wurst.mods.spiderMod.isActive();
 	protected boolean fallingAllowed = true;
+	protected boolean divingAllowed = true;
 	
 	private final PathPos start;
 	protected PathPos current;
@@ -192,12 +193,13 @@ public class PathFinder
 			&& (flying || onGround || canClimbUpAt(pos))
 			&& (flying || canClimbUpAt(pos) || goal.equals(up)
 				|| canSafelyStandOn(north) || canSafelyStandOn(east)
-				|| canSafelyStandOn(south) || canSafelyStandOn(west)))
+				|| canSafelyStandOn(south) || canSafelyStandOn(west))
+			&& (divingAllowed || WBlock.getMaterial(up.up()) != Material.WATER))
 			neighbors.add(new PathPos(up, onGround));
 		
 		// down
-		if(pos.getY() > 0 && canGoThrough(down)
-			&& (flying || canFallBelow(pos)))
+		if(pos.getY() > 0 && canGoThrough(down) && (flying || canFallBelow(pos))
+			&& (divingAllowed || WBlock.getMaterial(pos) != Material.WATER))
 			neighbors.add(new PathPos(down));
 		
 		return neighbors;
@@ -229,7 +231,8 @@ public class PathFinder
 	protected boolean isPassable(BlockPos pos)
 	{
 		return canGoThrough(pos) && canGoThrough(pos.up())
-			&& canGoAbove(pos.down());
+			&& canGoAbove(pos.down()) && (divingAllowed
+				|| WBlock.getMaterial(pos.up()) != Material.WATER);
 	}
 	
 	protected boolean canBeSolid(BlockPos pos)
@@ -599,5 +602,10 @@ public class PathFinder
 	public void setFallingAllowed(boolean fallingAllowed)
 	{
 		this.fallingAllowed = fallingAllowed;
+	}
+	
+	public void setDivingAllowed(boolean divingAllowed)
+	{
+		this.divingAllowed = divingAllowed;
 	}
 }

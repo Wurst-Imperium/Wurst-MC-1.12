@@ -193,12 +193,14 @@ public final class AntiAfkMod extends Mod
 				random.nextInt(33) - 16));
 			setThinkTime(10);
 			setFallingAllowed(false);
+			setDivingAllowed(false);
 		}
 		
 		public RandomPathFinder(PathFinder pathFinder)
 		{
 			super(pathFinder);
 			setFallingAllowed(false);
+			setDivingAllowed(false);
 		}
 		
 		@Override
