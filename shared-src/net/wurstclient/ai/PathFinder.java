@@ -59,7 +59,12 @@ public class PathFinder
 	
 	public PathFinder(BlockPos goal)
 	{
-		start = new PathPos(new BlockPos(WMinecraft.getPlayer()));
+		if(WMinecraft.getPlayer().onGround)
+			start = new PathPos(new BlockPos(WMinecraft.getPlayer().posX,
+				WMinecraft.getPlayer().posY + 0.5,
+				WMinecraft.getPlayer().posZ));
+		else
+			start = new PathPos(new BlockPos(WMinecraft.getPlayer()));
 		this.goal = goal;
 		
 		costMap.put(start, 0F);
