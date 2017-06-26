@@ -103,8 +103,9 @@ public final class AntiAfkMod extends Mod
 			if(timer > 0)
 			{
 				timer--;
-				mc.gameSettings.keyBindJump.pressed =
-					WMinecraft.getPlayer().isInWater();
+				if(!wurst.mods.jesusMod.isActive())
+					mc.gameSettings.keyBindJump.pressed =
+						WMinecraft.getPlayer().isInWater();
 				return;
 			}
 			
