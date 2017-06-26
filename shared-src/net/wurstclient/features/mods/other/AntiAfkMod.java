@@ -12,28 +12,34 @@ import java.util.Random;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
-import net.wurstclient.ai.GoRandomAI;
+import net.wurstclient.ai.PathFinder;
+import net.wurstclient.ai.PathProcessor;
 import net.wurstclient.compatibility.WMinecraft;
+import net.wurstclient.events.listeners.RenderListener;
 import net.wurstclient.events.listeners.UpdateListener;
 import net.wurstclient.features.Category;
 import net.wurstclient.features.Mod;
 import net.wurstclient.features.SearchTags;
+import net.wurstclient.features.commands.PathCmd;
 import net.wurstclient.settings.CheckboxSetting;
 import net.wurstclient.utils.RotationUtils;
 
 @SearchTags({"AFKBot", "anti afk", "afk bot"})
 @Mod.Bypasses(ghostMode = false)
 @Mod.DontSaveState
-public final class AntiAfkMod extends Mod implements UpdateListener
+public final class AntiAfkMod extends Mod
+	implements UpdateListener, RenderListener
 {
 	private final CheckboxSetting useAi =
 		new CheckboxSetting("Use AI (experimental)", false);
 	
-	private GoRandomAI ai;
 	private int timer;
 	private Random random = new Random();
 	private BlockPos start;
 	private BlockPos nextBlock;
+	
+	private PathFinder pathFinder;
+	private PathProcessor processor;
 	
 	public AntiAfkMod()
 	{
@@ -54,23 +60,32 @@ public final class AntiAfkMod extends Mod implements UpdateListener
 	{
 		start = new BlockPos(WMinecraft.getPlayer());
 		nextBlock = null;
-		ai = new GoRandomAI(start, 16F);
+		pathFinder = new PathFinder(start.add(random.nextInt(33) - 16,
+			random.nextInt(33) - 16, random.nextInt(33) - 16));
+		pathFinder.setThinkTime(10);
+		pathFinder.setFallingAllowed(false);
 		
 		wurst.events.add(UpdateListener.class, this);
+		wurst.events.add(RenderListener.class, this);
 	}
 	
 	@Override
 	public void onDisable()
 	{
 		wurst.events.remove(UpdateListener.class, this);
+		wurst.events.remove(RenderListener.class, this);
 		
 		mc.gameSettings.keyBindForward.pressed =
 			GameSettings.isKeyDown(mc.gameSettings.keyBindForward);
 		mc.gameSettings.keyBindJump.pressed =
 			GameSettings.isKeyDown(mc.gameSettings.keyBindJump);
 		
-		if(ai != null)
-			ai.stop();
+		pathFinder = null;
+		if(processor != null)
+		{
+			processor.stop();
+			processor = null;
+		}
 	}
 	
 	@Override
@@ -94,13 +109,46 @@ public final class AntiAfkMod extends Mod implements UpdateListener
 				return;
 			}
 			
-			// walk around
-			ai.update();
+			// find path
+			if(!pathFinder.isDone() && !pathFinder.isFailed())
+			{
+				if(processor != null)
+					processor.lockControls();
+				
+				pathFinder.think();
+				
+				if(!pathFinder.isDone() && !pathFinder.isFailed())
+					return;
+				
+				pathFinder.formatPath();
+				
+				// set processor
+				processor = pathFinder.getProcessor();
+			}
+			
+			// check path
+			if(processor != null
+				&& !pathFinder.isPathStillValid(processor.getIndex()))
+			{
+				pathFinder = new PathFinder(pathFinder);
+				return;
+			}
+			
+			// process path
+			if(!processor.isDone())
+				processor.process();
+			else
+			{
+				pathFinder = new PathFinder(start.add(random.nextInt(33) - 16,
+					random.nextInt(33) - 16, random.nextInt(33) - 16));
+				pathFinder.setThinkTime(10);
+				pathFinder.setFallingAllowed(false);
+			}
 			
 			// wait 2 - 3 seconds (40 - 60 ticks)
-			if(ai.isDone())
+			if(processor.isDone())
 			{
-				ai.stop();
+				processor.stop();
 				timer = 40 + random.nextInt(21);
 			}
 		}else
@@ -131,5 +179,15 @@ public final class AntiAfkMod extends Mod implements UpdateListener
 			if(timer > 0)
 				timer--;
 		}
+	}
+	
+	@Override
+	public void onRender(float partialTicks)
+	{
+		if(!useAi.isChecked())
+			return;
+		
+		PathCmd pathCmd = wurst.commands.pathCmd;
+		pathFinder.renderPath(pathCmd.isDebugMode(), pathCmd.isDepthTest());
 	}
 }
