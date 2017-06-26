@@ -299,7 +299,7 @@ public class PathFinder
 	{
 		// check if player can keep falling
 		BlockPos down2 = pos.down(2);
-		if(canGoThrough(down2))
+		if(fallingAllowed && canGoThrough(down2))
 			return true;
 		
 		// check if player can stand below
