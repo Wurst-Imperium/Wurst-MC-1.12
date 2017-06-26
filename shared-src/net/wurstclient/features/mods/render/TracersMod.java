@@ -77,6 +77,10 @@ public final class TracersMod extends Mod implements RenderListener
 				|| entity instanceof EntityFakePlayer)
 				continue;
 			
+			// fake entities with crazy vertical position
+			if(Math.abs(entity.posY - WMinecraft.getPlayer().posY) > 1e6)
+				continue;
+			
 			if(!wurst.special.targetSpf.sleepingPlayers.isChecked()
 				&& entity.isPlayerSleeping())
 				continue;
