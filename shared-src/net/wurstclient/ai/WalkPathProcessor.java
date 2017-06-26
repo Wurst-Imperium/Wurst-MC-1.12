@@ -83,8 +83,7 @@ public class WalkPathProcessor extends PathProcessor
 			mc.gameSettings.keyBindForward.pressed = true;
 			
 			if(index > 0 && path.get(index - 1).isJumping()
-				|| WMinecraft.getPlayer().isInWater()
-					&& WMinecraft.getPlayer().posY < nextPos.getY())
+				|| pos.getY() < nextPos.getY())
 				mc.gameSettings.keyBindJump.pressed = true;
 			
 			// vertical movement
