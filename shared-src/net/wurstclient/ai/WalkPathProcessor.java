@@ -38,7 +38,15 @@ public class WalkPathProcessor extends PathProcessor
 		int posIndex = path.indexOf(pos);
 		
 		// update index
-		if(pos.equals(nextPos) || posIndex > index)
+		if(pos.equals(nextPos))
+		{
+			index++;
+			
+			// disable when done
+			if(index >= path.size())
+				done = true;
+			return;
+		}else if(posIndex > index)
 		{
 			index = posIndex + 1;
 			
@@ -52,6 +60,13 @@ public class WalkPathProcessor extends PathProcessor
 		
 		// face next position
 		facePosition(nextPos);
+		
+		// wait for Jesus to swim up
+		if(wurst.mods.jesusMod.isActive()
+			&& WMinecraft.getPlayer().posY < nextPos.getY()
+			&& (WMinecraft.getPlayer().isInWater()
+				|| WMinecraft.getPlayer().isInLava()))
+			return;
 		
 		// horizontal movement
 		if(pos.getX() != nextPos.getX() || pos.getZ() != nextPos.getZ())
