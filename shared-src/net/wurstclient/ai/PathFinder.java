@@ -198,7 +198,8 @@ public class PathFinder
 			neighbors.add(new PathPos(up, onGround));
 		
 		// down
-		if(pos.getY() > 0 && canGoThrough(down) && (flying || canFallBelow(pos))
+		if(pos.getY() > 0 && canGoThrough(down) && canGoAbove(down.down())
+			&& (flying || canFallBelow(pos))
 			&& (divingAllowed || WBlock.getMaterial(pos) != Material.WATER))
 			neighbors.add(new PathPos(down));
 		
