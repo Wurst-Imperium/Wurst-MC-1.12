@@ -1,6 +1,6 @@
-From 9c034f0d620c87ca14f335728d60390c815eb781 Mon Sep 17 00:00:00 2001
+From 31f10d4f4eb99981f1271fa372255ef8f7b1e5b1 Mon Sep 17 00:00:00 2001
 From: Alexander01998 <contact.wurstimperium@gmail.com>
-Date: Thu, 15 Jun 2017 18:43:39 +0200
+Date: Tue, 4 Jul 2017 09:29:49 +0200
 Subject: [PATCH] mod
 
 ---
@@ -11,7 +11,7 @@ Subject: [PATCH] mod
  net/minecraft/block/BlockSlab.java                 |   6 +-
  net/minecraft/block/BlockSoulSand.java             |   6 +
  net/minecraft/client/Minecraft.java                | 210 +++++++++---------
- net/minecraft/client/entity/EntityPlayerSP.java    | 117 ++++++----
+ net/minecraft/client/entity/EntityPlayerSP.java    | 122 +++++++----
  net/minecraft/client/gui/FontRenderer.java         |  17 +-
  net/minecraft/client/gui/GuiButton.java            |  28 ++-
  net/minecraft/client/gui/GuiButtonImage.java       |   2 +-
@@ -93,7 +93,7 @@ Subject: [PATCH] mod
  net/minecraft/util/ScreenShotHelper.java           |  15 +-
  net/minecraft/util/Timer.java                      |  14 +-
  net/minecraft/world/World.java                     |  35 +--
- 89 files changed, 1437 insertions(+), 734 deletions(-)
+ 89 files changed, 1440 insertions(+), 736 deletions(-)
 
 diff --git a/Start.java b/Start.java
 index ae0025f..46ccf4f 100644
@@ -764,7 +764,7 @@ index 2dea5d6..a735dd5 100644
  
      public float func_193989_ak()
 diff --git a/net/minecraft/client/entity/EntityPlayerSP.java b/net/minecraft/client/entity/EntityPlayerSP.java
-index 990f31d..74e6c60 100644
+index 990f31d..b6b197c 100644
 --- a/net/minecraft/client/entity/EntityPlayerSP.java
 +++ b/net/minecraft/client/entity/EntityPlayerSP.java
 @@ -1,7 +1,9 @@
@@ -917,7 +917,19 @@ index 990f31d..74e6c60 100644
              }
              else if (this.prevOnGround != this.onGround)
              {
-@@ -364,7 +381,24 @@ public class EntityPlayerSP extends AbstractClientPlayer
+@@ -332,8 +349,9 @@ public class EntityPlayerSP extends AbstractClientPlayer
+ 
+             if (flag3)
+             {
+-                this.lastReportedYaw = this.rotationYaw;
+-                this.lastReportedPitch = this.rotationPitch;
++				// TODO: Client
++				this.lastReportedYaw = yaw;
++				this.lastReportedPitch = pitch;
+             }
+ 
+             this.prevOnGround = this.onGround;
+@@ -364,7 +382,24 @@ public class EntityPlayerSP extends AbstractClientPlayer
       */
      public void sendChatMessage(String message)
      {
@@ -943,7 +955,7 @@ index 990f31d..74e6c60 100644
  	}
  
      public void swingArm(EnumHand hand)
-@@ -881,7 +915,7 @@ public class EntityPlayerSP extends AbstractClientPlayer
+@@ -881,7 +916,7 @@ public class EntityPlayerSP extends AbstractClientPlayer
          if (this.isCurrentViewEntity())
          {
              this.moveStrafing = this.movementInput.moveStrafe;
@@ -952,7 +964,7 @@ index 990f31d..74e6c60 100644
              this.isJumping = this.movementInput.jump;
              this.prevRenderArmYaw = this.renderArmYaw;
              this.prevRenderArmPitch = this.renderArmPitch;
-@@ -961,14 +995,17 @@ public class EntityPlayerSP extends AbstractClientPlayer
+@@ -961,14 +996,17 @@ public class EntityPlayerSP extends AbstractClientPlayer
          boolean flag = this.movementInput.jump;
          boolean flag1 = this.movementInput.sneak;
          float f = 0.8F;
@@ -973,7 +985,7 @@ index 990f31d..74e6c60 100644
              this.sprintToggleTimer = 0;
          }
  
-@@ -988,7 +1025,7 @@ public class EntityPlayerSP extends AbstractClientPlayer
+@@ -988,7 +1026,7 @@ public class EntityPlayerSP extends AbstractClientPlayer
          this.pushOutOfBlocks(this.posX + (double)this.width * 0.35D, axisalignedbb.minY + 0.5D, this.posZ + (double)this.width * 0.35D);
          boolean flag4 = (float)this.getFoodStats().getFoodLevel() > 6.0F || this.capabilities.allowFlying;
  
@@ -982,7 +994,7 @@ index 990f31d..74e6c60 100644
          {
              if (this.sprintToggleTimer <= 0 && !this.mc.gameSettings.keyBindSprint.isKeyDown())
              {
-@@ -1000,12 +1037,12 @@ public class EntityPlayerSP extends AbstractClientPlayer
+@@ -1000,12 +1038,12 @@ public class EntityPlayerSP extends AbstractClientPlayer
              }
          }
  
@@ -997,7 +1009,7 @@ index 990f31d..74e6c60 100644
          {
              this.setSprinting(false);
          }
-@@ -1052,7 +1089,7 @@ public class EntityPlayerSP extends AbstractClientPlayer
+@@ -1052,7 +1090,7 @@ public class EntityPlayerSP extends AbstractClientPlayer
              if (this.movementInput.sneak)
              {
                  this.movementInput.moveStrafe = (float)((double)this.movementInput.moveStrafe / 0.3D);
@@ -1006,7 +1018,7 @@ index 990f31d..74e6c60 100644
                  this.motionY -= (double)(this.capabilities.getFlySpeed() * 3.0F);
              }
  
-@@ -1166,7 +1203,9 @@ public class EntityPlayerSP extends AbstractClientPlayer
+@@ -1166,7 +1204,9 @@ public class EntityPlayerSP extends AbstractClientPlayer
  
      public boolean isAutoJumpEnabled()
      {

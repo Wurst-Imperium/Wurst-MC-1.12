@@ -10,6 +10,7 @@ package net.wurstclient.features.mods.combat;
 import net.minecraft.entity.Entity;
 import net.wurstclient.compatibility.WMinecraft;
 import net.wurstclient.compatibility.WPlayer;
+import net.wurstclient.events.listeners.PostUpdateListener;
 import net.wurstclient.events.listeners.UpdateListener;
 import net.wurstclient.features.Category;
 import net.wurstclient.features.Feature;
@@ -25,7 +26,8 @@ import net.wurstclient.utils.RotationUtils;
 
 @SearchTags({"ForceField", "kill aura", "force field"})
 @Mod.Bypasses
-public final class KillauraMod extends Mod implements UpdateListener
+public final class KillauraMod extends Mod
+	implements UpdateListener, PostUpdateListener
 {
 	public final CheckboxSetting useCooldown = !WMinecraft.COOLDOWN ? null
 		: new CheckboxSetting("Use Attack Cooldown as Speed", true)
@@ -66,6 +68,8 @@ public final class KillauraMod extends Mod implements UpdateListener
 		}
 	};
 	
+	private Entity attackTarget;
+	
 	public KillauraMod()
 	{
 		super("Killaura", "Automatically attacks entities around you.");
@@ -104,12 +108,15 @@ public final class KillauraMod extends Mod implements UpdateListener
 		wurst.mods.triggerBotMod.setEnabled(false);
 		
 		wurst.events.add(UpdateListener.class, this);
+		wurst.events.add(PostUpdateListener.class, this);
 	}
 	
 	@Override
 	public void onDisable()
 	{
 		wurst.events.remove(UpdateListener.class, this);
+		wurst.events.remove(PostUpdateListener.class, this);
+		attackTarget = null;
 	}
 	
 	@Override
@@ -132,10 +139,20 @@ public final class KillauraMod extends Mod implements UpdateListener
 		WPlayer.prepareAttack();
 		if(!RotationUtils.faceEntityPacket(entity))
 			return;
-		WPlayer.attackEntity(entity);
+		attackTarget = entity;
 		
 		// reset timer
 		updateLastMS();
+	}
+	
+	@Override
+	public void afterUpdate()
+	{
+		if(attackTarget == null)
+			return;
+		
+		WPlayer.attackEntity(attackTarget);
+		attackTarget = null;
 	}
 	
 	@Override
