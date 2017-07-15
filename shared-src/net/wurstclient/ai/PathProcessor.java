@@ -54,10 +54,6 @@ public abstract class PathProcessor
 		for(KeyBinding key : controls)
 			key.pressed = false;
 		
-		// face next position
-		if(index < path.size())
-			facePosition(path.get(index));
-		
 		// disable sprinting
 		WMinecraft.getPlayer().setSprinting(false);
 	}
