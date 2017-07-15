@@ -82,7 +82,7 @@ public final class AntiAfkMod extends Mod
 		pathFinder = null;
 		if(processor != null)
 		{
-			processor.stop();
+			processor.releaseControls();
 			processor = null;
 		}
 	}
@@ -143,7 +143,7 @@ public final class AntiAfkMod extends Mod
 			// wait 2 - 3 seconds (40 - 60 ticks)
 			if(processor.isDone())
 			{
-				processor.stop();
+				processor.releaseControls();
 				timer = 40 + random.nextInt(21);
 			}
 		}else

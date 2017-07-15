@@ -143,8 +143,8 @@ public final class RemoteViewMod extends Mod implements UpdateListener
 	{
 		// set entity
 		if(!isEnabled() && viewName != null && !viewName.isEmpty())
-			entity =
-				EntityUtils.getClosestEntityWithName(viewName, targetSettingsFind);
+			entity = EntityUtils.getClosestEntityWithName(viewName,
+				targetSettingsFind);
 		
 		// toggle RemoteView
 		toggle();

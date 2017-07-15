@@ -59,7 +59,7 @@ public class AutoBuildAI
 	public void stop()
 	{
 		if(processor != null)
-			processor.stop();
+			processor.releaseControls();
 	}
 	
 	public final boolean isDone()

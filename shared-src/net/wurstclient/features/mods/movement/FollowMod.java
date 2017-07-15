@@ -166,7 +166,7 @@ public final class FollowMod extends Mod
 		pathFinder = null;
 		if(processor != null)
 		{
-			processor.stop();
+			processor.releaseControls();
 			processor = null;
 		}
 		

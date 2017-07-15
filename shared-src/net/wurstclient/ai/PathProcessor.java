@@ -42,9 +42,10 @@ public abstract class PathProcessor
 	
 	public abstract void process();
 	
-	public void stop()
+	protected final void facePosition(BlockPos pos)
 	{
-		releaseControls();
+		RotationUtils
+			.faceVectorForWalking(new Vec3d(pos).addVector(0.5, 0.5, 0.5));
 	}
 	
 	public void lockControls()
@@ -61,12 +62,6 @@ public abstract class PathProcessor
 		WMinecraft.getPlayer().setSprinting(false);
 	}
 	
-	protected void facePosition(BlockPos pos)
-	{
-		RotationUtils
-			.faceVectorForWalking(new Vec3d(pos).addVector(0.5, 0.5, 0.5));
-	}
-	
 	public final void releaseControls()
 	{
 		// reset keys
@@ -74,7 +69,7 @@ public abstract class PathProcessor
 			key.pressed = GameSettings.isKeyDown(key);
 	}
 	
-	public int getIndex()
+	public final int getIndex()
 	{
 		return index;
 	}

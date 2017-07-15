@@ -139,7 +139,7 @@ public final class GoToCmd extends Cmd implements UpdateListener, RenderListener
 		pathFinder = null;
 		if(processor != null)
 		{
-			processor.stop();
+			processor.releaseControls();
 			processor = null;
 		}
 		
