@@ -27,8 +27,6 @@ import net.wurstclient.utils.EntityUtils.TargetSettings;
 public final class FollowMod extends Mod
 	implements UpdateListener, RenderListener
 {
-	private final float range = 12F;
-	
 	private Entity entity;
 	private EntityPathFinder pathFinder;
 	private PathProcessor processor;
@@ -62,12 +60,6 @@ public final class FollowMod extends Mod
 		public boolean targetFriends()
 		{
 			return true;
-		}
-		
-		@Override
-		public float getRange()
-		{
-			return range;
 		}
 	};
 	
@@ -147,13 +139,15 @@ public final class FollowMod extends Mod
 	public void onEnable()
 	{
 		if(entity == null)
-			entity = EntityUtils.getClosestEntity(targetSettingsFind);
-		
-		if(entity == null)
 		{
-			ChatUtils.error("Could not find a valid entity within 12 blocks.");
-			setEnabled(false);
-			return;
+			entity = EntityUtils.getClosestEntity(targetSettingsFind);
+			
+			if(entity == null)
+			{
+				ChatUtils.error("Could not find a valid entity.");
+				setEnabled(false);
+				return;
+			}
 		}
 		
 		pathFinder = new EntityPathFinder(entity, distance.getValueF());
