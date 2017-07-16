@@ -164,11 +164,8 @@ public final class FollowMod extends Mod
 		wurst.events.remove(RenderListener.class, this);
 		
 		pathFinder = null;
-		if(processor != null)
-		{
-			processor.releaseControls();
-			processor = null;
-		}
+		processor = null;
+		PathProcessor.releaseControls();
 		
 		if(entity != null)
 			ChatUtils.message("No longer following " + entity.getName());
@@ -207,8 +204,7 @@ public final class FollowMod extends Mod
 		// find path
 		if(!pathFinder.isDone() && !pathFinder.isFailed())
 		{
-			if(processor != null)
-				processor.lockControls();
+			PathProcessor.lockControls();
 			
 			pathFinder.think();
 			
@@ -233,7 +229,7 @@ public final class FollowMod extends Mod
 		if(!processor.isDone())
 			processor.process();
 		else
-			processor.lockControls();
+			PathProcessor.lockControls();
 	}
 	
 	@Override

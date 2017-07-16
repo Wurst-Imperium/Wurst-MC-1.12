@@ -58,6 +58,7 @@ public class WalkPathProcessor extends PathProcessor
 		}
 		
 		lockControls();
+		WMinecraft.getPlayer().capabilities.isFlying = false;
 		
 		// face next position
 		facePosition(nextPos);
@@ -129,12 +130,5 @@ public class WalkPathProcessor extends PathProcessor
 				if(WMinecraft.getPlayer().onGround)
 					mc.gameSettings.keyBindForward.pressed = true;
 			}
-	}
-	
-	@Override
-	public void lockControls()
-	{
-		super.lockControls();
-		WMinecraft.getPlayer().capabilities.isFlying = false;
 	}
 }

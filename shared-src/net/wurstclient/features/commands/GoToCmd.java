@@ -84,8 +84,7 @@ public final class GoToCmd extends Cmd implements UpdateListener, RenderListener
 		// find path
 		if(!pathFinder.isDone())
 		{
-			if(processor != null)
-				processor.lockControls();
+			PathProcessor.lockControls();
 			
 			pathFinder.think();
 			
@@ -137,11 +136,8 @@ public final class GoToCmd extends Cmd implements UpdateListener, RenderListener
 		wurst.events.remove(RenderListener.class, this);
 		
 		pathFinder = null;
-		if(processor != null)
-		{
-			processor.releaseControls();
-			processor = null;
-		}
+		processor = null;
+		PathProcessor.releaseControls();
 		
 		enabled = false;
 	}

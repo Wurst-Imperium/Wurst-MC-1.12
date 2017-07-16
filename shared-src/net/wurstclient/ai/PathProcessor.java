@@ -20,17 +20,17 @@ import net.wurstclient.utils.RotationUtils;
 
 public abstract class PathProcessor
 {
-	protected final WurstClient wurst = WurstClient.INSTANCE;
-	protected final Minecraft mc = Minecraft.getMinecraft();
+	protected static final WurstClient wurst = WurstClient.INSTANCE;
+	protected static final Minecraft mc = Minecraft.getMinecraft();
+	
+	private static final KeyBinding[] CONTROLS = new KeyBinding[]{
+		mc.gameSettings.keyBindForward, mc.gameSettings.keyBindBack,
+		mc.gameSettings.keyBindRight, mc.gameSettings.keyBindLeft,
+		mc.gameSettings.keyBindJump, mc.gameSettings.keyBindSneak};
 	
 	protected final ArrayList<PathPos> path;
 	protected int index;
 	protected boolean done;
-	
-	private final KeyBinding[] controls = new KeyBinding[]{
-		mc.gameSettings.keyBindForward, mc.gameSettings.keyBindBack,
-		mc.gameSettings.keyBindRight, mc.gameSettings.keyBindLeft,
-		mc.gameSettings.keyBindJump, mc.gameSettings.keyBindSneak};
 	
 	public PathProcessor(ArrayList<PathPos> path)
 	{
@@ -42,29 +42,6 @@ public abstract class PathProcessor
 	
 	public abstract void process();
 	
-	protected final void facePosition(BlockPos pos)
-	{
-		RotationUtils
-			.faceVectorForWalking(new Vec3d(pos).addVector(0.5, 0.5, 0.5));
-	}
-	
-	public void lockControls()
-	{
-		// disable keys
-		for(KeyBinding key : controls)
-			key.pressed = false;
-		
-		// disable sprinting
-		WMinecraft.getPlayer().setSprinting(false);
-	}
-	
-	public final void releaseControls()
-	{
-		// reset keys
-		for(KeyBinding key : controls)
-			key.pressed = GameSettings.isKeyDown(key);
-	}
-	
 	public final int getIndex()
 	{
 		return index;
@@ -73,5 +50,28 @@ public abstract class PathProcessor
 	public final boolean isDone()
 	{
 		return done;
+	}
+	
+	protected final void facePosition(BlockPos pos)
+	{
+		RotationUtils
+			.faceVectorForWalking(new Vec3d(pos).addVector(0.5, 0.5, 0.5));
+	}
+	
+	public static final void lockControls()
+	{
+		// disable keys
+		for(KeyBinding key : CONTROLS)
+			key.pressed = false;
+		
+		// disable sprinting
+		WMinecraft.getPlayer().setSprinting(false);
+	}
+	
+	public static final void releaseControls()
+	{
+		// reset keys
+		for(KeyBinding key : CONTROLS)
+			key.pressed = GameSettings.isKeyDown(key);
 	}
 }

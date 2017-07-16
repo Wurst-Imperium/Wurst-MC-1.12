@@ -80,11 +80,8 @@ public final class AntiAfkMod extends Mod
 			GameSettings.isKeyDown(mc.gameSettings.keyBindJump);
 		
 		pathFinder = null;
-		if(processor != null)
-		{
-			processor.releaseControls();
-			processor = null;
-		}
+		processor = null;
+		PathProcessor.releaseControls();
 	}
 	
 	@Override
@@ -112,8 +109,7 @@ public final class AntiAfkMod extends Mod
 			// find path
 			if(!pathFinder.isDone() && !pathFinder.isFailed())
 			{
-				if(processor != null)
-					processor.lockControls();
+				PathProcessor.lockControls();
 				
 				pathFinder.think();
 				
@@ -143,7 +139,7 @@ public final class AntiAfkMod extends Mod
 			// wait 2 - 3 seconds (40 - 60 ticks)
 			if(processor.isDone())
 			{
-				processor.releaseControls();
+				PathProcessor.releaseControls();
 				timer = 40 + random.nextInt(21);
 			}
 		}else

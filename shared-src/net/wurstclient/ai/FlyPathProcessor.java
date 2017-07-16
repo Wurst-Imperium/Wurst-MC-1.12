@@ -87,6 +87,7 @@ public class FlyPathProcessor extends PathProcessor
 		stopped = false;
 		
 		lockControls();
+		WMinecraft.getPlayer().capabilities.isFlying = creativeFlying;
 		
 		// face next position
 		facePosition(nextPos);
@@ -144,12 +145,5 @@ public class FlyPathProcessor extends PathProcessor
 				mc.gameSettings.keyBindForward.pressed = true;
 			}
 		}
-	}
-	
-	@Override
-	public void lockControls()
-	{
-		super.lockControls();
-		WMinecraft.getPlayer().capabilities.isFlying = creativeFlying;
 	}
 }

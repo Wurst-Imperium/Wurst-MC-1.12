@@ -27,8 +27,7 @@ public class AutoBuildAI
 		// find path
 		if(!pathFinder.isDone() && !pathFinder.isFailed())
 		{
-			if(processor != null)
-				processor.lockControls();
+			PathProcessor.lockControls();
 			
 			pathFinder.think();
 			
@@ -58,8 +57,7 @@ public class AutoBuildAI
 	
 	public void stop()
 	{
-		if(processor != null)
-			processor.releaseControls();
+		PathProcessor.releaseControls();
 	}
 	
 	public final boolean isDone()
