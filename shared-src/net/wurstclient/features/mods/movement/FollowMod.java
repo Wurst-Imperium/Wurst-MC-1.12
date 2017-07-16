@@ -8,7 +8,8 @@
 package net.wurstclient.features.mods.movement;
 
 import net.minecraft.entity.Entity;
-import net.wurstclient.ai.EntityPathFinder;
+import net.minecraft.util.math.BlockPos;
+import net.wurstclient.ai.PathFinder;
 import net.wurstclient.ai.PathProcessor;
 import net.wurstclient.compatibility.WMinecraft;
 import net.wurstclient.events.listeners.RenderListener;
@@ -22,7 +23,7 @@ import net.wurstclient.utils.ChatUtils;
 import net.wurstclient.utils.EntityUtils;
 import net.wurstclient.utils.EntityUtils.TargetSettings;
 
-@Mod.Bypasses(ghostMode = false)
+@Mod.Bypasses
 @Mod.DontSaveState
 public final class FollowMod extends Mod
 	implements UpdateListener, RenderListener
@@ -242,5 +243,46 @@ public final class FollowMod extends Mod
 	public void setEntity(Entity entity)
 	{
 		this.entity = entity;
+	}
+	
+	private class EntityPathFinder extends PathFinder
+	{
+		private final Entity entity;
+		private final float distanceSq;
+		
+		public EntityPathFinder(Entity entity, float distance)
+		{
+			super(new BlockPos(entity));
+			this.entity = entity;
+			distanceSq = (float)Math.pow(distance, 2);
+		}
+		
+		public EntityPathFinder(EntityPathFinder pathFinder)
+		{
+			super(new BlockPos(pathFinder.entity));
+			thinkSpeed = pathFinder.thinkSpeed;
+			thinkTime = pathFinder.thinkTime;
+			entity = pathFinder.entity;
+			distanceSq = pathFinder.distanceSq;
+		}
+		
+		@Override
+		protected boolean checkDone()
+		{
+			return done = entity.getDistanceSqToCenter(current) <= distanceSq;
+		}
+		
+		@Override
+		public boolean isPathStillValid(int index)
+		{
+			if(!super.isPathStillValid(index))
+				return false;
+			
+			// check entity
+			if(!getGoal().equals(new BlockPos(entity)))
+				return false;
+			
+			return true;
+		}
 	}
 }
