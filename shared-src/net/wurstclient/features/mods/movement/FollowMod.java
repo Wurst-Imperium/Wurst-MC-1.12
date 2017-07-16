@@ -18,6 +18,7 @@ import net.wurstclient.compatibility.WMinecraft;
 import net.wurstclient.events.listeners.RenderListener;
 import net.wurstclient.events.listeners.UpdateListener;
 import net.wurstclient.features.Category;
+import net.wurstclient.features.Feature;
 import net.wurstclient.features.Mod;
 import net.wurstclient.features.commands.PathCmd;
 import net.wurstclient.settings.CheckboxSetting;
@@ -56,6 +57,12 @@ public final class FollowMod extends Mod
 		super("Follow",
 			"A bot that follows the closest entity.\n" + "Very annoying.");
 		setCategory(Category.MOVEMENT);
+	}
+	
+	@Override
+	public Feature[] getSeeAlso()
+	{
+		return new Feature[]{wurst.commands.followCmd};
 	}
 	
 	@Override
