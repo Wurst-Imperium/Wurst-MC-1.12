@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
+import net.wurstclient.compatibility.WMath;
 import net.wurstclient.compatibility.WMinecraft;
 import net.wurstclient.utils.RotationUtils;
 
@@ -91,8 +92,9 @@ public class FlyPathProcessor extends PathProcessor
 		
 		// face next position
 		facePosition(nextPos);
-		if(Math.abs(RotationUtils.getHorizontalAngleToClientRotation(
-			new Vec3d(nextPos).addVector(0.5, 0.5, 0.5))) > 1)
+		if(WMath.wrapDegrees(
+			Math.abs(RotationUtils.getHorizontalAngleToClientRotation(
+				new Vec3d(nextPos).addVector(0.5, 0.5, 0.5)))) > 1)
 			return;
 		
 		// skip mid-air nodes
