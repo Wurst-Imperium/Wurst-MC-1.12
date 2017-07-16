@@ -20,11 +20,13 @@ import net.wurstclient.events.listeners.UpdateListener;
 import net.wurstclient.features.Category;
 import net.wurstclient.features.Mod;
 import net.wurstclient.features.commands.PathCmd;
+import net.wurstclient.settings.CheckboxSetting;
 import net.wurstclient.settings.SliderSetting;
 import net.wurstclient.settings.SliderSetting.ValueDisplay;
 import net.wurstclient.utils.ChatUtils;
 import net.wurstclient.utils.EntityUtils;
 import net.wurstclient.utils.EntityUtils.TargetSettings;
+import net.wurstclient.utils.RotationUtils;
 
 @Mod.Bypasses
 @Mod.DontSaveState
@@ -35,6 +37,7 @@ public final class FollowMod extends Mod
 	private EntityPathFinder pathFinder;
 	private PathProcessor processor;
 	private int ticksProcessing;
+	private float distanceSq;
 	
 	private final SliderSetting distance =
 		new SliderSetting("Distance", 1F, 1F, 12F, 0.5F, ValueDisplay.DECIMAL)
@@ -45,7 +48,8 @@ public final class FollowMod extends Mod
 				distanceSq = (float)Math.pow(getValue(), 2);
 			}
 		};
-	private float distanceSq;
+	private final CheckboxSetting useAi =
+		new CheckboxSetting("Use AI (experimental)", false);
 	
 	public FollowMod()
 	{
@@ -58,6 +62,7 @@ public final class FollowMod extends Mod
 	public void initSettings()
 	{
 		addSetting(distance);
+		addSetting(useAi);
 	}
 	
 	private final TargetSettings targetSettingsFind = new TargetSettings()
@@ -209,30 +214,69 @@ public final class FollowMod extends Mod
 			ticksProcessing = 0;
 		}
 		
-		// reset pathfinder
-		if((processor == null || processor.isDone() || ticksProcessing >= 10
-			|| !pathFinder.isPathStillValid(processor.getIndex()))
-			&& (pathFinder.isDone() || pathFinder.isFailed()))
+		if(useAi.isChecked())
 		{
-			pathFinder = new EntityPathFinder();
-			processor = null;
-			ticksProcessing = 0;
-		}
-		
-		// find path
-		if(!pathFinder.isDone() && !pathFinder.isFailed())
+			// reset pathfinder
+			if((processor == null || processor.isDone() || ticksProcessing >= 10
+				|| !pathFinder.isPathStillValid(processor.getIndex()))
+				&& (pathFinder.isDone() || pathFinder.isFailed()))
+			{
+				pathFinder = new EntityPathFinder();
+				processor = null;
+				ticksProcessing = 0;
+			}
+			
+			// find path
+			if(!pathFinder.isDone() && !pathFinder.isFailed())
+			{
+				PathProcessor.lockControls();
+				pathFinder.think();
+				pathFinder.formatPath();
+				processor = pathFinder.getProcessor();
+			}
+			
+			// process path
+			if(!processor.isDone())
+			{
+				processor.process();
+				ticksProcessing++;
+			}
+		}else
 		{
-			PathProcessor.lockControls();
-			pathFinder.think();
-			pathFinder.formatPath();
-			processor = pathFinder.getProcessor();
-		}
-		
-		// process path
-		if(!processor.isDone())
-		{
-			processor.process();
-			ticksProcessing++;
+			// jump if necessary
+			if(WMinecraft.getPlayer().isCollidedHorizontally
+				&& WMinecraft.getPlayer().onGround)
+				WMinecraft.getPlayer().jump();
+			
+			// swim up if necessary
+			if(WMinecraft.getPlayer().isInWater()
+				&& WMinecraft.getPlayer().posY < entity.posY)
+				WMinecraft.getPlayer().motionY += 0.04;
+			
+			// control height if flying
+			if(!WMinecraft.getPlayer().onGround
+				&& (WMinecraft.getPlayer().capabilities.isFlying
+					|| wurst.mods.flightMod.isActive())
+				&& WMinecraft.getPlayer().getDistanceSq(entity.posX,
+					WMinecraft.getPlayer().posY, entity.posZ) <= WMinecraft
+						.getPlayer().getDistanceSq(WMinecraft.getPlayer().posX,
+							entity.posY, WMinecraft.getPlayer().posZ))
+			{
+				if(WMinecraft.getPlayer().posY > entity.posY + 1D)
+					mc.gameSettings.keyBindSneak.pressed = true;
+				else if(WMinecraft.getPlayer().posY < entity.posY - 1D)
+					mc.gameSettings.keyBindJump.pressed = true;
+			}else
+			{
+				mc.gameSettings.keyBindSneak.pressed = false;
+				mc.gameSettings.keyBindJump.pressed = false;
+			}
+			
+			// follow entity
+			RotationUtils.faceEntityClient(entity);
+			mc.gameSettings.keyBindForward.pressed =
+				WMinecraft.getPlayer().getDistanceSq(entity.posX,
+					WMinecraft.getPlayer().posY, entity.posZ) > distanceSq;
 		}
 	}
 	
