@@ -230,6 +230,7 @@ public final class FollowMod extends Mod
 			if(!pathFinder.isDone() && !pathFinder.isFailed())
 			{
 				PathProcessor.lockControls();
+				RotationUtils.faceEntityClient(entity);
 				pathFinder.think();
 				pathFinder.formatPath();
 				processor = pathFinder.getProcessor();
