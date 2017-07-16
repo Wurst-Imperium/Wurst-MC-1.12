@@ -7,9 +7,12 @@
  */
 package net.wurstclient.features.mods.movement;
 
+import java.util.ArrayList;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
 import net.wurstclient.ai.PathFinder;
+import net.wurstclient.ai.PathPos;
 import net.wurstclient.ai.PathProcessor;
 import net.wurstclient.compatibility.WMinecraft;
 import net.wurstclient.events.listeners.RenderListener;
@@ -31,6 +34,7 @@ public final class FollowMod extends Mod
 	private Entity entity;
 	private EntityPathFinder pathFinder;
 	private PathProcessor processor;
+	private int ticksProcessing;
 	
 	private final SliderSetting distance =
 		new SliderSetting("Distance", 1F, 1F, 12F, 0.5F, ValueDisplay.DECIMAL)
@@ -38,9 +42,10 @@ public final class FollowMod extends Mod
 			@Override
 			public void update()
 			{
-				entity = null;
+				distanceSq = (float)Math.pow(getValue(), 2);
 			}
 		};
+	private float distanceSq;
 	
 	public FollowMod()
 	{
@@ -151,8 +156,7 @@ public final class FollowMod extends Mod
 			}
 		}
 		
-		pathFinder = new EntityPathFinder(entity, distance.getValueF());
-		pathFinder.setThinkTime(40);
+		pathFinder = new EntityPathFinder();
 		wurst.events.add(UpdateListener.class, this);
 		wurst.events.add(RenderListener.class, this);
 		ChatUtils.message("Now following " + entity.getName());
@@ -166,6 +170,7 @@ public final class FollowMod extends Mod
 		
 		pathFinder = null;
 		processor = null;
+		ticksProcessing = 0;
 		PathProcessor.releaseControls();
 		
 		if(entity != null)
@@ -186,10 +191,11 @@ public final class FollowMod extends Mod
 			return;
 		}
 		
-		// check if entity died or entity disappeared
+		// check if entity died or disappeared
 		if(!EntityUtils.isCorrectEntity(entity, targetSettingsKeep))
 		{
-			entity = EntityUtils.getClosestEntity(targetSettingsFind);
+			entity = EntityUtils.getClosestEntityWithName(entity.getName(),
+				targetSettingsKeep);
 			
 			if(entity == null)
 			{
@@ -198,39 +204,36 @@ public final class FollowMod extends Mod
 				return;
 			}
 			
-			pathFinder = new EntityPathFinder(entity, distance.getValueF());
-			pathFinder.setThinkTime(40);
+			pathFinder = new EntityPathFinder();
+			processor = null;
+			ticksProcessing = 0;
+		}
+		
+		// reset pathfinder
+		if((processor == null || processor.isDone() || ticksProcessing >= 10
+			|| !pathFinder.isPathStillValid(processor.getIndex()))
+			&& (pathFinder.isDone() || pathFinder.isFailed()))
+		{
+			pathFinder = new EntityPathFinder();
+			processor = null;
+			ticksProcessing = 0;
 		}
 		
 		// find path
 		if(!pathFinder.isDone() && !pathFinder.isFailed())
 		{
 			PathProcessor.lockControls();
-			
 			pathFinder.think();
-			
-			if(!pathFinder.isDone() && !pathFinder.isFailed())
-				return;
-			
 			pathFinder.formatPath();
-			
-			// set processor
 			processor = pathFinder.getProcessor();
-		}
-		
-		// check path
-		if(processor != null
-			&& !pathFinder.isPathStillValid(processor.getIndex()))
-		{
-			pathFinder = new EntityPathFinder(pathFinder);
-			return;
 		}
 		
 		// process path
 		if(!processor.isDone())
+		{
 			processor.process();
-		else
-			PathProcessor.lockControls();
+			ticksProcessing++;
+		}
 	}
 	
 	@Override
@@ -247,23 +250,10 @@ public final class FollowMod extends Mod
 	
 	private class EntityPathFinder extends PathFinder
 	{
-		private final Entity entity;
-		private final float distanceSq;
-		
-		public EntityPathFinder(Entity entity, float distance)
+		public EntityPathFinder()
 		{
 			super(new BlockPos(entity));
-			this.entity = entity;
-			distanceSq = (float)Math.pow(distance, 2);
-		}
-		
-		public EntityPathFinder(EntityPathFinder pathFinder)
-		{
-			super(new BlockPos(pathFinder.entity));
-			thinkSpeed = pathFinder.thinkSpeed;
-			thinkTime = pathFinder.thinkTime;
-			entity = pathFinder.entity;
-			distanceSq = pathFinder.distanceSq;
+			setThinkTime(1);
 		}
 		
 		@Override
@@ -273,16 +263,12 @@ public final class FollowMod extends Mod
 		}
 		
 		@Override
-		public boolean isPathStillValid(int index)
+		public ArrayList<PathPos> formatPath()
 		{
-			if(!super.isPathStillValid(index))
-				return false;
+			if(!done)
+				failed = true;
 			
-			// check entity
-			if(!getGoal().equals(new BlockPos(entity)))
-				return false;
-			
-			return true;
+			return super.formatPath();
 		}
 	}
 }
