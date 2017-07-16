@@ -7,16 +7,22 @@
  */
 package net.wurstclient.features.mods.combat;
 
-import net.minecraft.client.settings.GameSettings;
-import net.minecraft.client.settings.KeyBinding;
+import java.util.ArrayList;
+
 import net.minecraft.entity.Entity;
+import net.minecraft.util.math.BlockPos;
+import net.wurstclient.ai.PathFinder;
+import net.wurstclient.ai.PathPos;
+import net.wurstclient.ai.PathProcessor;
 import net.wurstclient.compatibility.WMinecraft;
 import net.wurstclient.compatibility.WPlayer;
+import net.wurstclient.events.listeners.RenderListener;
 import net.wurstclient.events.listeners.UpdateListener;
 import net.wurstclient.features.Category;
 import net.wurstclient.features.Feature;
 import net.wurstclient.features.Mod;
 import net.wurstclient.features.SearchTags;
+import net.wurstclient.features.commands.PathCmd;
 import net.wurstclient.features.special_features.YesCheatSpf.Profile;
 import net.wurstclient.settings.CheckboxSetting;
 import net.wurstclient.settings.SliderSetting;
@@ -28,7 +34,8 @@ import net.wurstclient.utils.RotationUtils;
 @SearchTags({"fight bot"})
 @Mod.Bypasses(ghostMode = false)
 @Mod.DontSaveState
-public final class FightBotMod extends Mod implements UpdateListener
+public final class FightBotMod extends Mod
+	implements UpdateListener, RenderListener
 {
 	private final CheckboxSetting useKillaura =
 		new CheckboxSetting("Use Killaura settings", true)
@@ -69,7 +76,22 @@ public final class FightBotMod extends Mod implements UpdateListener
 	private final SliderSetting range =
 		new SliderSetting("Range", 4.25, 1, 6, 0.05, ValueDisplay.DECIMAL);
 	private final SliderSetting distance =
-		new SliderSetting("Distance", 3, 1, 6, 0.05, ValueDisplay.DECIMAL);
+		new SliderSetting("Distance", 3, 1, 6, 0.05, ValueDisplay.DECIMAL)
+		{
+			@Override
+			public void update()
+			{
+				distanceSq = Math.pow(getValue(), 2);
+			}
+		};
+	
+	private final CheckboxSetting useAi =
+		new CheckboxSetting("Use AI (experimental)", false);
+	
+	private EntityPathFinder pathFinder;
+	private PathProcessor processor;
+	private int ticksProcessing;
+	private double distanceSq;
 	
 	private final TargetSettings followSettings = new TargetSettings();
 	private final TargetSettings attackSettings = new TargetSettings()
@@ -100,6 +122,8 @@ public final class FightBotMod extends Mod implements UpdateListener
 		addSetting(speed);
 		addSetting(range);
 		addSetting(distance);
+		
+		addSetting(useAi);
 	}
 	
 	@Override
@@ -121,7 +145,10 @@ public final class FightBotMod extends Mod implements UpdateListener
 		wurst.mods.tpAuraMod.setEnabled(false);
 		wurst.mods.triggerBotMod.setEnabled(false);
 		
+		pathFinder = new EntityPathFinder(WMinecraft.getPlayer());
+		
 		wurst.events.add(UpdateListener.class, this);
+		wurst.events.add(RenderListener.class, this);
 	}
 	
 	@Override
@@ -129,9 +156,12 @@ public final class FightBotMod extends Mod implements UpdateListener
 	{
 		// remove listener
 		wurst.events.remove(UpdateListener.class, this);
+		wurst.events.remove(RenderListener.class, this);
 		
-		// reset keys
-		resetKeys();
+		pathFinder = null;
+		processor = null;
+		ticksProcessing = 0;
+		PathProcessor.releaseControls();
 	}
 	
 	@Override
@@ -140,41 +170,76 @@ public final class FightBotMod extends Mod implements UpdateListener
 		// update timer
 		updateMS();
 		
-		// reset keys
-		resetKeys();
-		
 		// set entity
 		Entity entity = EntityUtils.getClosestEntity(followSettings);
 		if(entity == null)
 			return;
 		
-		// jump if necessary
-		if(WMinecraft.getPlayer().isCollidedHorizontally)
-			mc.gameSettings.keyBindJump.pressed = true;
-		
-		// swim up if necessary
-		if(WMinecraft.getPlayer().isInWater()
-			&& WMinecraft.getPlayer().posY < entity.posY)
-			mc.gameSettings.keyBindJump.pressed = true;
-		
-		// control height if flying
-		if(!WMinecraft.getPlayer().onGround
-			&& (WMinecraft.getPlayer().capabilities.isFlying
-				|| wurst.mods.flightMod.isActive())
-			&& Math.sqrt(
-				Math.pow(WMinecraft.getPlayer().posX - entity.posX, 2) + Math
-					.pow(WMinecraft.getPlayer().posZ - entity.posZ, 2)) <= range
-						.getValue())
-			if(WMinecraft.getPlayer().posY > entity.posY + 1D)
-				mc.gameSettings.keyBindSneak.pressed = true;
-			else if(WMinecraft.getPlayer().posY < entity.posY - 1D)
-				mc.gameSettings.keyBindJump.pressed = true;
+		if(useAi.isChecked())
+		{
+			// reset pathfinder
+			if((processor == null || processor.isDone() || ticksProcessing >= 10
+				|| !pathFinder.isPathStillValid(processor.getIndex()))
+				&& (pathFinder.isDone() || pathFinder.isFailed()))
+			{
+				pathFinder = new EntityPathFinder(entity);
+				processor = null;
+				ticksProcessing = 0;
+			}
 			
-		// follow entity
-		mc.gameSettings.keyBindForward.pressed = WMinecraft.getPlayer()
-			.getDistanceToEntity(entity) > distance.getValueF();
-		if(!RotationUtils.faceEntityClient(entity))
-			return;
+			// find path
+			if(!pathFinder.isDone() && !pathFinder.isFailed())
+			{
+				PathProcessor.lockControls();
+				RotationUtils.faceEntityClient(entity);
+				pathFinder.think();
+				pathFinder.formatPath();
+				processor = pathFinder.getProcessor();
+			}
+			
+			// process path
+			if(!processor.isDone())
+			{
+				processor.process();
+				ticksProcessing++;
+			}
+		}else
+		{
+			// jump if necessary
+			if(WMinecraft.getPlayer().isCollidedHorizontally
+				&& WMinecraft.getPlayer().onGround)
+				WMinecraft.getPlayer().jump();
+			
+			// swim up if necessary
+			if(WMinecraft.getPlayer().isInWater()
+				&& WMinecraft.getPlayer().posY < entity.posY)
+				WMinecraft.getPlayer().motionY += 0.04;
+			
+			// control height if flying
+			if(!WMinecraft.getPlayer().onGround
+				&& (WMinecraft.getPlayer().capabilities.isFlying
+					|| wurst.mods.flightMod.isActive())
+				&& WMinecraft.getPlayer().getDistanceSq(entity.posX,
+					WMinecraft.getPlayer().posY, entity.posZ) <= WMinecraft
+						.getPlayer().getDistanceSq(WMinecraft.getPlayer().posX,
+							entity.posY, WMinecraft.getPlayer().posZ))
+			{
+				if(WMinecraft.getPlayer().posY > entity.posY + 1D)
+					mc.gameSettings.keyBindSneak.pressed = true;
+				else if(WMinecraft.getPlayer().posY < entity.posY - 1D)
+					mc.gameSettings.keyBindJump.pressed = true;
+			}else
+			{
+				mc.gameSettings.keyBindSneak.pressed = false;
+				mc.gameSettings.keyBindJump.pressed = false;
+			}
+			
+			// follow entity
+			mc.gameSettings.keyBindForward.pressed = WMinecraft.getPlayer()
+				.getDistanceToEntity(entity) > distance.getValueF();
+			if(!RotationUtils.faceEntityClient(entity))
+				return;
+		}
 		
 		// check timer / cooldown
 		if(useCooldown != null && useCooldown.isChecked()
@@ -191,6 +256,13 @@ public final class FightBotMod extends Mod implements UpdateListener
 		
 		// reset timer
 		updateLastMS();
+	}
+	
+	@Override
+	public void onRender(float partialTicks)
+	{
+		PathCmd pathCmd = wurst.commands.pathCmd;
+		pathFinder.renderPath(pathCmd.isDebugMode(), pathCmd.isDepthTest());
 	}
 	
 	@Override
@@ -217,14 +289,30 @@ public final class FightBotMod extends Mod implements UpdateListener
 		}
 	}
 	
-	private void resetKeys()
+	private class EntityPathFinder extends PathFinder
 	{
-		// get keys
-		KeyBinding[] keys = new KeyBinding[]{mc.gameSettings.keyBindForward,
-			mc.gameSettings.keyBindJump, mc.gameSettings.keyBindSneak};
+		private final Entity entity;
 		
-		// reset keys
-		for(KeyBinding key : keys)
-			key.pressed = GameSettings.isKeyDown(key);
+		public EntityPathFinder(Entity entity)
+		{
+			super(new BlockPos(entity));
+			this.entity = entity;
+			setThinkTime(1);
+		}
+		
+		@Override
+		protected boolean checkDone()
+		{
+			return done = entity.getDistanceSqToCenter(current) <= distanceSq;
+		}
+		
+		@Override
+		public ArrayList<PathPos> formatPath()
+		{
+			if(!done)
+				failed = true;
+			
+			return super.formatPath();
+		}
 	}
 }
