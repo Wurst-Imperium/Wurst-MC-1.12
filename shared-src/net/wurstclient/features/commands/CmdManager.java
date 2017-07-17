@@ -108,7 +108,7 @@ public final class CmdManager implements ChatOutputListener
 		if(!WurstClient.INSTANCE.isEnabled())
 			return;
 		
-		String message = event.getMessage();
+		String message = event.getMessage().trim();
 		if(message.startsWith("."))
 		{
 			event.cancel();
