@@ -207,9 +207,16 @@ public class ColorsSetting implements Setting, ColorsLock
 	@Override
 	public final void load(JsonObject json)
 	{
-		JsonArray jsonColors = json.get(name).getAsJsonArray();
-		for(int i = 0; i < selected.length; i++)
-			selected[i] = jsonColors.get(i).getAsBoolean();
+		try
+		{
+			JsonArray jsonColors = json.get(name).getAsJsonArray();
+			for(int i = 0; i < selected.length; i++)
+				selected[i] = jsonColors.get(i).getAsBoolean();
+		}catch(Exception e)
+		{
+			
+		}
+		
 		update();
 	}
 	

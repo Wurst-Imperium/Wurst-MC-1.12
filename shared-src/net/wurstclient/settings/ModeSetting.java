@@ -194,7 +194,17 @@ public class ModeSetting implements Setting
 	@Override
 	public final void load(JsonObject json)
 	{
-		setSelected(json.get(name).getAsInt());
+		int selected = this.selected;
+		
+		try
+		{
+			selected = json.get(name).getAsInt();
+		}catch(Exception e)
+		{
+			
+		}
+		
+		setSelected(selected);
 	}
 	
 	@Override

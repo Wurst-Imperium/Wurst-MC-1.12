@@ -234,7 +234,15 @@ public class SliderSetting implements Setting, SliderLock
 	@Override
 	public final void load(JsonObject json)
 	{
-		double newValue = json.get(name).getAsDouble();
+		double newValue = value;
+		
+		try
+		{
+			newValue = json.get(name).getAsDouble();
+		}catch(Exception e)
+		{
+			
+		}
 		
 		if(newValue > maximum || newValue < minimum)
 			return;

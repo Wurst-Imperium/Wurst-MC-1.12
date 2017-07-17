@@ -117,7 +117,14 @@ public class CheckboxSetting implements Setting, CheckboxLock
 	@Override
 	public final void load(JsonObject json)
 	{
-		checked = json.get(name).getAsBoolean();
+		try
+		{
+			checked = json.get(name).getAsBoolean();
+		}catch(Exception e)
+		{
+			
+		}
+		
 		update();
 	}
 	
