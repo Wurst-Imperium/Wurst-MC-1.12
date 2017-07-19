@@ -85,6 +85,7 @@ public final class ModManager
 	public final BowAimbotMod bowAimbotMod = new BowAimbotMod();
 	public final BuildRandomMod buildRandomMod = new BuildRandomMod();
 	public final BunnyHopMod bunnyHopMod = new BunnyHopMod();
+	public final CameraNoClipMod cameraNoClipMod = new CameraNoClipMod();
 	public final CaveFinderMod caveFinderMod = new CaveFinderMod();
 	public final ChestEspMod chestEspMod = new ChestEspMod();
 	public final ClickAuraMod clickAuraMod = new ClickAuraMod();
