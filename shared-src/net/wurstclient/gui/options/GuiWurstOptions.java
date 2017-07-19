@@ -86,8 +86,8 @@ public class GuiWurstOptions extends GuiScreen
 			100, 20, "Twitter Page"));
 		buttonList.add(new GuiButton(13, width / 2 + 54, height / 4 + 72 - 16,
 			100, 20, "Discord Server"));
-		// buttonList.add(new GuiButton(14, width / 2 + 54, height / 4 + 96 -
-		// 16, 100, 20, "???"));
+		buttonList.add(new GuiButton(14, width / 2 + 54, height / 4 + 96 - 16,
+			100, 20, "Feedback"));
 		// buttonList.add(new GuiButton(15, width / 2 + 54, height / 4 + 120 -
 		// 16, 100, 20, "???"));
 		
@@ -170,9 +170,8 @@ public class GuiWurstOptions extends GuiScreen
 		else if(button.id == 13)
 			MiscUtils.openLink("https://discord.gg/2K8cFmG");
 		else if(button.id == 14)
-		{
-			
-		}else if(button.id == 15)
+			MiscUtils.openLink("https://www.wurstclient.net/feedback/");
+		else if(button.id == 15)
 		{
 			
 		}
