@@ -24,7 +24,7 @@ public final class SearchCmd extends Cmd
 	}
 	
 	@Override
-	public void execute(String[] args) throws CmdError
+	public void call(String[] args) throws CmdException
 	{
 		if(args.length == 0)
 		{
@@ -39,7 +39,7 @@ public final class SearchCmd extends Cmd
 				if(MiscUtils.isInteger(args[1]))
 					wurst.options.searchID = Integer.valueOf(args[1]);
 				else
-					syntaxError("ID must be a number.");
+					throw new CmdSyntaxError("ID must be a number.");
 				ConfigFiles.OPTIONS.save();
 				wurst.mods.searchMod.notify = true;
 				ChatUtils.message("Search ID set to " + args[1] + ".");
@@ -48,7 +48,8 @@ public final class SearchCmd extends Cmd
 				int newID =
 					Block.getIdFromBlock(Block.getBlockFromName(args[1]));
 				if(newID == -1)
-					error("Block \"" + args[1] + "\" could not be found.");
+					throw new CmdError(
+						"Block \"" + args[1] + "\" could not be found.");
 				wurst.options.searchID = Integer.valueOf(newID);
 				ConfigFiles.OPTIONS.save();
 				wurst.mods.searchMod.notify = true;
@@ -56,6 +57,6 @@ public final class SearchCmd extends Cmd
 					"Search ID set to " + newID + " (" + args[1] + ").");
 			}
 		}else
-			syntaxError();
+			throw new CmdSyntaxError();
 	}
 }

@@ -27,7 +27,7 @@ public final class IpCmd extends Cmd
 	}
 	
 	@Override
-	public void execute(String[] args) throws CmdError
+	public void call(String[] args) throws CmdException
 	{
 		if(args.length == 0)
 			ChatUtils.message("IP: " + ServerHook.getCurrentServerIP());
@@ -37,7 +37,7 @@ public final class IpCmd extends Cmd
 				new StringSelection(ServerHook.getCurrentServerIP()), null);
 			ChatUtils.message("IP copied to clipboard.");
 		}else
-			syntaxError();
+			throw new CmdSyntaxError();
 	}
 	
 	@Override

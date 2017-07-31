@@ -40,10 +40,10 @@ public final class TacoCmd extends Cmd
 	}
 	
 	@Override
-	public void execute(String[] args) throws CmdError
+	public void call(String[] args) throws CmdException
 	{
 		if(args.length != 0)
-			syntaxError("Tacos don't need arguments!");
+			throw new CmdSyntaxError("Tacos don't need arguments!");
 		
 		enabled = !enabled;
 		if(enabled)

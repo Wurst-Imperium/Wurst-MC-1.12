@@ -46,7 +46,7 @@ public final class GoToCmd extends Cmd implements UpdateListener, RenderListener
 	}
 	
 	@Override
-	public void execute(String[] args) throws CmdError
+	public void call(String[] args) throws CmdException
 	{
 		// disable if enabled
 		if(enabled)
@@ -64,7 +64,7 @@ public final class GoToCmd extends Cmd implements UpdateListener, RenderListener
 			if(goal != null)
 				pathFinder = new PathFinder(goal);
 			else
-				error("No previous position on .path.");
+				throw new CmdError("No previous position on .path.");
 		}else
 		{
 			int[] goal = argsToPos(targetSettings, args);

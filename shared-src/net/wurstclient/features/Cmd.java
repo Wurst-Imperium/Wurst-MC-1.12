@@ -31,32 +31,6 @@ public abstract class Cmd extends Feature
 		this.syntax = syntax;
 	}
 	
-	public final class CmdSyntaxError extends CmdError
-	{
-		public CmdSyntaxError()
-		{
-			super();
-		}
-		
-		public CmdSyntaxError(String message)
-		{
-			super(message);
-		}
-	}
-	
-	public class CmdError extends Throwable
-	{
-		public CmdError()
-		{
-			super();
-		}
-		
-		public CmdError(String message)
-		{
-			super(message);
-		}
-	}
-	
 	public final String getCmdName()
 	{
 		return name;
@@ -146,7 +120,7 @@ public abstract class Cmd extends Feature
 	}
 	
 	protected final int[] argsToPos(TargetSettings targetSettings,
-		String... args) throws Cmd.CmdError
+		String... args) throws CmdException
 	{
 		int[] pos = new int[3];
 		if(args.length == 3)
@@ -164,36 +138,74 @@ public abstract class Cmd extends Feature
 						pos[i] = playerPos[i]
 							+ Integer.parseInt(args[i].substring(1));
 					else
-						syntaxError("Invalid coordinates.");
+						throw new CmdSyntaxError("Invalid coordinates.");
 				else
-					syntaxError("Invalid coordinates.");
+					throw new CmdSyntaxError("Invalid coordinates.");
 		}else if(args.length == 1)
 		{
 			Entity entity =
 				EntityUtils.getClosestEntityWithName(args[0], targetSettings);
 			if(entity == null)
-				error("Entity \"" + args[0] + "\" could not be found.");
+				throw new CmdError(
+					"Entity \"" + args[0] + "\" could not be found.");
 			BlockPos blockPos = new BlockPos(entity);
 			pos = new int[]{blockPos.getX(), blockPos.getY(), blockPos.getZ()};
 		}else
-			syntaxError("Invalid coordinates.");
+			throw new CmdSyntaxError("Invalid coordinates.");
 		return pos;
 	}
 	
-	protected final void syntaxError() throws CmdSyntaxError
+	public abstract void call(String[] args) throws CmdException;
+	
+	public abstract class CmdException extends Exception
 	{
-		throw new CmdSyntaxError();
+		public CmdException()
+		{
+			super();
+		}
+		
+		public CmdException(String message)
+		{
+			super(message);
+		}
+		
+		public abstract void printToChat();
 	}
 	
-	protected final void syntaxError(String message) throws CmdSyntaxError
+	public final class CmdError extends CmdException
 	{
-		throw new CmdSyntaxError(message);
+		public CmdError(String message)
+		{
+			super(message);
+		}
+		
+		@Override
+		public void printToChat()
+		{
+			ChatUtils.error(getMessage());
+		}
 	}
 	
-	protected final void error(String message) throws CmdError
+	public final class CmdSyntaxError extends CmdException
 	{
-		throw new CmdError(message);
+		public CmdSyntaxError()
+		{
+			super();
+		}
+		
+		public CmdSyntaxError(String message)
+		{
+			super(message);
+		}
+		
+		@Override
+		public void printToChat()
+		{
+			if(getMessage() != null)
+				ChatUtils.message("§4Syntax error:§r " + getMessage());
+			
+			for(String line : syntax)
+				ChatUtils.message(line);
+		}
 	}
-	
-	public abstract void execute(String[] args) throws CmdError;
 }

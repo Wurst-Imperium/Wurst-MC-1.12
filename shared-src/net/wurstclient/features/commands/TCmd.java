@@ -20,7 +20,7 @@ public final class TCmd extends Cmd
 	}
 	
 	@Override
-	public void execute(String[] args) throws CmdError
+	public void call(String[] args) throws CmdException
 	{
 		int mode = -1;
 		if(args.length == 1)
@@ -30,10 +30,10 @@ public final class TCmd extends Cmd
 		else if(args.length == 2 && args[1].equalsIgnoreCase("off"))
 			mode = 2;
 		else
-			syntaxError();
+			throw new CmdSyntaxError();
 		Mod mod = wurst.mods.getModByName(args[0]);
 		if(mod == null)
-			error("Could not find mod \"" + args[0] + "\".");
+			throw new CmdError("Could not find mod \"" + args[0] + "\".");
 		if(mode == 0)
 			mod.toggle();
 		else if(mode == 1 && !mod.isEnabled())

@@ -29,13 +29,13 @@ public final class LeaveCmd extends Cmd
 	}
 	
 	@Override
-	public void execute(String[] args) throws CmdError
+	public void call(String[] args) throws CmdException
 	{
 		if(args.length > 2)
-			syntaxError();
+			throw new CmdSyntaxError();
 		if(mc.isIntegratedServerRunning()
 			&& WMinecraft.getConnection().getPlayerInfoMap().size() == 1)
-			error("Cannot leave server when in singleplayer.");
+			throw new CmdError("Cannot leave server when in singleplayer.");
 		switch(args.length)
 		{
 			case 0:
@@ -105,7 +105,6 @@ public final class LeaveCmd extends Cmd
 				return i;
 			
 		// syntax error if mode does not exist
-		syntaxError("Invalid mode: " + input);
-		return 0;
+		throw new CmdSyntaxError("Invalid mode: " + input);
 	}
 }

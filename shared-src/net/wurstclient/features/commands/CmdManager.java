@@ -8,6 +8,7 @@
 package net.wurstclient.features.commands;
 
 import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.TreeMap;
@@ -15,16 +16,11 @@ import java.util.TreeMap;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.util.ReportedException;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.event.ClickEvent;
-import net.minecraft.util.text.event.ClickEvent.Action;
 import net.wurstclient.WurstClient;
 import net.wurstclient.events.ChatOutputEvent;
 import net.wurstclient.events.listeners.ChatOutputListener;
 import net.wurstclient.features.Cmd;
-import net.wurstclient.features.Cmd.CmdSyntaxError;
+import net.wurstclient.features.Cmd.CmdException;
 import net.wurstclient.utils.ChatUtils;
 
 public final class CmdManager implements ChatOutputListener
@@ -109,61 +105,45 @@ public final class CmdManager implements ChatOutputListener
 			return;
 		
 		String message = event.getMessage().trim();
-		if(message.startsWith("."))
+		if(!message.startsWith("."))
+			return;
+		
+		event.cancel();
+		
+		runCommand(message.substring(1));
+	}
+	
+	public void runCommand(String input)
+	{
+		String[] parts = input.split(" ");
+		Cmd cmd = getCommandByName(parts[0]);
+		
+		if(cmd == null)
 		{
-			event.cancel();
-			String input = message.substring(1);
-			String commandName = input.split(" ")[0];
-			String[] args;
-			if(input.contains(" "))
-				args = input.substring(input.indexOf(" ") + 1).split(" ");
-			else
-				args = new String[0];
-			Cmd cmd = getCommandByName(commandName);
-			if(cmd != null)
-				try
-				{
-					cmd.execute(args);
-				}catch(CmdSyntaxError e)
-				{
-					if(e.getMessage() != null)
-						ChatUtils
-							.message("§4Syntax error:§r " + e.getMessage());
-					else
-						ChatUtils.message("§4Syntax error!§r");
-					cmd.printSyntax();
-				}catch(Cmd.CmdError e)
-				{
-					ChatUtils.error(e.getMessage());
-				}catch(Throwable e)
-				{
-					CrashReport crashReport =
-						CrashReport.makeCrashReport(e, "Running Wurst command");
-					CrashReportCategory crashReportCategory =
-						crashReport.makeCategory("Affected command");
-					crashReportCategory.setDetail("Command input",
-						() -> message);
-					throw new ReportedException(crashReport);
-				}
-			else
-				switch(message)
-				{
-					case "...":
-					case ".legit":
-					ITextComponent link = new TextComponentString("more info");
-					link.getStyle().setColor(TextFormatting.AQUA)
-						.setClickEvent(new ClickEvent(Action.OPEN_URL,
-							"https://www.wurstclient.net/wiki/Commands/say/"));
-					
-					ChatUtils
-						.component(new TextComponentString("Try using .say (")
-							.appendSibling(link).appendText(")"));
-					break;
-					default:
-					ChatUtils.error(
-						"\"." + commandName + "\" is not a valid command.");
-					break;
-				}
+			ChatUtils.error("Unknown command: ." + parts[0]);
+			
+			if(input.equals("..") || input.equalsIgnoreCase("legit"))
+				ChatUtils.message("Try using .say ." + input);
+			
+			return;
+		}
+		
+		try
+		{
+			cmd.call(Arrays.copyOfRange(parts, 1, parts.length));
+			
+		}catch(CmdException e)
+		{
+			e.printToChat();
+			
+		}catch(Throwable e)
+		{
+			CrashReport crashReport =
+				CrashReport.makeCrashReport(e, "Running Wurst command");
+			CrashReportCategory crashReportCategory =
+				crashReport.makeCategory("Affected command");
+			crashReportCategory.setDetail("Command input", () -> input);
+			throw new ReportedException(crashReport);
 		}
 	}
 	

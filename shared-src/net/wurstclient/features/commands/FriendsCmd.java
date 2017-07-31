@@ -25,15 +25,15 @@ public final class FriendsCmd extends Cmd
 	}
 	
 	@Override
-	public void execute(String[] args) throws CmdError
+	public void call(String[] args) throws CmdException
 	{
 		if(args.length == 0)
-			syntaxError();
+			throw new CmdSyntaxError();
 		if(args[0].equalsIgnoreCase("list"))
 		{
 			if(args.length == 1)
 			{
-				execute(new String[]{"list", "1"});
+				call(new String[]{"list", "1"});
 				return;
 			}
 			int pages = (int)Math.ceil(wurst.friends.size() / 8D);
@@ -41,7 +41,7 @@ public final class FriendsCmd extends Cmd
 			{
 				int page = Integer.valueOf(args[1]);
 				if(page > pages || page < 1)
-					syntaxError();
+					throw new CmdSyntaxError();
 				ChatUtils.message("Current friends: " + wurst.friends.size());
 				ChatUtils
 					.message("Friends list (page " + page + "/" + pages + "):");
@@ -53,9 +53,9 @@ public final class FriendsCmd extends Cmd
 						ChatUtils.message(friend);
 				}
 			}else
-				syntaxError();
+				throw new CmdSyntaxError();
 		}else if(args.length < 2)
-			syntaxError();
+			throw new CmdSyntaxError();
 		else if(args[0].equalsIgnoreCase("add"))
 		{
 			if(wurst.friends.contains(args[1]))
@@ -77,6 +77,6 @@ public final class FriendsCmd extends Cmd
 				ChatUtils
 					.error("\"" + args[1] + "\" is not in your friends list.");
 		}else
-			syntaxError();
+			throw new CmdSyntaxError();
 	}
 }

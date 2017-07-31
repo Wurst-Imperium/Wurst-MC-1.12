@@ -56,9 +56,17 @@ public class NavigatorNewKeybindScreen extends NavigatorScreen
 			case 0:
 			if(choosingKey)
 			{
-				WurstClient.INSTANCE.keybinds.addBind(selectedKey,
-					possibleKeybinds.get(selectedCommand).getCommand());
-				ConfigFiles.KEYBINDS.save();
+				String newCommands =
+					possibleKeybinds.get(selectedCommand).getCommand();
+				
+				String oldCommands =
+					WurstClient.INSTANCE.getKeybinds().getCommands(selectedKey);
+				if(oldCommands != null)
+					newCommands = oldCommands + " ; " + newCommands;
+				
+				WurstClient.INSTANCE.getKeybinds().add(selectedKey,
+					newCommands);
+				
 				WurstClient.INSTANCE.navigator
 					.addPreference(parent.getFeature().getName());
 				ConfigFiles.NAVIGATOR.save();
@@ -133,13 +141,16 @@ public class NavigatorNewKeybindScreen extends NavigatorScreen
 			if(!selectedKey.equals("NONE"))
 			{
 				text += "\n\nKey: " + selectedKey;
-				KeybindManager keybinds = WurstClient.INSTANCE.keybinds;
-				if(keybinds.get(selectedKey) != null)
+				String commands =
+					WurstClient.INSTANCE.getKeybinds().getCommands(selectedKey);
+				if(commands != null)
 				{
 					text +=
 						"\n\nWARNING: This key is already bound to the following command(s):";
-					keybinds.get(selectedKey)
-						.forEach((cmd) -> text += "\n- " + cmd);
+					commands = commands.replace(";", "§").replace("§§", ";");
+					
+					for(String cmd : commands.split("§"))
+						text += "\n- " + cmd;
 				}
 			}
 		}else

@@ -25,7 +25,7 @@ public final class SayCmd extends Cmd
 	}
 	
 	@Override
-	public void execute(String[] args) throws CmdError
+	public void call(String[] args) throws CmdException
 	{
 		if(args.length > 0)
 		{
@@ -34,6 +34,6 @@ public final class SayCmd extends Cmd
 				message += " " + args[i];
 			WConnection.sendPacket(new CPacketChatMessage(message));
 		}else
-			syntaxError("Message required.");
+			throw new CmdSyntaxError("Message required.");
 	}
 }

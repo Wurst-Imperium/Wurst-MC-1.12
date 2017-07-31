@@ -25,16 +25,16 @@ public final class EnchantCmd extends Cmd
 	}
 	
 	@Override
-	public void execute(String[] args) throws CmdError
+	public void call(String[] args) throws CmdException
 	{
 		if(!WMinecraft.getPlayer().capabilities.isCreativeMode)
-			error("Creative mode only.");
+			throw new CmdError("Creative mode only.");
 		if(args.length == 0)
 		{
 			ItemStack currentItem =
 				WMinecraft.getPlayer().inventory.getCurrentItem();
 			if(currentItem == null)
-				error("There is no item in your hand.");
+				throw new CmdError("There is no item in your hand.");
 			for(Enchantment enchantment : Enchantment.REGISTRY)
 				try
 				{
@@ -71,7 +71,7 @@ public final class EnchantCmd extends Cmd
 			else
 				ChatUtils.message("Enchanted " + items + " items.");
 		}else
-			syntaxError();
+			throw new CmdSyntaxError();
 	}
 	
 	@Override

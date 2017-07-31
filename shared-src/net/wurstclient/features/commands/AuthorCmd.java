@@ -23,15 +23,16 @@ public final class AuthorCmd extends Cmd
 	}
 	
 	@Override
-	public void execute(String[] args) throws Cmd.CmdError
+	public void call(String[] args) throws CmdException
 	{
 		if(args.length == 0)
-			syntaxError();
+			throw new CmdSyntaxError();
 		if(!WMinecraft.getPlayer().capabilities.isCreativeMode)
-			error("Creative mode only.");
+			throw new CmdError("Creative mode only.");
 		ItemStack item = WMinecraft.getPlayer().inventory.getCurrentItem();
 		if(item == null || Item.getIdFromItem(item.getItem()) != 387)
-			error("You are not holding a written book in your hand.");
+			throw new CmdError(
+				"You are not holding a written book in your hand.");
 		String author = args[0];
 		for(int i = 1; i < args.length; i++)
 			author += " " + args[i];

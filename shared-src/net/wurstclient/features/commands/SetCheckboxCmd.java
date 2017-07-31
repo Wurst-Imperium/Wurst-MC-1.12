@@ -27,10 +27,10 @@ public final class SetCheckboxCmd extends Cmd
 	}
 	
 	@Override
-	public void execute(String[] args) throws CmdError
+	public void call(String[] args) throws CmdException
 	{
 		if(args.length != 3)
-			syntaxError();
+			throw new CmdSyntaxError();
 		
 		// find feature
 		Feature feature = null;
@@ -45,7 +45,7 @@ public final class SetCheckboxCmd extends Cmd
 			}
 		}
 		if(feature == null)
-			error(
+			throw new CmdError(
 				"A feature named \"" + featureName + "\" could not be found.");
 		
 		// find setting
@@ -58,12 +58,12 @@ public final class SetCheckboxCmd extends Cmd
 				break;
 			}
 		if(setting == null)
-			error("A setting named \"" + settingName
+			throw new CmdError("A setting named \"" + settingName
 				+ "\" could not be found in " + feature.getName() + ".");
 		
 		// check that setting is checkbox setting
 		if(!(setting instanceof CheckboxSetting))
-			error(feature.getName() + " " + setting.getName()
+			throw new CmdError(feature.getName() + " " + setting.getName()
 				+ " is not a checkbox setting.");
 		CheckboxSetting checkboxSetting = (CheckboxSetting)setting;
 		
@@ -76,6 +76,6 @@ public final class SetCheckboxCmd extends Cmd
 		else if(valueName.equalsIgnoreCase("toggle"))
 			checkboxSetting.toggle();
 		else
-			syntaxError();
+			throw new CmdSyntaxError();
 	}
 }

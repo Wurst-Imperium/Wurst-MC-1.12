@@ -18,7 +18,8 @@ import net.wurstclient.files.FileManager;
 import net.wurstclient.files.WurstFolders;
 import net.wurstclient.font.Fonts;
 import net.wurstclient.hooks.FrameHook;
-import net.wurstclient.keybinds.KeybindManager;
+import net.wurstclient.keybinds.KeybindList;
+import net.wurstclient.keybinds.KeybindProcessor;
 import net.wurstclient.navigator.Navigator;
 import net.wurstclient.options.FriendsList;
 import net.wurstclient.options.OptionsManager;
@@ -37,7 +38,8 @@ public enum WurstClient
 	public FriendsList friends;
 	public ModManager mods;
 	public Navigator navigator;
-	public final KeybindManager keybinds = new KeybindManager();
+	private KeybindList keybinds;
+	private KeybindProcessor keybindProcessor;
 	public OptionsManager options;
 	public SpfManager special;
 	public Updater updater;
@@ -54,7 +56,6 @@ public enum WurstClient
 		special = new SpfManager();
 		files = new FileManager();
 		updater = new Updater();
-		keybinds.loadDefaults();
 		options = new OptionsManager();
 		friends = new FriendsList();
 		navigator = new Navigator();
@@ -62,6 +63,10 @@ public enum WurstClient
 		WurstFolders.initialize();
 		ConfigFiles.initialize();
 		files.init();
+		
+		keybinds = new KeybindList(WurstFolders.MAIN.resolve("keybinds.json"));
+		keybinds.init();
+		keybindProcessor = new KeybindProcessor(mods, keybinds, commands);
 		
 		navigator.sortFeatures();
 		updater.checkForUpdate();
@@ -90,5 +95,15 @@ public enum WurstClient
 			mods.panicMod.setEnabled(true);
 			mods.panicMod.onUpdate();
 		}
+	}
+	
+	public KeybindList getKeybinds()
+	{
+		return keybinds;
+	}
+	
+	public KeybindProcessor getKeybindProcessor()
+	{
+		return keybindProcessor;
 	}
 }

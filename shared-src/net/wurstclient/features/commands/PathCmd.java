@@ -58,7 +58,7 @@ public final class PathCmd extends Cmd implements UpdateListener, RenderListener
 	}
 	
 	@Override
-	public void execute(String[] args) throws CmdError
+	public void call(String[] args) throws CmdException
 	{
 		// process special commands
 		boolean refresh = false;
@@ -77,7 +77,7 @@ public final class PathCmd extends Cmd implements UpdateListener, RenderListener
 				return;
 				case "-refresh":
 				if(lastGoal == null)
-					error("Cannot refresh: no previous path.");
+					throw new CmdError("Cannot refresh: no previous path.");
 				refresh = true;
 				break;
 			}

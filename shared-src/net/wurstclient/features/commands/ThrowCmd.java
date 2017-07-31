@@ -23,7 +23,7 @@ public final class ThrowCmd extends Cmd
 	}
 	
 	@Override
-	public void execute(String[] args) throws CmdError
+	public void call(String[] args) throws CmdException
 	{
 		if(args.length == 0)
 		{
@@ -43,6 +43,6 @@ public final class ThrowCmd extends Cmd
 			ConfigFiles.OPTIONS.save();
 			ChatUtils.message("Throw amount set to " + args[1] + ".");
 		}else
-			syntaxError();
+			throw new CmdSyntaxError();
 	}
 }

@@ -13,7 +13,6 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import net.wurstclient.WurstClient;
-import net.wurstclient.files.ConfigFiles;
 import net.wurstclient.gui.options.GuiPressAKey;
 import net.wurstclient.gui.options.GuiPressAKeyCallback;
 
@@ -38,13 +37,13 @@ public final class KeybindEditorScreen extends GuiScreen
 	}
 	
 	public KeybindEditorScreen(GuiScreen prevScreen, String key,
-		Iterable<String> commands)
+		String commands)
 	{
 		this.prevScreen = prevScreen;
 		
 		this.key = key;
 		oldKey = key;
-		oldCommands = String.join(";", commands);
+		oldCommands = commands;
 	}
 	
 	@Override
@@ -79,11 +78,9 @@ public final class KeybindEditorScreen extends GuiScreen
 			
 			case 1:
 			if(oldKey != null)
-				WurstClient.INSTANCE.keybinds.unbind(oldKey);
+				WurstClient.INSTANCE.getKeybinds().remove(oldKey);
 			
-			WurstClient.INSTANCE.keybinds.bind(key,
-				commandField.getText().split(";"));
-			ConfigFiles.KEYBINDS.save();
+			WurstClient.INSTANCE.getKeybinds().add(key, commandField.getText());
 			
 			mc.displayGuiScreen(prevScreen);
 			break;
@@ -124,7 +121,7 @@ public final class KeybindEditorScreen extends GuiScreen
 		
 		drawString(fontRendererObj, "Key: " + key, width / 2 - 100, 47,
 			0xa0a0a0);
-		drawString(fontRendererObj, "Commands (separated by \";\")",
+		drawString(fontRendererObj, "Commands (separated by ';')",
 			width / 2 - 100, 87, 0xa0a0a0);
 		
 		commandField.drawTextBox();

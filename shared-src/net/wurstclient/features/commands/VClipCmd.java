@@ -24,15 +24,15 @@ public final class VClipCmd extends Cmd
 	}
 	
 	@Override
-	public void execute(String[] args) throws CmdError
+	public void call(String[] args) throws CmdException
 	{
 		if(args.length != 1)
-			syntaxError();
+			throw new CmdSyntaxError();
 		if(MiscUtils.isInteger(args[0]))
 			WMinecraft.getPlayer().setPosition(WMinecraft.getPlayer().posX,
 				WMinecraft.getPlayer().posY + Integer.valueOf(args[0]),
 				WMinecraft.getPlayer().posZ);
 		else
-			syntaxError();
+			throw new CmdSyntaxError();
 	}
 }

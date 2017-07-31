@@ -21,13 +21,13 @@ public final class JumpCmd extends Cmd
 	}
 	
 	@Override
-	public void execute(String[] args) throws CmdError
+	public void call(String[] args) throws CmdException
 	{
 		if(args.length != 0)
-			syntaxError();
+			throw new CmdSyntaxError();
 		if(!WMinecraft.getPlayer().onGround
 			&& !wurst.mods.jetpackMod.isActive())
-			error("Can't jump in mid-air.");
+			throw new CmdError("Can't jump in mid-air.");
 		WMinecraft.getPlayer().jump();
 	}
 	

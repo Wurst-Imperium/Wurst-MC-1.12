@@ -14,6 +14,8 @@ import static org.lwjgl.opengl.GL11.glDisable;
 import static org.lwjgl.opengl.GL11.glEnable;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
@@ -43,29 +45,6 @@ public class NavigatorRemoveKeybindScreen extends NavigatorScreen
 	}
 	
 	@Override
-	protected void actionPerformed(GuiButton button) throws IOException
-	{
-		if(!button.enabled)
-			return;
-		
-		switch(button.id)
-		{
-			case 0:
-			WurstClient.INSTANCE.keybinds.removeBind(selectedKey,
-				existingKeybinds.get(selectedKey).getCommand());
-			ConfigFiles.KEYBINDS.save();
-			mc.displayGuiScreen(parent);
-			WurstClient.INSTANCE.navigator
-				.addPreference(parent.getFeature().getName());
-			ConfigFiles.NAVIGATOR.save();
-			break;
-			case 1:
-			mc.displayGuiScreen(parent);
-			break;
-		}
-	}
-	
-	@Override
 	protected void onResize()
 	{
 		// OK button
@@ -77,6 +56,54 @@ public class NavigatorRemoveKeybindScreen extends NavigatorScreen
 		// cancel button
 		buttonList.add(
 			new GuiButton(1, width / 2 + 2, height - 65, 149, 18, "Cancel"));
+	}
+	
+	@Override
+	protected void actionPerformed(GuiButton button) throws IOException
+	{
+		if(!button.enabled)
+			return;
+		
+		switch(button.id)
+		{
+			case 0:
+			remove();
+			break;
+			
+			case 1:
+			mc.displayGuiScreen(parent);
+			break;
+		}
+	}
+	
+	private void remove()
+	{
+		String oldCommands =
+			WurstClient.INSTANCE.getKeybinds().getCommands(selectedKey);
+		if(oldCommands == null)
+			return;
+		
+		ArrayList<String> commandsList = new ArrayList<>(Arrays.asList(
+			oldCommands.replace(";", "§").replace("§§", ";").split("§")));
+		
+		String command = existingKeybinds.get(selectedKey).getCommand();
+		while(commandsList.contains(command))
+			commandsList.remove(command);
+		
+		if(commandsList.isEmpty())
+			WurstClient.INSTANCE.getKeybinds().remove(selectedKey);
+		else
+		{
+			String newCommands = String.join("§", commandsList)
+				.replace(";", "§§").replace("§", ";");
+			WurstClient.INSTANCE.getKeybinds().add(selectedKey, newCommands);
+		}
+		
+		WurstClient.INSTANCE.navigator
+			.addPreference(parent.getFeature().getName());
+		ConfigFiles.NAVIGATOR.save();
+		
+		mc.displayGuiScreen(parent);
 	}
 	
 	@Override

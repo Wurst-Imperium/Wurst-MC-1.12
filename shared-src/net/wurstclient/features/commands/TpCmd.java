@@ -38,7 +38,7 @@ public final class TpCmd extends Cmd
 	}
 	
 	@Override
-	public void execute(String[] args) throws CmdError
+	public void call(String[] args) throws CmdException
 	{
 		int[] pos = argsToPos(targetSettings, args);
 		WMinecraft.getPlayer().setPosition(pos[0], pos[1], pos[2]);

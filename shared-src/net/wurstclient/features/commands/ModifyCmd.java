@@ -30,25 +30,25 @@ public final class ModifyCmd extends Cmd
 	}
 	
 	@Override
-	public void execute(String[] args) throws CmdError
+	public void call(String[] args) throws CmdException
 	{
 		EntityPlayerSP player = WMinecraft.getPlayer();
 		
 		if(!player.capabilities.isCreativeMode)
-			error("Creative mode only.");
+			throw new CmdError("Creative mode only.");
 		
 		if(args.length < 1)
-			syntaxError();
+			throw new CmdSyntaxError();
 		
 		ItemStack item = player.inventory.getCurrentItem();
 		
 		if(item == null)
-			error("You need an item in your hand.");
+			throw new CmdError("You need an item in your hand.");
 		
 		if(args[0].equalsIgnoreCase("add"))
 		{
 			if(args.length < 2)
-				syntaxError();
+				throw new CmdSyntaxError();
 			
 			String v = "";
 			for(int i = 1; i < args.length; i++)
@@ -64,12 +64,12 @@ public final class ModifyCmd extends Cmd
 			}catch(NBTException e)
 			{
 				e.printStackTrace();
-				error("NBT data is invalid.");
+				throw new CmdError("NBT data is invalid.");
 			}
 		}else if(args[0].equalsIgnoreCase("set"))
 		{
 			if(args.length < 2)
-				syntaxError();
+				throw new CmdSyntaxError();
 			
 			String v = "";
 			for(int i = 1; i < args.length; i++)
@@ -82,30 +82,30 @@ public final class ModifyCmd extends Cmd
 			}catch(NBTException e)
 			{
 				e.printStackTrace();
-				error("NBT data is invalid.");
+				throw new CmdError("NBT data is invalid.");
 			}
 		}else if(args[0].equalsIgnoreCase("remove"))
 		{
 			if(args.length != 2)
-				syntaxError();
+				throw new CmdSyntaxError();
 			
 			NBTPath path = parseNBTPath(item.getTagCompound(), args[1]);
 			
 			if(path == null)
-				error("The path does not exist.");
+				throw new CmdError("The path does not exist.");
 			
 			path.base.removeTag(path.key);
 		}else if(args[0].equalsIgnoreCase("metadata"))
 		{
 			if(args.length != 2)
-				syntaxError();
+				throw new CmdSyntaxError();
 			
 			if(!MiscUtils.isInteger(args[1]))
-				syntaxError("Value must be a number.");
+				throw new CmdSyntaxError("Value must be a number.");
 			
 			item.setItemDamage(Integer.parseInt(args[1]));
 		}else
-			syntaxError();
+			throw new CmdSyntaxError();
 		
 		WConnection.sendPacket(new CPacketCreativeInventoryAction(
 			36 + player.inventory.currentItem, item));

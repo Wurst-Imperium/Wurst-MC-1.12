@@ -8,9 +8,6 @@
 package net.wurstclient.keybinds;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import org.lwjgl.input.Keyboard;
 
@@ -20,7 +17,7 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiSlot;
 import net.minecraft.client.gui.GuiYesNo;
 import net.wurstclient.WurstClient;
-import net.wurstclient.files.ConfigFiles;
+import net.wurstclient.keybinds.KeybindList.Keybind;
 
 public final class KeybindManagerScreen extends GuiScreen
 {
@@ -68,25 +65,21 @@ public final class KeybindManagerScreen extends GuiScreen
 			
 			case 1:
 			// Edit
-			String key = WurstClient.INSTANCE.keybinds.keySet()
-				.toArray(new String[WurstClient.INSTANCE.keybinds
-					.size()])[listGui.selectedSlot];
-			ArrayList<String> commands = WurstClient.INSTANCE.keybinds.get(key);
-			mc.displayGuiScreen(new KeybindEditorScreen(this, key, commands));
+			Keybind keybind =
+				WurstClient.INSTANCE.getKeybinds().get(listGui.selectedSlot);
+			mc.displayGuiScreen(new KeybindEditorScreen(this, keybind.getKey(),
+				keybind.getCommands()));
 			break;
 			
 			case 2:
 			// Remove
-			String key1 = WurstClient.INSTANCE.keybinds.keySet()
-				.toArray(new String[WurstClient.INSTANCE.keybinds
-					.size()])[listGui.selectedSlot];
-			WurstClient.INSTANCE.keybinds.unbind(key1);
-			ConfigFiles.KEYBINDS.save();
+			Keybind keybind1 =
+				WurstClient.INSTANCE.getKeybinds().get(listGui.selectedSlot);
+			WurstClient.INSTANCE.getKeybinds().remove(keybind1.getKey());
 			break;
 			
 			case 3:
 			// Back
-			WurstClient.INSTANCE.keybinds.forceAddGuiKeybind();
 			mc.displayGuiScreen(prevScreen);
 			break;
 			
@@ -103,10 +96,7 @@ public final class KeybindManagerScreen extends GuiScreen
 	public void confirmClicked(boolean confirmed, int id)
 	{
 		if(confirmed)
-		{
-			WurstClient.INSTANCE.keybinds.loadDefaults();
-			ConfigFiles.KEYBINDS.save();
-		}
+			WurstClient.INSTANCE.getKeybinds().loadDefaults();
 		
 		mc.displayGuiScreen(this);
 	}
@@ -180,7 +170,7 @@ public final class KeybindManagerScreen extends GuiScreen
 		@Override
 		protected int getSize()
 		{
-			return WurstClient.INSTANCE.keybinds.size();
+			return WurstClient.INSTANCE.getKeybinds().size();
 		}
 		
 		@Override
@@ -200,13 +190,12 @@ public final class KeybindManagerScreen extends GuiScreen
 		protected void drawSlot(int id, int x, int y, int slotHeight,
 			int mouseX, int mouseY, float partialTicks)
 		{
-			Entry entry = WurstClient.INSTANCE.keybinds.entrySet().toArray(
-				new Map.Entry[WurstClient.INSTANCE.keybinds.size()])[id];
+			Keybind keybind = WurstClient.INSTANCE.getKeybinds().get(id);
 			
-			mc.fontRendererObj.drawString("Key: " + entry.getKey(), x + 3,
+			mc.fontRendererObj.drawString("Key: " + keybind.getKey(), x + 3,
 				y + 3, 0xa0a0a0);
-			mc.fontRendererObj.drawString("Command: " + entry.getValue(), x + 3,
-				y + 15, 0xa0a0a0);
+			mc.fontRendererObj.drawString("Commands: " + keybind.getCommands(),
+				x + 3, y + 15, 0xa0a0a0);
 		}
 	}
 }

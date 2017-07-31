@@ -30,15 +30,15 @@ public final class XRayCmd extends Cmd
 	}
 	
 	@Override
-	public void execute(String[] args) throws CmdError
+	public void call(String[] args) throws CmdException
 	{
 		if(args.length == 0)
-			syntaxError();
+			throw new CmdSyntaxError();
 		else if(args[0].equalsIgnoreCase("list"))
 		{
 			if(args.length == 1)
 			{
-				execute(new String[]{"list", "1"});
+				call(new String[]{"list", "1"});
 				return;
 			}
 			int pages = (int)Math.ceil(XRayMod.xrayBlocks.size() / 8D);
@@ -46,7 +46,7 @@ public final class XRayCmd extends Cmd
 			{
 				int page = Integer.valueOf(args[1]);
 				if(page > pages || page < 1)
-					syntaxError("Invalid page: " + page);
+					throw new CmdSyntaxError("Invalid page: " + page);
 				ChatUtils.message(
 					"Current X-Ray blocks: " + XRayMod.xrayBlocks.size());
 				ChatUtils.message(
@@ -63,9 +63,9 @@ public final class XRayCmd extends Cmd
 							ChatUtils.message(block.getLocalizedName());
 				}
 			}else
-				syntaxError();
+				throw new CmdSyntaxError();
 		}else if(args.length < 2)
-			syntaxError();
+			throw new CmdSyntaxError();
 		else if(args[0].equalsIgnoreCase("add"))
 		{
 			if(args[1].equalsIgnoreCase("id") && MiscUtils.isInteger(args[2]))
@@ -98,7 +98,7 @@ public final class XRayCmd extends Cmd
 					"Added block " + newID + " (\"" + args[2] + "\").");
 				mc.renderGlobal.loadRenderers();
 			}else
-				syntaxError();
+				throw new CmdSyntaxError();
 		}else if(args[0].equalsIgnoreCase("remove"))
 		{
 			if(args[1].equalsIgnoreCase("id") && MiscUtils.isInteger(args[2]))
@@ -140,8 +140,8 @@ public final class XRayCmd extends Cmd
 				ChatUtils.error("Block " + newID + " (\"" + args[2]
 					+ "\") is not in your X-Ray blocks list.");
 			}else
-				syntaxError();
+				throw new CmdSyntaxError();
 		}else
-			syntaxError();
+			throw new CmdSyntaxError();
 	}
 }

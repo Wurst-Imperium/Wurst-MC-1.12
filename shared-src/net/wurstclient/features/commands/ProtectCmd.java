@@ -39,10 +39,10 @@ public final class ProtectCmd extends Cmd
 	}
 	
 	@Override
-	public void execute(String[] args) throws CmdError
+	public void call(String[] args) throws CmdException
 	{
 		if(args.length > 1)
-			syntaxError();
+			throw new CmdSyntaxError();
 		if(args.length == 0)
 			wurst.mods.protectMod.toggle();
 		else
@@ -52,7 +52,8 @@ public final class ProtectCmd extends Cmd
 			Entity entity =
 				EntityUtils.getClosestEntityWithName(args[0], targetSettings);
 			if(entity == null)
-				error("Entity \"" + args[0] + "\" could not be found.");
+				throw new CmdError(
+					"Entity \"" + args[0] + "\" could not be found.");
 			wurst.mods.protectMod.setEnabled(true);
 			wurst.mods.protectMod.setFriend(entity);
 		}

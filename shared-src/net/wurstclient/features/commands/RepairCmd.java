@@ -25,24 +25,24 @@ public final class RepairCmd extends Cmd
 	}
 	
 	@Override
-	public void execute(String[] args) throws CmdError
+	public void call(String[] args) throws CmdException
 	{
 		if(args.length > 0)
-			syntaxError();
+			throw new CmdSyntaxError();
 		
 		// check for creative mode
 		EntityPlayerSP player = WMinecraft.getPlayer();
 		if(!player.capabilities.isCreativeMode)
-			error("Creative mode only.");
+			throw new CmdError("Creative mode only.");
 		
 		// validate item
 		ItemStack item = player.inventory.getCurrentItem();
 		if(item == null)
-			error("You need an item in your hand.");
+			throw new CmdError("You need an item in your hand.");
 		if(!item.isItemStackDamageable())
-			error("This item can't take damage.");
+			throw new CmdError("This item can't take damage.");
 		if(!item.isItemDamaged())
-			error("This item is not damaged.");
+			throw new CmdError("This item is not damaged.");
 		
 		// repair item
 		item.setItemDamage(0);

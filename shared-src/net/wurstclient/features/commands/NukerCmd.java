@@ -26,11 +26,11 @@ public final class NukerCmd extends Cmd
 	}
 	
 	@Override
-	public void execute(String[] args) throws CmdError
+	public void call(String[] args) throws CmdException
 	{
 		NukerMod nuker = wurst.mods.nukerMod;
 		if(args.length != 2)
-			syntaxError();
+			throw new CmdSyntaxError();
 		else if(args[0].toLowerCase().equals("mode"))
 		{
 			// search mode by name
@@ -43,7 +43,7 @@ public final class NukerCmd extends Cmd
 				
 			// syntax error if mode does not exist
 			if(newMode == -1)
-				syntaxError("Invalid mode");
+				throw new CmdSyntaxError("Invalid mode");
 			
 			if(newMode != nuker.mode.getSelected())
 			{
@@ -74,12 +74,13 @@ public final class NukerCmd extends Cmd
 			
 			int newId = Block.getIdFromBlock(Block.getBlockFromName(args[1]));
 			if(newId == -1)
-				error("The block \"" + args[1] + "\" could not be found.");
+				throw new CmdError(
+					"The block \"" + args[1] + "\" could not be found.");
 			
 			nuker.id = newId;
 			ChatUtils
 				.message("Nuker ID set to " + newId + " (" + args[1] + ").");
 		}else
-			syntaxError();
+			throw new CmdSyntaxError();
 	}
 }

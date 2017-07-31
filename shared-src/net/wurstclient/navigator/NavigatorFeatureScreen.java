@@ -14,7 +14,6 @@ import java.awt.Rectangle;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map.Entry;
 import java.util.TreeMap;
 
 import net.minecraft.client.gui.GuiButton;
@@ -22,8 +21,10 @@ import net.wurstclient.WurstClient;
 import net.wurstclient.compatibility.WMath;
 import net.wurstclient.compatibility.WSoundEvents;
 import net.wurstclient.features.Feature;
+import net.wurstclient.features.Mod;
 import net.wurstclient.files.ConfigFiles;
 import net.wurstclient.font.Fonts;
+import net.wurstclient.keybinds.KeybindList.Keybind;
 import net.wurstclient.keybinds.NavigatorNewKeybindScreen;
 import net.wurstclient.keybinds.NavigatorRemoveKeybindScreen;
 import net.wurstclient.keybinds.PossibleKeybind;
@@ -151,22 +152,40 @@ public class NavigatorFeatureScreen extends NavigatorScreen
 					possibleKeybind.getDescription());
 			TreeMap<String, PossibleKeybind> existingKeybinds = new TreeMap<>();
 			boolean noKeybindsSet = true;
-			for(Entry<String, ArrayList<String>> entry : WurstClient.INSTANCE.keybinds
-				.entrySet())
-				for(String command : entry.getValue())
+			for(int i = 0; i < WurstClient.INSTANCE.getKeybinds().size(); i++)
+			{
+				Keybind keybind = WurstClient.INSTANCE.getKeybinds().get(i);
+				
+				String commands = keybind.getCommands();
+				commands = commands.replace(";", "§").replace("§§", ";");
+				for(String command : commands.split("§"))
 				{
+					command = command.trim();
 					String keybindDescription =
 						possibleKeybindsMap.get(command);
+					
 					if(keybindDescription != null)
 					{
 						if(noKeybindsSet)
 							noKeybindsSet = false;
 						text +=
-							"\n" + entry.getKey() + ": " + keybindDescription;
-						existingKeybinds.put(entry.getKey(),
+							"\n" + keybind.getKey() + ": " + keybindDescription;
+						existingKeybinds.put(keybind.getKey(),
 							new PossibleKeybind(command, keybindDescription));
+						
+					}else if(feature instanceof Mod
+						&& command.equalsIgnoreCase(feature.getName()))
+					{
+						if(noKeybindsSet)
+							noKeybindsSet = false;
+						text += "\n" + keybind.getKey() + ": " + "Toggle "
+							+ feature.getName();
+						existingKeybinds.put(keybind.getKey(),
+							new PossibleKeybind(command,
+								"Toggle " + feature.getName()));
 					}
 				}
+			}
 			if(noKeybindsSet)
 				text += "\nNone";
 			else

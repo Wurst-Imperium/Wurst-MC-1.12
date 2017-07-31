@@ -27,10 +27,10 @@ public final class SetModeCmd extends Cmd
 	}
 	
 	@Override
-	public void execute(String[] args) throws CmdError
+	public void call(String[] args) throws CmdException
 	{
 		if(args.length != 3)
-			syntaxError();
+			throw new CmdSyntaxError();
 		
 		// find feature
 		Feature feature = null;
@@ -45,7 +45,7 @@ public final class SetModeCmd extends Cmd
 			}
 		}
 		if(feature == null)
-			error(
+			throw new CmdError(
 				"A feature named \"" + featureName + "\" could not be found.");
 		
 		// find setting
@@ -58,12 +58,12 @@ public final class SetModeCmd extends Cmd
 				break;
 			}
 		if(setting == null)
-			error("A setting named \"" + settingName
+			throw new CmdError("A setting named \"" + settingName
 				+ "\" could not be found in " + feature.getName() + ".");
 		
 		// check that setting is mode setting
 		if(!(setting instanceof ModeSetting))
-			error(feature.getName() + " " + setting.getName()
+			throw new CmdError(feature.getName() + " " + setting.getName()
 				+ " is not a mode setting.");
 		ModeSetting modeSetting = (ModeSetting)setting;
 		
@@ -78,8 +78,9 @@ public final class SetModeCmd extends Cmd
 			// find mode
 			int mode = modeSetting.indexOf(modeName);
 			if(mode == -1)
-				error("A " + feature.getName() + " " + setting.getName()
-					+ " named \"" + modeName + "\" could not be found.");
+				throw new CmdError(
+					"A " + feature.getName() + " " + setting.getName()
+						+ " named \"" + modeName + "\" could not be found.");
 			
 			// set mode
 			modeSetting.setSelected(mode);

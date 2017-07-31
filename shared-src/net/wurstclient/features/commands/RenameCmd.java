@@ -24,19 +24,19 @@ public final class RenameCmd extends Cmd
 	}
 	
 	@Override
-	public void execute(String[] args) throws CmdError
+	public void call(String[] args) throws CmdException
 	{
 		if(!WMinecraft.getPlayer().capabilities.isCreativeMode)
-			error("Creative mode only.");
+			throw new CmdError("Creative mode only.");
 		if(args.length == 0)
-			syntaxError();
+			throw new CmdSyntaxError();
 		String message = args[0];
 		for(int i = 1; i < args.length; i++)
 			message += " " + args[i];
 		message = message.replace("$", "§").replace("§§", "$");
 		ItemStack item = WMinecraft.getPlayer().inventory.getCurrentItem();
 		if(item == null)
-			error("There is no item in your hand.");
+			throw new CmdError("There is no item in your hand.");
 		item.setStackDisplayName(message);
 		ChatUtils.message("Renamed item to \"" + message + "§r\".");
 	}

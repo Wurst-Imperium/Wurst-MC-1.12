@@ -28,10 +28,10 @@ public final class GetPosCmd extends Cmd
 	}
 	
 	@Override
-	public void execute(String[] args) throws CmdError
+	public void call(String[] args) throws CmdException
 	{
 		if(args.length > 1)
-			syntaxError();
+			throw new CmdSyntaxError();
 		BlockPos blockpos = new BlockPos(WMinecraft.getPlayer());
 		String pos =
 			blockpos.getX() + " " + blockpos.getY() + " " + blockpos.getZ();

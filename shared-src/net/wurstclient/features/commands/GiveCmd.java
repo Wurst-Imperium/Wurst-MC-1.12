@@ -76,13 +76,13 @@ public final class GiveCmd extends Cmd
 	}
 	
 	@Override
-	public void execute(String[] args) throws CmdError
+	public void call(String[] args) throws CmdException
 	{
 		// validate input
 		if(args.length < 1)
-			syntaxError();
+			throw new CmdSyntaxError();
 		if(!WMinecraft.getPlayer().capabilities.isCreativeMode)
-			error("Creative mode only.");
+			throw new CmdError("Creative mode only.");
 		
 		// list all templates
 		if(args[0].equalsIgnoreCase("templates"))
@@ -107,12 +107,12 @@ public final class GiveCmd extends Cmd
 			// item from template
 			
 			if(args.length < 2 || args.length > 3)
-				syntaxError();
+				throw new CmdSyntaxError();
 			if(!MiscUtils.isInteger(args[1]))
-				syntaxError("Template ID must be a number.");
+				throw new CmdSyntaxError("Template ID must be a number.");
 			int id = Integer.valueOf(args[1]);
 			if(id < 1 || id > templates.length)
-				error("Template ID is out of range.");
+				throw new CmdError("Template ID is out of range.");
 			
 			ItemTemplate template = templates[id - 1];
 			item = template.item;
@@ -128,7 +128,8 @@ public final class GiveCmd extends Cmd
 			if(item == null && MiscUtils.isInteger(args[0]))
 				item = Item.getItemById(Integer.parseInt(args[0]));
 			if(item == null)
-				error("Item \"" + args[0] + "\" could not be found.");
+				throw new CmdError(
+					"Item \"" + args[0] + "\" could not be found.");
 			
 			// amount
 			if(args.length >= 2)
@@ -138,7 +139,7 @@ public final class GiveCmd extends Cmd
 			if(args.length >= 3)
 			{
 				if(!MiscUtils.isInteger(args[2]))
-					syntaxError("Metadata must be a number.");
+					throw new CmdSyntaxError("Metadata must be a number.");
 				
 				metadata = Integer.valueOf(args[2]);
 			}
@@ -160,25 +161,25 @@ public final class GiveCmd extends Cmd
 				stack.setTagCompound(JsonToNBT.getTagFromJson(nbt));
 			}catch(NBTException e)
 			{
-				syntaxError("NBT data is invalid.");
+				throw new CmdSyntaxError("NBT data is invalid.");
 			}
 		
 		// give item
 		if(InventoryUtils.placeStackInHotbar(stack))
 			ChatUtils.message("Item" + (amount > 1 ? "s" : "") + " created.");
 		else
-			error("Please clear a slot in your hotbar.");
+			throw new CmdError("Please clear a slot in your hotbar.");
 	}
 	
-	private int parseAmount(Item item, String input) throws CmdError
+	private int parseAmount(Item item, String input) throws CmdException
 	{
 		if(!MiscUtils.isInteger(input))
-			syntaxError("Amount must be a number.");
+			throw new CmdSyntaxError("Amount must be a number.");
 		int amount = Integer.valueOf(input);
 		if(amount < 1)
-			error("Amount must be 1 or more.");
+			throw new CmdError("Amount must be 1 or more.");
 		if(amount > item.getItemStackLimit())
-			error("Amount is larger than the maximum stack size.");
+			throw new CmdError("Amount is larger than the maximum stack size.");
 		return amount;
 	}
 	

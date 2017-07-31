@@ -28,10 +28,10 @@ public final class SetSliderCmd extends Cmd
 	}
 	
 	@Override
-	public void execute(String[] args) throws CmdError
+	public void call(String[] args) throws CmdException
 	{
 		if(args.length != 3)
-			syntaxError();
+			throw new CmdSyntaxError();
 		
 		// find feature
 		Feature feature = null;
@@ -46,7 +46,7 @@ public final class SetSliderCmd extends Cmd
 			}
 		}
 		if(feature == null)
-			error(
+			throw new CmdError(
 				"A feature named \"" + featureName + "\" could not be found.");
 		
 		// find setting
@@ -59,12 +59,12 @@ public final class SetSliderCmd extends Cmd
 				break;
 			}
 		if(setting == null)
-			error("A setting named \"" + settingName
+			throw new CmdError("A setting named \"" + settingName
 				+ "\" could not be found in " + feature.getName() + ".");
 		
 		// check that setting is slider setting
 		if(!(setting instanceof SliderSetting))
-			error(feature.getName() + " " + setting.getName()
+			throw new CmdError(feature.getName() + " " + setting.getName()
 				+ " is not a slider setting.");
 		SliderSetting sliderSetting = (SliderSetting)setting;
 		
@@ -78,7 +78,7 @@ public final class SetSliderCmd extends Cmd
 		{
 			// parse value
 			if(!MiscUtils.isDouble(valueName))
-				syntaxError("Value must be a number.");
+				throw new CmdSyntaxError("Value must be a number.");
 			double value = Double.parseDouble(valueName);
 			
 			// set value

@@ -23,23 +23,23 @@ public final class DamageCmd extends Cmd
 	}
 	
 	@Override
-	public void execute(String[] args) throws CmdError
+	public void call(String[] args) throws CmdException
 	{
 		if(args.length == 0)
-			syntaxError();
+			throw new CmdSyntaxError();
 		
 		// check amount
 		if(!MiscUtils.isInteger(args[0]))
-			syntaxError("Amount must be a number.");
+			throw new CmdSyntaxError("Amount must be a number.");
 		int dmg = Integer.parseInt(args[0]);
 		if(dmg < 1)
-			error("Amount must be at least 1.");
+			throw new CmdError("Amount must be at least 1.");
 		if(dmg > 40)
-			error("Amount must be at most 20.");
+			throw new CmdError("Amount must be at most 20.");
 		
 		// check gamemode
 		if(WMinecraft.getPlayer().capabilities.isCreativeMode)
-			error("Cannot damage in creative mode.");
+			throw new CmdError("Cannot damage in creative mode.");
 		
 		double posX = WMinecraft.getPlayer().posX;
 		double posY = WMinecraft.getPlayer().posY;

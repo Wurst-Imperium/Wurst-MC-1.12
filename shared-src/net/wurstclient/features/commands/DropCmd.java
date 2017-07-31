@@ -32,15 +32,15 @@ public final class DropCmd extends Cmd implements UpdateListener
 	}
 	
 	@Override
-	public void execute(String[] args) throws CmdError
+	public void call(String[] args) throws CmdException
 	{
 		if(args.length > 1)
-			syntaxError();
+			throw new CmdSyntaxError();
 		if(args.length == 1)
 			if(args[0].equalsIgnoreCase("infinite"))
 				infinite = !infinite;
 			else
-				syntaxError();
+				throw new CmdSyntaxError();
 		else
 			infinite = false;
 		timer = 0;

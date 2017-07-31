@@ -21,10 +21,10 @@ public final class WmsCmd extends Cmd
 	}
 	
 	@Override
-	public void execute(String[] args) throws CmdError
+	public void call(String[] args) throws CmdException
 	{
 		if(args.length == 0)
-			syntaxError();
+			throw new CmdSyntaxError();
 		if(args[0].equalsIgnoreCase("on") || args[0].equalsIgnoreCase("off"))
 			ChatUtils.setEnabled(args[0].equalsIgnoreCase("on"));
 		else if(args[0].equalsIgnoreCase("echo") && args.length >= 2)
@@ -34,6 +34,6 @@ public final class WmsCmd extends Cmd
 				message += " " + args[i];
 			ChatUtils.cmd(message);
 		}else
-			syntaxError();
+			throw new CmdSyntaxError();
 	}
 }

@@ -20,10 +20,10 @@ public final class BlinkCmd extends Cmd
 	}
 	
 	@Override
-	public void execute(String[] args) throws CmdError
+	public void call(String[] args) throws CmdException
 	{
 		if(args.length > 1)
-			syntaxError();
+			throw new CmdSyntaxError();
 		if(args.length == 0)
 			wurst.mods.blinkMod.toggle();
 		else if(args[0].equalsIgnoreCase("on"))
@@ -37,6 +37,6 @@ public final class BlinkCmd extends Cmd
 			if(wurst.mods.blinkMod.isEnabled())
 				wurst.mods.blinkMod.cancel();
 		}else
-			syntaxError();
+			throw new CmdSyntaxError();
 	}
 }

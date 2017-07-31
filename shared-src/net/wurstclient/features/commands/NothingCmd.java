@@ -20,7 +20,7 @@ public final class NothingCmd extends Cmd
 	}
 	
 	@Override
-	public void execute(String[] args) throws CmdError
+	public void call(String[] args) throws CmdError
 	{
 		
 	}

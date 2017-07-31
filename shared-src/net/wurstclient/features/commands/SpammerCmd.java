@@ -25,14 +25,14 @@ public final class SpammerCmd extends Cmd
 	}
 	
 	@Override
-	public void execute(String[] args) throws CmdError
+	public void call(String[] args) throws CmdException
 	{
 		if(args.length != 2)
-			syntaxError();
+			throw new CmdSyntaxError();
 		if(args[0].equalsIgnoreCase("delay"))
 		{
 			if(!MiscUtils.isInteger(args[1]))
-				syntaxError();
+				throw new CmdSyntaxError();
 			int newDelay = Integer.parseInt(args[1]);
 			if(newDelay % 50 > 0)
 				newDelay = newDelay - newDelay % 50;

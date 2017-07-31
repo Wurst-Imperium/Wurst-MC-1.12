@@ -28,10 +28,10 @@ public final class InvseeCmd extends Cmd implements RenderListener
 	}
 	
 	@Override
-	public void execute(String[] args) throws CmdError
+	public void call(String[] args) throws CmdException
 	{
 		if(args.length != 1)
-			syntaxError();
+			throw new CmdSyntaxError();
 		if(WMinecraft.getPlayer().capabilities.isCreativeMode)
 		{
 			ChatUtils.error("Survival mode only.");

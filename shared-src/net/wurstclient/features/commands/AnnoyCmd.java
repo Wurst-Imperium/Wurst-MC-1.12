@@ -27,7 +27,7 @@ public final class AnnoyCmd extends Cmd implements ChatInputListener
 	}
 	
 	@Override
-	public void execute(String[] args) throws CmdError
+	public void call(String[] args) throws CmdException
 	{
 		toggled = !toggled;
 		if(toggled)
@@ -42,7 +42,7 @@ public final class AnnoyCmd extends Cmd implements ChatInputListener
 			}else
 			{
 				toggled = false;
-				syntaxError();
+				throw new CmdSyntaxError();
 			}
 		}else
 		{

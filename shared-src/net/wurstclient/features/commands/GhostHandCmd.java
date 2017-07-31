@@ -24,7 +24,7 @@ public final class GhostHandCmd extends Cmd
 	}
 	
 	@Override
-	public void execute(String[] args) throws CmdError
+	public void call(String[] args) throws CmdException
 	{
 		if(args.length == 0)
 		{
@@ -53,8 +53,8 @@ public final class GhostHandCmd extends Cmd
 				ChatUtils.message(
 					"GhostHand ID set to " + newID + " (" + args[1] + ").");
 			}else
-				syntaxError();
+				throw new CmdSyntaxError();
 		}else
-			syntaxError();
+			throw new CmdSyntaxError();
 	}
 }

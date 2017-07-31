@@ -20,11 +20,11 @@ public final class ClearCmd extends Cmd
 	}
 	
 	@Override
-	public void execute(String[] args) throws CmdError
+	public void call(String[] args) throws CmdException
 	{
 		if(args.length == 0)
 			WChat.clearMessages();
 		else
-			syntaxError();
+			throw new CmdSyntaxError();
 	}
 }

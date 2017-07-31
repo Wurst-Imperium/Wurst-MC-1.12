@@ -24,11 +24,11 @@ public final class HelpCmd extends Cmd
 	}
 	
 	@Override
-	public void execute(String[] args) throws CmdError
+	public void call(String[] args) throws CmdException
 	{
 		if(args.length == 0)
 		{
-			execute(new String[]{"1"});
+			call(new String[]{"1"});
 			return;
 		}
 		int pages = (int)Math.ceil(wurst.commands.countCommands() / 8D);
@@ -36,7 +36,7 @@ public final class HelpCmd extends Cmd
 		{
 			int page = Integer.valueOf(args[0]);
 			if(page > pages || page < 1)
-				syntaxError("Invalid page: " + page);
+				throw new CmdSyntaxError("Invalid page: " + page);
 			ChatUtils.message(
 				"Available commands: " + wurst.commands.countCommands());
 			ChatUtils
@@ -57,7 +57,8 @@ public final class HelpCmd extends Cmd
 				cmd.printHelp();
 				cmd.printSyntax();
 			}else
-				error("Command \"" + args[0] + "\" could not be found.");
+				throw new CmdError(
+					"Command \"" + args[0] + "\" could not be found.");
 		}
 	}
 }

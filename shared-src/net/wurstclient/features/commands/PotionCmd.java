@@ -31,17 +31,17 @@ public final class PotionCmd extends Cmd
 	}
 	
 	@Override
-	public void execute(String[] args) throws CmdError
+	public void call(String[] args) throws CmdException
 	{
 		if(args.length == 0)
-			syntaxError();
+			throw new CmdSyntaxError();
 		if(!WMinecraft.getPlayer().capabilities.isCreativeMode)
-			error("Creative mode only.");
+			throw new CmdError("Creative mode only.");
 		
 		ItemStack currentItem =
 			WMinecraft.getPlayer().inventory.getCurrentItem();
 		if(!WItem.isPotion(currentItem))
-			error("You are not holding a potion in your hand.");
+			throw new CmdError("You are not holding a potion in your hand.");
 		
 		NBTTagList newEffects = new NBTTagList();
 		
@@ -49,7 +49,7 @@ public final class PotionCmd extends Cmd
 		if(args[0].equalsIgnoreCase("remove"))
 		{
 			if(args.length != 2)
-				syntaxError();
+				throw new CmdSyntaxError();
 			int id = 0;
 			id = parsePotionEffectId(args[1]);
 			List<PotionEffect> oldEffects =
@@ -70,7 +70,7 @@ public final class PotionCmd extends Cmd
 			currentItem.setTagInfo("CustomPotionEffects", newEffects);
 			return;
 		}else if((args.length - 1) % 3 != 0)
-			syntaxError();
+			throw new CmdSyntaxError();
 		
 		// add
 		if(args[0].equalsIgnoreCase("add"))
@@ -88,7 +88,7 @@ public final class PotionCmd extends Cmd
 					newEffects.appendTag(effect);
 				}
 		}else if(!args[0].equalsIgnoreCase("set"))
-			syntaxError();
+			throw new CmdSyntaxError();
 		
 		// add & set
 		for(int i = 0; i < (args.length - 1) / 3; i++)
@@ -103,7 +103,7 @@ public final class PotionCmd extends Cmd
 				amplifier = Integer.parseInt(args[2 + i * 3]) - 1;
 				duration = Integer.parseInt(args[3 + i * 3]);
 			}else
-				syntaxError();
+				throw new CmdSyntaxError();
 			
 			NBTTagCompound effect = new NBTTagCompound();
 			effect.setInteger("Id", id);
@@ -128,11 +128,11 @@ public final class PotionCmd extends Cmd
 				id = WPotion.getIdFromResourceLocation(input);
 			}catch(NullPointerException e)
 			{
-				syntaxError();
+				throw new CmdSyntaxError();
 			}
 		}
 		if(id < 1)
-			syntaxError();
+			throw new CmdSyntaxError();
 		return id;
 	}
 }
