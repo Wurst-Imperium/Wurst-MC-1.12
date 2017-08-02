@@ -29,6 +29,7 @@ import net.minecraft.client.gui.ServerListEntryLanDetected;
 import net.minecraft.client.gui.ServerListEntryNormal;
 import net.minecraft.client.multiplayer.GuiConnecting;
 import net.minecraft.client.multiplayer.ServerData;
+import net.wurstclient.WurstClient;
 import net.wurstclient.bot.WurstBot;
 import net.wurstclient.compatibility.WMinecraft;
 import net.wurstclient.files.WurstFolders;
@@ -209,6 +210,9 @@ public class ServerHook
 	
 	public static int getProtocolVersion()
 	{
+		if(WurstClient.INSTANCE.options.experimental_mc1121_mode)
+			return 337;
+		
 		NavigableMap<Integer, String> protocols = WMinecraft.PROTOCOLS;
 		
 		// use default if using Wurst-Bot

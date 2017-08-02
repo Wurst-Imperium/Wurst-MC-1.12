@@ -23,6 +23,7 @@ public class OptionsManager
 	public boolean middleClickFriends = true;
 	public boolean spamFont = false;
 	public boolean wurstNews = true;
+	public boolean experimental_mc1121_mode = false;
 	
 	public int forceOPDelay = 1000;
 	public int ghostHandID = 54;
