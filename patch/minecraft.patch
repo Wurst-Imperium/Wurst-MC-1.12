@@ -1,6 +1,6 @@
-From b04400ba60767c4db3d894bc56b8347e54ca0d3e Mon Sep 17 00:00:00 2001
+From ff753a9077bfe6b1fffd46c3bc65d9a4a14f29a6 Mon Sep 17 00:00:00 2001
 From: Alexander01998 <contact.wurstimperium@gmail.com>
-Date: Wed, 2 Aug 2017 22:27:41 +0200
+Date: Sat, 5 Aug 2017 15:46:03 +0200
 Subject: [PATCH] mod
 
 ---
@@ -2344,7 +2344,7 @@ index 6cc7d7b..21afee2 100644
              GuiSnooper.this.fontRendererObj.drawString(GuiSnooper.this.keys.get(p_192637_1_), 10, p_192637_3_, 16777215);
              GuiSnooper.this.fontRendererObj.drawString(GuiSnooper.this.values.get(p_192637_1_), 230, p_192637_3_, 16777215);
 diff --git a/net/minecraft/client/gui/ServerListEntryNormal.java b/net/minecraft/client/gui/ServerListEntryNormal.java
-index ee3802a..706e878 100644
+index ee3802a..c3403cf 100644
 --- a/net/minecraft/client/gui/ServerListEntryNormal.java
 +++ b/net/minecraft/client/gui/ServerListEntryNormal.java
 @@ -1,16 +1,22 @@
@@ -2404,7 +2404,7 @@ index ee3802a..706e878 100644
 +		
 +		// TODO: Client
 +		boolean flag2 = WurstClient.INSTANCE.options.experimental_mc1121_mode
-+			? server.version != 337
++			? server.version != 338
 +			: !WMinecraft.PROTOCOLS.containsKey(server.version);
 +		
          this.mc.fontRendererObj.drawString(this.server.serverName, p_192634_2_ + 32 + 3, p_192634_3_ + 1, 16777215);
