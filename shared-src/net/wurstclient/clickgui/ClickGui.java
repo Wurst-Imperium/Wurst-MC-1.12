@@ -35,6 +35,8 @@ public final class ClickGui
 	private final ArrayList<Window> windows = new ArrayList<>();
 	private final Path windowsFile;
 	
+	private String tooltip;
+	
 	public ClickGui(Path windowsFile)
 	{
 		this.windowsFile = windowsFile;
@@ -314,6 +316,7 @@ public final class ClickGui
 				break;
 			}
 		
+		tooltip = null;
 		for(Window window : windows)
 		{
 			// dragging
@@ -334,6 +337,55 @@ public final class ClickGui
 					window.stopDraggingScrollbar();
 				
 			renderWindow(window, mouseX, mouseY);
+		}
+		
+		// tooltip
+		if(tooltip != null)
+		{
+			String[] lines = tooltip.split("\n");
+			Minecraft mc = Minecraft.getMinecraft();
+			FontRenderer fr = mc.fontRendererObj;
+			
+			int tw = 0;
+			int th = lines.length * fr.FONT_HEIGHT;
+			for(String line : lines)
+			{
+				int lw = fr.getStringWidth(line);
+				if(lw > tw)
+					tw = lw;
+			}
+			int sw = mc.currentScreen.width;
+			int sh = mc.currentScreen.height;
+			
+			int xt1 = mouseX + tw + 11 <= sw ? mouseX + 8 : mouseX - tw - 8;
+			int xt2 = xt1 + tw + 3;
+			int yt1 = mouseY + th - 2 <= sh ? mouseY - 4 : mouseY - th - 4;
+			int yt2 = yt1 + th + 2;
+			
+			// background
+			GL11.glDisable(GL11.GL_TEXTURE_2D);
+			GL11.glColor4f(0.25F, 0.25F, 0.25F, 0.75F);
+			GL11.glBegin(GL11.GL_QUADS);
+			GL11.glVertex2i(xt1, yt1);
+			GL11.glVertex2i(xt1, yt2);
+			GL11.glVertex2i(xt2, yt2);
+			GL11.glVertex2i(xt2, yt1);
+			GL11.glEnd();
+			
+			// outline
+			GL11.glColor4f(0.0625F, 0.0625F, 0.0625F, 0.5F);
+			GL11.glBegin(GL11.GL_LINE_LOOP);
+			GL11.glVertex2i(xt1, yt1);
+			GL11.glVertex2i(xt1, yt2);
+			GL11.glVertex2i(xt2, yt2);
+			GL11.glVertex2i(xt2, yt1);
+			GL11.glEnd();
+			
+			// text
+			GL11.glEnable(GL11.GL_TEXTURE_2D);
+			for(int i = 0; i < lines.length; i++)
+				fr.drawString(lines[i], xt1 + 2, yt1 + 2 + i * fr.FONT_HEIGHT,
+					0xffffff);
 		}
 		
 		GL11.glEnable(GL11.GL_CULL_FACE);
@@ -844,5 +896,10 @@ public final class ClickGui
 		GL11.glVertex2d(xc1, yc3);
 		GL11.glVertex2d(xc5, yc6);
 		GL11.glEnd();
+	}
+	
+	public void setTooltip(String tooltip)
+	{
+		this.tooltip = tooltip;
 	}
 }

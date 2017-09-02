@@ -11,6 +11,7 @@ import org.lwjgl.opengl.GL11;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
+import net.wurstclient.WurstClient;
 import net.wurstclient.features.Mod;
 
 public final class ModButton extends Component
@@ -46,6 +47,10 @@ public final class ModButton extends Component
 		boolean hovering = mouseX >= x1 && mouseY >= y1 && mouseX < x2
 			&& mouseY < y2 && mouseY >= -scroll
 			&& mouseY < getParent().getHeight() - 13 - scroll;
+		
+		// tooltip
+		if(hovering)
+			WurstClient.INSTANCE.getGui().setTooltip(hack.getDescription());
 		
 		// color
 		if(hack.isEnabled())
