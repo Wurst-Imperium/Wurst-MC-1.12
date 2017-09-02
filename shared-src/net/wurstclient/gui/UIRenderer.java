@@ -9,7 +9,9 @@ package net.wurstclient.gui;
 
 import org.lwjgl.opengl.GL11;
 
+import net.minecraft.client.Minecraft;
 import net.wurstclient.WurstClient;
+import net.wurstclient.clickgui.ClickGuiScreen;
 import net.wurstclient.events.GUIRenderEvent;
 
 public final class UIRenderer
@@ -30,6 +32,10 @@ public final class UIRenderer
 		wurstLogo.render();
 		modList.render(partialTicks);
 		tabGui.render(partialTicks);
+		
+		// pinned windows
+		if(!(Minecraft.getMinecraft().currentScreen instanceof ClickGuiScreen))
+			WurstClient.INSTANCE.getGui().renderPinnedWindows();
 		
 		WurstClient.INSTANCE.events.fire(GUIRenderEvent.INSTANCE);
 		

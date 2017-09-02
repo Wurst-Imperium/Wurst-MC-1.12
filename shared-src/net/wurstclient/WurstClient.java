@@ -8,6 +8,7 @@
 package net.wurstclient;
 
 import net.wurstclient.analytics.AnalyticsManager;
+import net.wurstclient.clickgui.ClickGui;
 import net.wurstclient.compatibility.WMinecraft;
 import net.wurstclient.events.EventManager;
 import net.wurstclient.features.commands.CmdManager;
@@ -39,6 +40,7 @@ public enum WurstClient
 	public ModManager mods;
 	public Navigator navigator;
 	private KeybindList keybinds;
+	private ClickGui gui;
 	private KeybindProcessor keybindProcessor;
 	public OptionsManager options;
 	public SpfManager special;
@@ -66,6 +68,10 @@ public enum WurstClient
 		
 		keybinds = new KeybindList(WurstFolders.MAIN.resolve("keybinds.json"));
 		keybinds.init();
+		
+		gui = new ClickGui(WurstFolders.MAIN.resolve("windows.json"));
+		gui.init(mods);
+		
 		keybindProcessor = new KeybindProcessor(mods, keybinds, commands);
 		
 		navigator.sortFeatures();
@@ -100,6 +106,11 @@ public enum WurstClient
 	public KeybindList getKeybinds()
 	{
 		return keybinds;
+	}
+	
+	public ClickGui getGui()
+	{
+		return gui;
 	}
 	
 	public KeybindProcessor getKeybindProcessor()
