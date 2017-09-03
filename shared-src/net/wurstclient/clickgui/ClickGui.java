@@ -27,8 +27,7 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.ScaledResolution;
 import net.wurstclient.WurstClient;
 import net.wurstclient.features.Category;
-import net.wurstclient.features.Mod;
-import net.wurstclient.features.mods.ModManager;
+import net.wurstclient.features.Feature;
 import net.wurstclient.utils.JsonUtils;
 
 public final class ClickGui
@@ -46,15 +45,20 @@ public final class ClickGui
 		this.windowsFile = windowsFile;
 	}
 	
-	public void init(ModManager hax)
+	public void init()
 	{
 		LinkedHashMap<Category, Window> windowMap = new LinkedHashMap<>();
 		for(Category category : Category.values())
 			windowMap.put(category, new Window(category.getName()));
 		
-		for(Mod hack : hax.getAllMods())
-			if(hack.getCategory() != null)
-				windowMap.get(hack.getCategory()).add(new ModButton(hack));
+		ArrayList<Feature> features = new ArrayList<>();
+		features.addAll(WurstClient.INSTANCE.mods.getAllMods());
+		features.addAll(WurstClient.INSTANCE.commands.getAllCommands());
+		features.addAll(WurstClient.INSTANCE.special.getAllFeatures());
+		
+		for(Feature f : features)
+			if(f.getCategory() != null)
+				windowMap.get(f.getCategory()).add(new FeatureButton(f));
 			
 		windows.addAll(windowMap.values());
 		

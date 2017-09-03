@@ -70,7 +70,7 @@ public enum WurstClient
 		keybinds.init();
 		
 		gui = new ClickGui(WurstFolders.MAIN.resolve("windows.json"));
-		gui.init(mods);
+		gui.init();
 		
 		keybindProcessor = new KeybindProcessor(mods, keybinds, commands);
 		

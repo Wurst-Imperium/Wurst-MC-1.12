@@ -12,15 +12,15 @@ import org.lwjgl.opengl.GL11;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.wurstclient.WurstClient;
-import net.wurstclient.features.Mod;
+import net.wurstclient.features.Feature;
 
-public final class ModButton extends Component
+public final class FeatureButton extends Component
 {
-	private final Mod hack;
+	private final Feature feature;
 	
-	public ModButton(Mod hack)
+	public FeatureButton(Feature feature)
 	{
-		this.hack = hack;
+		this.feature = feature;
 		setWidth(getDefaultWidth());
 		setHeight(getDefaultHeight());
 	}
@@ -31,7 +31,7 @@ public final class ModButton extends Component
 		if(mouseButton != 0)
 			return;
 		
-		hack.setEnabled(!hack.isEnabled());
+		feature.doPrimaryAction();
 	}
 	
 	@Override
@@ -54,11 +54,11 @@ public final class ModButton extends Component
 		
 		// tooltip
 		if(hovering)
-			gui.setTooltip(hack.getDescription());
+			gui.setTooltip(feature.getDescription());
 		
 		// color
-		if(hack.isEnabled())
-			if(hack.isBlocked())
+		if(feature.isEnabled())
+			if(feature.isBlocked())
 				GL11.glColor4f(1, 0, 0, hovering ? 0.75F : 0.5F);
 			else
 				GL11.glColor4f(0, 1, 0, hovering ? 0.75F : 0.5F);
@@ -87,9 +87,9 @@ public final class ModButton extends Component
 		GL11.glColor4f(1, 1, 1, 1);
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		FontRenderer fr = Minecraft.getMinecraft().fontRendererObj;
-		int fx = x1 + (getWidth() - fr.getStringWidth(hack.getName())) / 2;
+		int fx = x1 + (getWidth() - fr.getStringWidth(feature.getName())) / 2;
 		int fy = y1 + 2;
-		fr.drawString(hack.getName(), fx, fy, 0xf0f0f0);
+		fr.drawString(feature.getName(), fx, fy, 0xf0f0f0);
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
 	}
 	
@@ -97,7 +97,7 @@ public final class ModButton extends Component
 	public int getDefaultWidth()
 	{
 		return Minecraft.getMinecraft().fontRendererObj
-			.getStringWidth(hack.getName()) + 2;
+			.getStringWidth(feature.getName()) + 2;
 	}
 	
 	@Override
