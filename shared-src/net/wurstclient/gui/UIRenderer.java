@@ -11,6 +11,7 @@ import org.lwjgl.opengl.GL11;
 
 import net.minecraft.client.Minecraft;
 import net.wurstclient.WurstClient;
+import net.wurstclient.clickgui.ClickGui;
 import net.wurstclient.clickgui.ClickGuiScreen;
 import net.wurstclient.events.GUIRenderEvent;
 
@@ -25,9 +26,13 @@ public final class UIRenderer
 		if(!WurstClient.INSTANCE.isEnabled())
 			return;
 		
+		ClickGui clickGui = WurstClient.INSTANCE.getGui();
+		
 		// GL settings
 		GL11.glDisable(GL11.GL_CULL_FACE);
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
+		
+		clickGui.updateColors();
 		
 		wurstLogo.render();
 		modList.render(partialTicks);
@@ -35,7 +40,7 @@ public final class UIRenderer
 		
 		// pinned windows
 		if(!(Minecraft.getMinecraft().currentScreen instanceof ClickGuiScreen))
-			WurstClient.INSTANCE.getGui().renderPinnedWindows();
+			clickGui.renderPinnedWindows();
 		
 		WurstClient.INSTANCE.events.fire(GUIRenderEvent.INSTANCE);
 		

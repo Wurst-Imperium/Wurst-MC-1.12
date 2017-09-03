@@ -28,6 +28,7 @@ public final class ModList implements UpdateListener
 		WurstClient.INSTANCE.special.modListSpf;
 	private int posY;
 	private ScaledResolution sr;
+	private int textColor;
 	
 	public ModList()
 	{
@@ -53,6 +54,15 @@ public final class ModList implements UpdateListener
 		else
 			posY = 19;
 		sr = new ScaledResolution(Minecraft.getMinecraft());
+		
+		// color
+		if(WurstClient.INSTANCE.mods.rainbowUiMod.isActive())
+		{
+			float[] acColor = WurstClient.INSTANCE.getGui().getAcColor();
+			textColor = 0x04 << 24 | (int)(acColor[0] * 256) << 16
+				| (int)(acColor[1] * 256) << 8 | (int)(acColor[2] * 256);
+		}else
+			textColor = 0x04ffffff;
 		
 		// YesCheat+ mode indicator
 		YesCheatSpf yesCheatSpf = WurstClient.INSTANCE.special.yesCheatSpf;
@@ -125,7 +135,7 @@ public final class ModList implements UpdateListener
 			posX = 2;
 		
 		Fonts.segoe18.drawString(s, posX + 1, posY + 1, 0xff000000);
-		Fonts.segoe18.drawString(s, posX, posY, 0xffffffff);
+		Fonts.segoe18.drawString(s, posX, posY, textColor | 0xff000000);
 		
 		posY += 9;
 	}
@@ -145,7 +155,7 @@ public final class ModList implements UpdateListener
 		
 		int alpha = (int)(255 * (1 - offset / 4)) << 24;
 		Fonts.segoe18.drawString(s, posX + 1, posY + 1, 0x04000000 | alpha);
-		Fonts.segoe18.drawString(s, posX, posY, 0x04ffffff | alpha);
+		Fonts.segoe18.drawString(s, posX, posY, textColor | alpha);
 		
 		posY += 9;
 	}

@@ -12,6 +12,7 @@ import org.lwjgl.opengl.GL11;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.util.ResourceLocation;
+import net.wurstclient.WurstClient;
 import net.wurstclient.events.ChatOutputEvent;
 import net.wurstclient.events.listeners.GUIRenderListener;
 import net.wurstclient.events.listeners.UpdateListener;
@@ -76,7 +77,12 @@ public final class TacoCmd extends Cmd
 		GL11.glDisable(GL11.GL_CULL_FACE);
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-		GL11.glColor4f(1, 1, 1, 1);
+		if(WurstClient.INSTANCE.mods.rainbowUiMod.isActive())
+		{
+			float[] acColor = WurstClient.INSTANCE.getGui().getAcColor();
+			GL11.glColor4f(acColor[0], acColor[1], acColor[2], 1);
+		}else
+			GL11.glColor4f(1, 1, 1, 1);
 		
 		mc.getTextureManager().bindTexture(tacos[ticks / 8]);
 		ScaledResolution sr = new ScaledResolution(mc);

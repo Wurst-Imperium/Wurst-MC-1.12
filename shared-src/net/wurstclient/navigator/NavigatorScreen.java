@@ -15,6 +15,7 @@ import java.io.IOException;
 import org.lwjgl.input.Mouse;
 
 import net.minecraft.client.gui.GuiScreen;
+import net.wurstclient.WurstClient;
 
 public abstract class NavigatorScreen extends GuiScreen
 {
@@ -205,6 +206,10 @@ public abstract class NavigatorScreen extends GuiScreen
 	
 	protected final void drawBoxShadow(int x1, int y1, int x2, int y2)
 	{
+		// color
+		float[] acColor = WurstClient.INSTANCE.getGui().getAcColor();
+		boolean rainbow = WurstClient.INSTANCE.mods.rainbowUiMod.isActive();
+		
 		// outline positions
 		double xi1 = x1 - 0.1;
 		double xi2 = x2 + 0.1;
@@ -213,7 +218,10 @@ public abstract class NavigatorScreen extends GuiScreen
 		
 		// outline
 		glLineWidth(1F);
-		glColor4f(0F, 0F, 0F, 0.5F);
+		if(rainbow)
+			glColor4f(acColor[0], acColor[1], acColor[2], 0.5F);
+		else
+			glColor4f(0F, 0F, 0F, 0.5F);
 		glBegin(GL_LINE_LOOP);
 		{
 			glVertex2d(xi1, yi1);
@@ -229,17 +237,23 @@ public abstract class NavigatorScreen extends GuiScreen
 		yi1 -= 0.9;
 		yi2 += 0.9;
 		
+		float[] shadow;
+		if(rainbow)
+			shadow = acColor;
+		else
+			shadow = new float[]{0.125F, 0.125F, 0.125F};
+		
 		// top left
 		glBegin(GL_POLYGON);
 		{
-			glColor4f(0.125F, 0.125F, 0.125F, 0.75F);
+			glColor4f(shadow[0], shadow[1], shadow[2], 0.75F);
 			glVertex2d(x1, y1);
 			glVertex2d(x2, y1);
 			glColor4f(0F, 0F, 0F, 0F);
 			glVertex2d(xi2, yi1);
 			glVertex2d(xi1, yi1);
 			glVertex2d(xi1, yi2);
-			glColor4f(0.125F, 0.125F, 0.125F, 0.75F);
+			glColor4f(shadow[0], shadow[1], shadow[2], 0.75F);
 			glVertex2d(x1, y2);
 		}
 		glEnd();
@@ -253,7 +267,7 @@ public abstract class NavigatorScreen extends GuiScreen
 			glVertex2d(xi2, yi1);
 			glVertex2d(xi2, yi2);
 			glVertex2d(xi1, yi2);
-			glColor4f(0.125F, 0.125F, 0.125F, 0.75F);
+			glColor4f(shadow[0], shadow[1], shadow[2], 0.75F);
 			glVertex2d(x1, y2);
 		}
 		glEnd();
@@ -261,6 +275,10 @@ public abstract class NavigatorScreen extends GuiScreen
 	
 	protected final void drawInvertedBoxShadow(int x1, int y1, int x2, int y2)
 	{
+		// color
+		float[] acColor = WurstClient.INSTANCE.getGui().getAcColor();
+		boolean rainbow = WurstClient.INSTANCE.mods.rainbowUiMod.isActive();
+		
 		// outline positions
 		double xi1 = x1 + 0.1;
 		double xi2 = x2 - 0.1;
@@ -268,8 +286,11 @@ public abstract class NavigatorScreen extends GuiScreen
 		double yi2 = y2 - 0.1;
 		
 		// outline
-		glColor4f(0F, 0F, 0F, 0.5F);
 		glLineWidth(1F);
+		if(rainbow)
+			glColor4f(acColor[0], acColor[1], acColor[2], 0.5F);
+		else
+			glColor4f(0F, 0F, 0F, 0.5F);
 		glBegin(GL_LINE_LOOP);
 		{
 			glVertex2d(xi1, yi1);
@@ -285,17 +306,23 @@ public abstract class NavigatorScreen extends GuiScreen
 		yi1 += 0.9;
 		yi2 -= 0.9;
 		
+		float[] shadow;
+		if(rainbow)
+			shadow = acColor;
+		else
+			shadow = new float[]{0.125F, 0.125F, 0.125F};
+		
 		// top left
 		glBegin(GL_POLYGON);
 		{
-			glColor4f(0.125F, 0.125F, 0.125F, 0.75F);
+			glColor4f(shadow[0], shadow[1], shadow[2], 0.75F);
 			glVertex2d(x1, y1);
 			glVertex2d(x2, y1);
 			glColor4f(0F, 0F, 0F, 0F);
 			glVertex2d(xi2, yi1);
 			glVertex2d(xi1, yi1);
 			glVertex2d(xi1, yi2);
-			glColor4f(0.125F, 0.125F, 0.125F, 0.75F);
+			glColor4f(shadow[0], shadow[1], shadow[2], 0.75F);
 			glVertex2d(x1, y2);
 		}
 		glEnd();
@@ -309,7 +336,7 @@ public abstract class NavigatorScreen extends GuiScreen
 			glVertex2d(xi2, yi1);
 			glVertex2d(xi2, yi2);
 			glVertex2d(xi1, yi2);
-			glColor4f(0.125F, 0.125F, 0.125F, 0.75F);
+			glColor4f(shadow[0], shadow[1], shadow[2], 0.75F);
 			glVertex2d(x1, y2);
 		}
 		glEnd();
@@ -317,10 +344,17 @@ public abstract class NavigatorScreen extends GuiScreen
 	
 	protected final void drawDownShadow(int x1, int y1, int x2, int y2)
 	{
+		// color
+		float[] acColor = WurstClient.INSTANCE.getGui().getAcColor();
+		boolean rainbow = WurstClient.INSTANCE.mods.rainbowUiMod.isActive();
+		
 		// outline
 		double yi1 = y1 + 0.1;
-		glColor4f(0F, 0F, 0F, 0.5F);
 		glLineWidth(1F);
+		if(rainbow)
+			glColor4f(acColor[0], acColor[1], acColor[2], 0.5F);
+		else
+			glColor4f(0F, 0F, 0F, 0.5F);
 		glBegin(GL_LINES);
 		{
 			glVertex2d(x1, yi1);
@@ -331,7 +365,10 @@ public abstract class NavigatorScreen extends GuiScreen
 		// shadow
 		glBegin(GL_POLYGON);
 		{
-			glColor4f(0.125F, 0.125F, 0.125F, 0.75F);
+			if(rainbow)
+				glColor4f(acColor[0], acColor[1], acColor[2], 0.75F);
+			else
+				glColor4f(0.125F, 0.125F, 0.125F, 0.75F);
 			glVertex2i(x1, y1);
 			glVertex2i(x2, y1);
 			glColor4f(0F, 0F, 0F, 0F);

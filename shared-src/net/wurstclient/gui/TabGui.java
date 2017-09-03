@@ -196,6 +196,8 @@ public final class TabGui implements KeyPressListener
 	{
 		// color
 		GL11.glColor4f(0.25F, 0.25F, 0.25F, 0.5F);
+		float[] acColor = WurstClient.INSTANCE.getGui().getAcColor();
+		boolean rainbow = WurstClient.INSTANCE.mods.rainbowUiMod.isActive();
 		
 		// box
 		GL11.glBegin(GL11.GL_QUADS);
@@ -215,7 +217,10 @@ public final class TabGui implements KeyPressListener
 		
 		// outline
 		GL11.glLineWidth(1);
-		GL11.glColor4f(0, 0, 0, 0.5F);
+		if(rainbow)
+			GL11.glColor4f(acColor[0], acColor[1], acColor[2], 0.5F);
+		else
+			GL11.glColor4f(0, 0, 0, 0.5F);
 		GL11.glBegin(GL11.GL_LINE_LOOP);
 		{
 			GL11.glVertex2d(xi1, yi1);
@@ -231,17 +236,23 @@ public final class TabGui implements KeyPressListener
 		yi1 -= 0.9;
 		yi2 += 0.9;
 		
+		float[] shadow;
+		if(rainbow)
+			shadow = acColor;
+		else
+			shadow = new float[]{0.125F, 0.125F, 0.125F};
+		
 		// top left
 		GL11.glBegin(GL11.GL_POLYGON);
 		{
-			GL11.glColor4f(0.125F, 0.125F, 0.125F, 0.75F);
+			GL11.glColor4f(shadow[0], shadow[1], shadow[2], 0.75F);
 			GL11.glVertex2d(x1, y1);
 			GL11.glVertex2d(x2, y1);
 			GL11.glColor4f(0, 0, 0, 0);
 			GL11.glVertex2d(xi2, yi1);
 			GL11.glVertex2d(xi1, yi1);
 			GL11.glVertex2d(xi1, yi2);
-			GL11.glColor4f(0.125F, 0.125F, 0.125F, 0.75F);
+			GL11.glColor4f(shadow[0], shadow[1], shadow[2], 0.75F);
 			GL11.glVertex2d(x1, y2);
 		}
 		GL11.glEnd();
@@ -255,7 +266,7 @@ public final class TabGui implements KeyPressListener
 			GL11.glVertex2d(xi2, yi1);
 			GL11.glVertex2d(xi2, yi2);
 			GL11.glVertex2d(xi1, yi2);
-			GL11.glColor4f(0.125F, 0.125F, 0.125F, 0.75F);
+			GL11.glColor4f(shadow[0], shadow[1], shadow[2], 0.75F);
 			GL11.glVertex2d(x1, y2);
 		}
 		GL11.glEnd();
