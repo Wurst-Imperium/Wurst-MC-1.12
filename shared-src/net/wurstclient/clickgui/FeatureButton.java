@@ -9,10 +9,10 @@ package net.wurstclient.clickgui;
 
 import org.lwjgl.opengl.GL11;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.wurstclient.WurstClient;
 import net.wurstclient.features.Feature;
+import net.wurstclient.font.Fonts;
 
 public final class FeatureButton extends Component
 {
@@ -86,9 +86,9 @@ public final class FeatureButton extends Component
 		// hack name
 		GL11.glColor4f(1, 1, 1, 1);
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
-		FontRenderer fr = Minecraft.getMinecraft().fontRendererObj;
+		FontRenderer fr = Fonts.segoe18;
 		int fx = x1 + (getWidth() - fr.getStringWidth(feature.getName())) / 2;
-		int fy = y1 + 2;
+		int fy = y1 - 1;
 		fr.drawString(feature.getName(), fx, fy, 0xf0f0f0);
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
 	}
@@ -96,8 +96,7 @@ public final class FeatureButton extends Component
 	@Override
 	public int getDefaultWidth()
 	{
-		return Minecraft.getMinecraft().fontRendererObj
-			.getStringWidth(feature.getName()) + 2;
+		return Fonts.segoe18.getStringWidth(feature.getName()) + 2;
 	}
 	
 	@Override

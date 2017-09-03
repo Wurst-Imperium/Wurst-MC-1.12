@@ -28,6 +28,7 @@ import net.minecraft.client.gui.ScaledResolution;
 import net.wurstclient.WurstClient;
 import net.wurstclient.features.Category;
 import net.wurstclient.features.Feature;
+import net.wurstclient.font.Fonts;
 import net.wurstclient.utils.JsonUtils;
 
 public final class ClickGui
@@ -352,7 +353,7 @@ public final class ClickGui
 		{
 			String[] lines = tooltip.split("\n");
 			Minecraft mc = Minecraft.getMinecraft();
-			FontRenderer fr = mc.fontRendererObj;
+			FontRenderer fr = Fonts.segoe15;
 			
 			int tw = 0;
 			int th = lines.length * fr.FONT_HEIGHT;
@@ -392,7 +393,7 @@ public final class ClickGui
 			// text
 			GL11.glEnable(GL11.GL_TEXTURE_2D);
 			for(int i = 0; i < lines.length; i++)
-				fr.drawString(lines[i], xt1 + 2, yt1 + 2 + i * fr.FONT_HEIGHT,
+				fr.drawString(lines[i], xt1 + 2, yt1 - 1 + i * fr.FONT_HEIGHT,
 					0xffffff);
 		}
 		
@@ -660,10 +661,9 @@ public final class ClickGui
 		// window title
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		GL11.glColor4f(1, 1, 1, 1);
-		FontRenderer fontRenderer = Minecraft.getMinecraft().fontRendererObj;
-		String title =
-			fontRenderer.trimStringToWidth(window.getTitle(), x3 - x1);
-		fontRenderer.drawString(title, x1 + 2, y1 + 3, 0xf0f0f0);
+		FontRenderer fr = Fonts.segoe18;
+		String title = fr.trimStringToWidth(window.getTitle(), x3 - x1);
+		fr.drawString(title, x1 + 2, y1, 0xf0f0f0);
 	}
 	
 	private void renderTitleBarButton(int x1, int y1, int x2, int y2,
