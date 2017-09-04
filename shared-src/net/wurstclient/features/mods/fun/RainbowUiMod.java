@@ -17,7 +17,8 @@ public final class RainbowUiMod extends Mod
 {
 	public RainbowUiMod()
 	{
-		super("RainbowUI", "Makes everything colorful.");
+		super("RainbowUI",
+			"§cM§aa§9k§ce§as §9e§cv§ae§9r§cy§at§9h§ci§an§9g §cc§ao§9l§co§ar§9f§cu§al§9.");
 		setCategory(Category.FUN);
 	}
 }
