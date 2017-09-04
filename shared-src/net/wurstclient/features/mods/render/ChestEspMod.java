@@ -207,8 +207,7 @@ public final class ChestEspMod extends Mod
 				+ (e.posY - e.lastTickPosY) * partialTicks;
 			double offsetZ = -(e.posZ - e.lastTickPosZ)
 				+ (e.posZ - e.lastTickPosZ) * partialTicks;
-			minecartBoxes.add(
-				e.getRenderBoundingBox().offset(offsetX, offsetY, offsetZ));
+			minecartBoxes.add(e.boundingBox.offset(offsetX, offsetY, offsetZ));
 		});
 		
 		GL11.glColor4f(0, 1, 0, 0.25F);
