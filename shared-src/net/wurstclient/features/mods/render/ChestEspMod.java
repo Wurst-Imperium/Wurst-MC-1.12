@@ -58,10 +58,10 @@ public final class ChestEspMod extends Mod
 	
 	public ChestEspMod()
 	{
-		super("ChestESP", "Allows you to see chests through walls.\n"
-			+ "Works with normal chests, trapped chests, ender chests and minecart chests.\n"
-			+ "For normal and trapped chests, ChestESP will remember which ones you have already\n"
-			+ "opened and remind you whether or not they are empty by slightly altering their overlay.");
+		super("ChestESP",
+			"Highlights nearby chests.\n" + "§agreen§r - normal chests\n"
+				+ "§6orange§r - trapped chests\n" + "§bcyan§r - ender chests\n"
+				+ "[  ] - empty\n" + "[X] - not empty");
 		setCategory(Category.RENDER);
 	}
 	
@@ -197,33 +197,45 @@ public final class ChestEspMod extends Mod
 			-mc.getRenderManager().renderPosY,
 			-mc.getRenderManager().renderPosZ);
 		
-		// TODO: interpolation for minecarts
+		// minecart interpolation
+		ArrayList<AxisAlignedBB> minecartBoxes =
+			new ArrayList<>(specialCart.size());
+		specialCart.forEach(e -> {
+			double offsetX = -(e.posX - e.lastTickPosX)
+				+ (e.posX - e.lastTickPosX) * partialTicks;
+			double offsetY = -(e.posY - e.lastTickPosY)
+				+ (e.posY - e.lastTickPosY) * partialTicks;
+			double offsetZ = -(e.posZ - e.lastTickPosZ)
+				+ (e.posZ - e.lastTickPosZ) * partialTicks;
+			minecartBoxes.add(
+				e.getRenderBoundingBox().offset(offsetX, offsetY, offsetZ));
+		});
 		
 		GL11.glColor4f(0, 1, 0, 0.25F);
-		basicNew.forEach((bb) -> RenderUtils.drawSolidBox(bb));
-		specialCart.forEach((e) -> RenderUtils.drawSolidBox(e.boundingBox));
+		basicNew.forEach(bb -> RenderUtils.drawSolidBox(bb));
+		minecartBoxes.forEach(bb -> RenderUtils.drawSolidBox(bb));
 		
 		GL11.glColor4f(0, 1, 0, 0.5F);
-		basicNew.forEach((bb) -> RenderUtils.drawOutlinedBox(bb));
-		basicEmpty.forEach((bb) -> RenderUtils.drawOutlinedBox(bb));
-		basicNotEmpty.forEach((bb) -> RenderUtils.drawOutlinedBox(bb));
-		basicNotEmpty.forEach((bb) -> RenderUtils.drawCrossBox(bb));
-		specialCart.forEach((e) -> RenderUtils.drawOutlinedBox(e.boundingBox));
+		basicNew.forEach(bb -> RenderUtils.drawOutlinedBox(bb));
+		basicEmpty.forEach(bb -> RenderUtils.drawOutlinedBox(bb));
+		basicNotEmpty.forEach(bb -> RenderUtils.drawOutlinedBox(bb));
+		basicNotEmpty.forEach(bb -> RenderUtils.drawCrossBox(bb));
+		minecartBoxes.forEach(bb -> RenderUtils.drawOutlinedBox(bb));
 		
 		GL11.glColor4f(1, 0.5F, 0, 0.25F);
-		trappedNew.forEach((bb) -> RenderUtils.drawSolidBox(bb));
+		trappedNew.forEach(bb -> RenderUtils.drawSolidBox(bb));
 		
 		GL11.glColor4f(1, 0.5F, 0, 0.5F);
-		trappedNew.forEach((bb) -> RenderUtils.drawOutlinedBox(bb));
-		trappedEmpty.forEach((bb) -> RenderUtils.drawOutlinedBox(bb));
-		trappedNotEmpty.forEach((bb) -> RenderUtils.drawOutlinedBox(bb));
-		trappedNotEmpty.forEach((bb) -> RenderUtils.drawCrossBox(bb));
+		trappedNew.forEach(bb -> RenderUtils.drawOutlinedBox(bb));
+		trappedEmpty.forEach(bb -> RenderUtils.drawOutlinedBox(bb));
+		trappedNotEmpty.forEach(bb -> RenderUtils.drawOutlinedBox(bb));
+		trappedNotEmpty.forEach(bb -> RenderUtils.drawCrossBox(bb));
 		
 		GL11.glColor4f(0, 1, 1, 0.25F);
-		specialEnder.forEach((bb) -> RenderUtils.drawSolidBox(bb));
+		specialEnder.forEach(bb -> RenderUtils.drawSolidBox(bb));
 		
 		GL11.glColor4f(0, 1, 1, 0.5F);
-		specialEnder.forEach((bb) -> RenderUtils.drawOutlinedBox(bb));
+		specialEnder.forEach(bb -> RenderUtils.drawOutlinedBox(bb));
 		
 		GL11.glPopMatrix();
 		
