@@ -26,6 +26,8 @@ public final class UIRenderer
 		if(!WurstClient.INSTANCE.isEnabled())
 			return;
 		
+		boolean blend = GL11.glGetBoolean(GL11.GL_BLEND);
+		
 		ClickGui clickGui = WurstClient.INSTANCE.getGui();
 		
 		// GL settings
@@ -48,5 +50,10 @@ public final class UIRenderer
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		GL11.glEnable(GL11.GL_ALPHA_TEST);
 		GL11.glColor4f(1, 1, 1, 1);
+		
+		if(blend)
+			GL11.glEnable(GL11.GL_BLEND);
+		else
+			GL11.glDisable(GL11.GL_BLEND);
 	}
 }
