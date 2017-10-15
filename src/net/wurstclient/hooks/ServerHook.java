@@ -210,7 +210,9 @@ public class ServerHook
 	
 	public static int getProtocolVersion()
 	{
-		if(WurstClient.INSTANCE.options.experimental_mc1121_mode)
+		if(WurstClient.INSTANCE.options.mc112x_compatibility == 2)
+			return 340;
+		else if(WurstClient.INSTANCE.options.mc112x_compatibility == 1)
 			return 338;
 		
 		NavigableMap<Integer, String> protocols = WMinecraft.PROTOCOLS;

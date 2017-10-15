@@ -23,7 +23,6 @@ public class OptionsManager
 	public boolean middleClickFriends = true;
 	public boolean spamFont = false;
 	public boolean wurstNews = true;
-	public boolean experimental_mc1121_mode = false;
 	
 	public int forceOPDelay = 1000;
 	public int ghostHandID = 54;
@@ -31,6 +30,7 @@ public class OptionsManager
 	public int serverFinderThreads = 128;
 	public int spamDelay = 1000;
 	public int throwAmount = 16;
+	public int mc112x_compatibility = 2;
 	
 	public String forceOPList = WurstFolders.MAIN.toString();
 	public String lastLaunchedVersion = "0";

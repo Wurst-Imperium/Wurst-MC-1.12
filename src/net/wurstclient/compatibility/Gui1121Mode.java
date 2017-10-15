@@ -13,6 +13,7 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.wurstclient.WurstClient;
 import net.wurstclient.files.ConfigFiles;
+import net.wurstclient.update.Version;
 
 public class Gui1121Mode extends GuiScreen
 {
@@ -26,12 +27,19 @@ public class Gui1121Mode extends GuiScreen
 	@Override
 	public void initGui()
 	{
-		boolean mc1121mode =
-			WurstClient.INSTANCE.options.experimental_mc1121_mode;
-		buttonList.add(new GuiButton(0, width / 2 - 100, height / 3 * 2,
-			(mc1121mode ? "§a§lDisable" : "§4§lEnable") + " MC 1.12.1 Mode"));
+		buttonList.add(new GuiButton(0, width / 2 - 150, height / 3 * 2, 100,
+			20, "MC 1.12"));
+		buttonList.add(new GuiButton(1, width / 2 - 50, height / 3 * 2, 100, 20,
+			"MC 1.12.1"));
+		buttonList.add(new GuiButton(2, width / 2 + 50, height / 3 * 2, 100, 20,
+			"MC 1.12.2"));
+		
 		buttonList.add(
-			new GuiButton(1, width / 2 - 100, height / 3 * 2 + 20, "Cancel"));
+			new GuiButton(-1, width / 2 - 100, height / 3 * 2 + 40, "Cancel"));
+		
+		int version = WurstClient.INSTANCE.options.mc112x_compatibility;
+		if(version >= 0 && version < buttonList.size() - 1)
+			buttonList.get(version).enabled = false;
 	}
 	
 	@Override
@@ -40,13 +48,14 @@ public class Gui1121Mode extends GuiScreen
 		switch(button.id)
 		{
 			case 0:
-			WurstClient.INSTANCE.options.experimental_mc1121_mode =
-				!WurstClient.INSTANCE.options.experimental_mc1121_mode;
+			case 1:
+			case 2:
+			WurstClient.INSTANCE.options.mc112x_compatibility = button.id;
 			ConfigFiles.OPTIONS.save();
 			mc.shutdown();
 			break;
 			
-			case 1:
+			case -1:
 			mc.displayGuiScreen(prevScreen);
 			break;
 		}
@@ -57,18 +66,16 @@ public class Gui1121Mode extends GuiScreen
 	{
 		drawDefaultBackground();
 		drawCenteredString(fontRendererObj,
-			"Minecraft 1.12.1 Compatibility Mode", width / 2, 20, 0xffffff);
+			"Minecraft 1.12.X Compatibility Mode", width / 2, 20, 0xffffff);
 		
 		drawCenteredString(fontRendererObj,
-			"§c§lWARNING:§r MC 1.12.1 Mode is highly experimental and may crash at any time.",
+			"§aCurrent version: " + new Version(
+				"1.12." + WurstClient.INSTANCE.options.mc112x_compatibility),
 			width / 2, 80, 0xa0a0a0);
 		
 		drawCenteredString(fontRendererObj,
-			"Enabling this option allows you to connect to Minecraft 1.12.1 servers.",
-			width / 2, 100, 0xa0a0a0);
-		drawCenteredString(fontRendererObj,
-			"Enabling 1.12.1 compatibility disables 1.12 compatibility.",
-			width / 2, 110, 0xa0a0a0);
+			"Only one version can be selected at any time.", width / 2, 110,
+			0xa0a0a0);
 		drawCenteredString(fontRendererObj,
 			"Changing this option requires the game to be restarted.",
 			width / 2, 120, 0xa0a0a0);

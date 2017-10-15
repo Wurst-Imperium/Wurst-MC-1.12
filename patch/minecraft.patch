@@ -1,6 +1,6 @@
-From ff753a9077bfe6b1fffd46c3bc65d9a4a14f29a6 Mon Sep 17 00:00:00 2001
+From fe3ced69f33edef2436e858dde28b997bb5f73fe Mon Sep 17 00:00:00 2001
 From: Alexander01998 <contact.wurstimperium@gmail.com>
-Date: Sat, 5 Aug 2017 15:46:03 +0200
+Date: Sun, 15 Oct 2017 14:20:58 +0200
 Subject: [PATCH] mod
 
 ---
@@ -32,7 +32,7 @@ Subject: [PATCH] mod
  net/minecraft/client/gui/GuiMainMenu.java          |  43 +++-
  net/minecraft/client/gui/GuiMemoryErrorScreen.java |   4 +-
  net/minecraft/client/gui/GuiMerchant.java          |   2 +-
- net/minecraft/client/gui/GuiMultiplayer.java       | 106 +++++++--
+ net/minecraft/client/gui/GuiMultiplayer.java       | 105 +++++++--
  net/minecraft/client/gui/GuiNewChat.java           |  20 +-
  net/minecraft/client/gui/GuiOptionsRowList.java    |   4 +-
  net/minecraft/client/gui/GuiPageButtonList.java    |   2 +-
@@ -44,7 +44,7 @@ Subject: [PATCH] mod
  net/minecraft/client/gui/GuiSlot.java              |   4 +-
  net/minecraft/client/gui/GuiSlotRealmsProxy.java   |   2 +-
  net/minecraft/client/gui/GuiSnooper.java           |   2 +-
- .../client/gui/ServerListEntryNormal.java          |  36 +++-
+ .../client/gui/ServerListEntryNormal.java          |  48 ++++-
  net/minecraft/client/gui/achievement/GuiStats.java |  30 ++-
  net/minecraft/client/gui/inventory/GuiBeacon.java  |   2 +-
  net/minecraft/client/gui/inventory/GuiChest.java   |  76 +++++++
@@ -58,7 +58,7 @@ Subject: [PATCH] mod
  .../client/multiplayer/GuiConnecting.java          |  14 +-
  .../client/multiplayer/PlayerControllerMP.java     |  38 ++--
  net/minecraft/client/multiplayer/ServerList.java   |  15 +-
- .../client/network/NetHandlerPlayClient.java       | 194 +++--------------
+ .../client/network/NetHandlerPlayClient.java       | 202 ++++--------------
  .../client/network/NetworkPlayerInfo.java          |  15 +-
  .../client/renderer/BlockFluidRenderer.java        |   8 +
  .../client/renderer/BlockModelRenderer.java        |  14 +-
@@ -84,8 +84,9 @@ Subject: [PATCH] mod
  net/minecraft/entity/player/EntityPlayerMP.java    |   2 +-
  net/minecraft/item/ItemSword.java                  |   2 +-
  net/minecraft/item/ItemTool.java                   |   2 +-
- net/minecraft/network/EnumConnectionState.java     |  23 +-
+ net/minecraft/network/EnumConnectionState.java     | 162 +++++---------
  net/minecraft/network/NetworkManager.java          |  56 +++--
+ .../network/play/INetHandlerPlayClient.java        |  81 +------
  net/minecraft/potion/PotionEffect.java             |  11 +-
  net/minecraft/realms/RealmsButton.java             |   2 +-
  net/minecraft/tileentity/TileEntitySign.java       |   2 +-
@@ -94,7 +95,7 @@ Subject: [PATCH] mod
  net/minecraft/util/ScreenShotHelper.java           |  15 +-
  net/minecraft/util/Timer.java                      |  14 +-
  net/minecraft/world/World.java                     |  35 +--
- 90 files changed, 1477 insertions(+), 738 deletions(-)
+ 91 files changed, 1529 insertions(+), 925 deletions(-)
 
 diff --git a/Start.java b/Start.java
 index ae0025f..46ccf4f 100644
@@ -1755,7 +1756,7 @@ index 53e35f3..475b939 100644
              if (this.visible)
              {
 diff --git a/net/minecraft/client/gui/GuiMultiplayer.java b/net/minecraft/client/gui/GuiMultiplayer.java
-index 208019f..81175d9 100644
+index 208019f..b6314b7 100644
 --- a/net/minecraft/client/gui/GuiMultiplayer.java
 +++ b/net/minecraft/client/gui/GuiMultiplayer.java
 @@ -1,9 +1,15 @@
@@ -1776,7 +1777,7 @@ index 208019f..81175d9 100644
  import net.minecraft.client.multiplayer.GuiConnecting;
  import net.minecraft.client.multiplayer.ServerData;
  import net.minecraft.client.multiplayer.ServerList;
-@@ -11,17 +17,20 @@ import net.minecraft.client.network.LanServerDetector;
+@@ -11,17 +17,21 @@ import net.minecraft.client.network.LanServerDetector;
  import net.minecraft.client.network.LanServerInfo;
  import net.minecraft.client.network.ServerPinger;
  import net.minecraft.client.resources.I18n;
@@ -1789,6 +1790,7 @@ index 208019f..81175d9 100644
 +import net.wurstclient.gui.multiplayer.GuiServerFinder;
 +import net.wurstclient.hooks.ServerHook;
 +import net.wurstclient.spam.SpamProcessor;
++import net.wurstclient.update.Version;
  
  public class GuiMultiplayer extends GuiScreen
  {
@@ -1802,7 +1804,7 @@ index 208019f..81175d9 100644
      private GuiButton btnEditServer;
      private GuiButton btnSelectServer;
      private GuiButton btnDeleteServer;
-@@ -87,6 +96,10 @@ public class GuiMultiplayer extends GuiScreen
+@@ -87,6 +97,10 @@ public class GuiMultiplayer extends GuiScreen
      public void handleMouseInput() throws IOException
      {
          super.handleMouseInput();
@@ -1813,7 +1815,7 @@ index 208019f..81175d9 100644
  			this.serverListSelector.handleMouseInput();
      }
  
-@@ -99,6 +112,27 @@ public class GuiMultiplayer extends GuiScreen
+@@ -99,6 +113,25 @@ public class GuiMultiplayer extends GuiScreen
          this.buttonList.add(new GuiButton(3, this.width / 2 + 4 + 50, this.height - 52, 100, 20, I18n.format("selectServer.add")));
          this.buttonList.add(new GuiButton(8, this.width / 2 + 4, this.height - 28, 70, 20, I18n.format("selectServer.refresh")));
          this.buttonList.add(new GuiButton(0, this.width / 2 + 4 + 76, this.height - 28, 75, 20, I18n.format("gui.cancel")));
@@ -1823,11 +1825,9 @@ index 208019f..81175d9 100644
 +		{
 +			this.buttonList.add(new GuiButton(5, this.width / 2 - 154, 10, 100,
 +				20, "Last server"));
-+			this.buttonList
-+				.add(new GuiButton(6, this.width / 2 + 54, 10, 100, 20,
-+					"1.12.1 Mode: "
-+						+ (WurstClient.INSTANCE.options.experimental_mc1121_mode
-+							? "ON" : "OFF")));
++			this.buttonList.add(new GuiButton(6, this.width / 2 + 54, 10, 100,
++				20, "Version: " + new Version("1.12."
++					+ WurstClient.INSTANCE.options.mc112x_compatibility)));
 +			this.buttonList.add(new GuiButton(10, this.width / 2 - 154 - 104,
 +				this.height - 52, 100, 20, "Import Servers"));
 +			this.buttonList.add(new GuiButton(11, this.width / 2 - 154 - 104,
@@ -1841,7 +1841,7 @@ index 208019f..81175d9 100644
          this.selectServer(this.serverListSelector.getSelected());
      }
  
-@@ -117,6 +151,11 @@ public class GuiMultiplayer extends GuiScreen
+@@ -117,6 +150,11 @@ public class GuiMultiplayer extends GuiScreen
          }
  
          this.oldServerPinger.pingPendingNetworks();
@@ -1853,7 +1853,7 @@ index 208019f..81175d9 100644
      }
  
      /**
-@@ -190,11 +229,32 @@ public class GuiMultiplayer extends GuiScreen
+@@ -190,11 +228,32 @@ public class GuiMultiplayer extends GuiScreen
              else if (button.id == 8)
              {
                  this.refreshServerList();
@@ -1890,7 +1890,7 @@ index 208019f..81175d9 100644
      {
          this.mc.displayGuiScreen(new GuiMultiplayer(this.parentScreen));
      }
-@@ -279,6 +339,13 @@ public class GuiMultiplayer extends GuiScreen
+@@ -279,6 +338,13 @@ public class GuiMultiplayer extends GuiScreen
          {
              if (i >= 0)
              {
@@ -1904,7 +1904,7 @@ index 208019f..81175d9 100644
                  if (keyCode == 200)
                  {
                      if (isShiftKeyDown())
-@@ -373,7 +440,12 @@ public class GuiMultiplayer extends GuiScreen
+@@ -373,7 +439,12 @@ public class GuiMultiplayer extends GuiScreen
          this.hoveringText = null;
          this.drawDefaultBackground();
          this.serverListSelector.drawScreen(mouseX, mouseY, partialTicks);
@@ -1918,7 +1918,7 @@ index 208019f..81175d9 100644
          super.drawScreen(mouseX, mouseY, partialTicks);
  
          if (this.hoveringText != null)
-@@ -386,6 +458,10 @@ public class GuiMultiplayer extends GuiScreen
+@@ -386,6 +457,10 @@ public class GuiMultiplayer extends GuiScreen
      {
          GuiListExtended.IGuiListEntry guilistextended$iguilistentry = this.serverListSelector.getSelected() < 0 ? null : this.serverListSelector.getListEntry(this.serverListSelector.getSelected());
  		
@@ -1929,7 +1929,7 @@ index 208019f..81175d9 100644
          if (guilistextended$iguilistentry instanceof ServerListEntryNormal)
          {
              this.connectToServer(((ServerListEntryNormal)guilistextended$iguilistentry).getServerData());
-@@ -397,9 +473,13 @@ public class GuiMultiplayer extends GuiScreen
+@@ -397,9 +472,13 @@ public class GuiMultiplayer extends GuiScreen
          }
      }
  
@@ -2344,7 +2344,7 @@ index 6cc7d7b..21afee2 100644
              GuiSnooper.this.fontRendererObj.drawString(GuiSnooper.this.keys.get(p_192637_1_), 10, p_192637_3_, 16777215);
              GuiSnooper.this.fontRendererObj.drawString(GuiSnooper.this.values.get(p_192637_1_), 230, p_192637_3_, 16777215);
 diff --git a/net/minecraft/client/gui/ServerListEntryNormal.java b/net/minecraft/client/gui/ServerListEntryNormal.java
-index ee3802a..c3403cf 100644
+index ee3802a..0b7676b 100644
 --- a/net/minecraft/client/gui/ServerListEntryNormal.java
 +++ b/net/minecraft/client/gui/ServerListEntryNormal.java
 @@ -1,16 +1,22 @@
@@ -2396,21 +2396,33 @@ index ee3802a..c3403cf 100644
      {
          this.owner = p_i45048_1_;
          this.server = serverIn;
-@@ -78,7 +83,12 @@ public class ServerListEntryNormal implements GuiListExtended.IGuiListEntry
+@@ -78,7 +83,24 @@ public class ServerListEntryNormal implements GuiListExtended.IGuiListEntry
  
          boolean flag = this.server.version > 335;
          boolean flag1 = this.server.version < 335;
 -        boolean flag2 = flag || flag1;
 +		
 +		// TODO: Client
-+		boolean flag2 = WurstClient.INSTANCE.options.experimental_mc1121_mode
-+			? server.version != 338
-+			: !WMinecraft.PROTOCOLS.containsKey(server.version);
++		boolean flag2;
++		switch(WurstClient.INSTANCE.options.mc112x_compatibility)
++		{
++			case 2:
++			flag2 = server.version != 340;
++			break;
++			
++			case 1:
++			flag2 = server.version != 338;
++			break;
++			
++			default:
++			flag2 = !WMinecraft.PROTOCOLS.containsKey(server.version);
++			break;
++		}
 +		
          this.mc.fontRendererObj.drawString(this.server.serverName, p_192634_2_ + 32 + 3, p_192634_3_ + 1, 16777215);
          List<String> list = this.mc.fontRendererObj.listFormattedStringToWidth(this.server.serverMOTD, p_192634_4_ - 32 - 2);
  
-@@ -87,7 +97,11 @@ public class ServerListEntryNormal implements GuiListExtended.IGuiListEntry
+@@ -87,7 +109,11 @@ public class ServerListEntryNormal implements GuiListExtended.IGuiListEntry
              this.mc.fontRendererObj.drawString(list.get(i), p_192634_2_ + 32 + 3, p_192634_3_ + 12 + this.mc.fontRendererObj.FONT_HEIGHT * i, 8421504);
          }
  		
@@ -2981,7 +2993,7 @@ index 8a8a8b2..0acbe0c 100644
       * Loads a list of servers from servers.dat, by running ServerData.getServerDataFromNBTCompound on each NBT compound
       * found in the "servers" tag list.
 diff --git a/net/minecraft/client/network/NetHandlerPlayClient.java b/net/minecraft/client/network/NetHandlerPlayClient.java
-index 7e62acd..49e3a6f 100644
+index 7e62acd..3bb04f1 100644
 --- a/net/minecraft/client/network/NetHandlerPlayClient.java
 +++ b/net/minecraft/client/network/NetHandlerPlayClient.java
 @@ -1,10 +1,5 @@
@@ -3213,19 +3225,21 @@ index 7e62acd..49e3a6f 100644
  import net.minecraft.util.EnumFacing;
  import net.minecraft.util.EnumHand;
  import net.minecraft.util.EnumParticleTypes;
-@@ -254,8 +117,9 @@ import net.minecraft.world.WorldProviderSurface;
+@@ -254,8 +117,11 @@ import net.minecraft.world.WorldProviderSurface;
  import net.minecraft.world.WorldSettings;
  import net.minecraft.world.chunk.Chunk;
  import net.minecraft.world.storage.MapData;
 -import org.apache.logging.log4j.LogManager;
 -import org.apache.logging.log4j.Logger;
 +import net.wurstclient.WurstClient;
++import net.wurstclient.compatibility.CPacketNewKeepAlive;
++import net.wurstclient.compatibility.SPacketNewKeepAlive;
 +import net.wurstclient.events.PacketOutputEvent;
 +import net.wurstclient.gui.main.GuiWurstMainMenu;
  
  public class NetHandlerPlayClient implements INetHandlerPlayClient
  {
-@@ -885,12 +749,24 @@ public class NetHandlerPlayClient implements INetHandlerPlayClient
+@@ -885,12 +751,24 @@ public class NetHandlerPlayClient implements INetHandlerPlayClient
          }
          else
          {
@@ -3251,6 +3265,19 @@ index 7e62acd..49e3a6f 100644
          this.netManager.sendPacket(packetIn);
      }
  
+@@ -1795,6 +1673,12 @@ public class NetHandlerPlayClient implements INetHandlerPlayClient
+         this.sendPacket(new CPacketKeepAlive(packetIn.getId()));
+     }
+ 	
++	// TODO: Client
++	public void handleNewKeepAlive(SPacketNewKeepAlive packetIn)
++	{
++		this.sendPacket(new CPacketNewKeepAlive(packetIn.getId()));
++	}
++	
+     public void handlePlayerAbilities(SPacketPlayerAbilities packetIn)
+     {
+         PacketThreadUtil.checkThreadAndEnqueue(packetIn, this, this.gameController);
 diff --git a/net/minecraft/client/network/NetworkPlayerInfo.java b/net/minecraft/client/network/NetworkPlayerInfo.java
 index 630dd7a..aa6f635 100644
 --- a/net/minecraft/client/network/NetworkPlayerInfo.java
@@ -4807,54 +4834,218 @@ index e0d1aae..0059f98 100644
  
      /** The material this tool is made from. */
 diff --git a/net/minecraft/network/EnumConnectionState.java b/net/minecraft/network/EnumConnectionState.java
-index d61401b..d404071 100644
+index d61401b..69e4e2b 100644
 --- a/net/minecraft/network/EnumConnectionState.java
 +++ b/net/minecraft/network/EnumConnectionState.java
-@@ -121,6 +121,10 @@ import net.minecraft.network.status.client.CPacketPing;
+@@ -1,127 +1,32 @@
+ package net.minecraft.network;
+ 
++import java.util.Map;
++
++import javax.annotation.Nullable;
++
++import org.apache.logging.log4j.LogManager;
++
+ import com.google.common.collect.BiMap;
+ import com.google.common.collect.HashBiMap;
+ import com.google.common.collect.Maps;
+-import java.util.Map;
+-import javax.annotation.Nullable;
++
+ import net.minecraft.network.handshake.client.C00Handshake;
+ import net.minecraft.network.login.client.CPacketEncryptionResponse;
+ import net.minecraft.network.login.client.CPacketLoginStart;
+ import net.minecraft.network.login.server.SPacketEnableCompression;
+ import net.minecraft.network.login.server.SPacketEncryptionRequest;
+ import net.minecraft.network.login.server.SPacketLoginSuccess;
+-import net.minecraft.network.play.client.CPacketAnimation;
+-import net.minecraft.network.play.client.CPacketChatMessage;
+-import net.minecraft.network.play.client.CPacketClickWindow;
+-import net.minecraft.network.play.client.CPacketClientSettings;
+-import net.minecraft.network.play.client.CPacketClientStatus;
+-import net.minecraft.network.play.client.CPacketCloseWindow;
+-import net.minecraft.network.play.client.CPacketConfirmTeleport;
+-import net.minecraft.network.play.client.CPacketConfirmTransaction;
+-import net.minecraft.network.play.client.CPacketCreativeInventoryAction;
+-import net.minecraft.network.play.client.CPacketCustomPayload;
+-import net.minecraft.network.play.client.CPacketEnchantItem;
+-import net.minecraft.network.play.client.CPacketEntityAction;
+-import net.minecraft.network.play.client.CPacketHeldItemChange;
+-import net.minecraft.network.play.client.CPacketInput;
+-import net.minecraft.network.play.client.CPacketKeepAlive;
+-import net.minecraft.network.play.client.CPacketPlayer;
+-import net.minecraft.network.play.client.CPacketPlayerAbilities;
+-import net.minecraft.network.play.client.CPacketPlayerDigging;
+-import net.minecraft.network.play.client.CPacketPlayerTryUseItem;
+-import net.minecraft.network.play.client.CPacketPlayerTryUseItemOnBlock;
+-import net.minecraft.network.play.client.CPacketRecipeInfo;
+-import net.minecraft.network.play.client.CPacketRecipePlacement;
+-import net.minecraft.network.play.client.CPacketResourcePackStatus;
+-import net.minecraft.network.play.client.CPacketSeenAdvancements;
+-import net.minecraft.network.play.client.CPacketSpectate;
+-import net.minecraft.network.play.client.CPacketSteerBoat;
+-import net.minecraft.network.play.client.CPacketTabComplete;
+-import net.minecraft.network.play.client.CPacketUpdateSign;
+-import net.minecraft.network.play.client.CPacketUseEntity;
+-import net.minecraft.network.play.client.CPacketVehicleMove;
+-import net.minecraft.network.play.server.SPacketAdvancementInfo;
+-import net.minecraft.network.play.server.SPacketAnimation;
+-import net.minecraft.network.play.server.SPacketBlockAction;
+-import net.minecraft.network.play.server.SPacketBlockBreakAnim;
+-import net.minecraft.network.play.server.SPacketBlockChange;
+-import net.minecraft.network.play.server.SPacketCamera;
+-import net.minecraft.network.play.server.SPacketChangeGameState;
+-import net.minecraft.network.play.server.SPacketChat;
+-import net.minecraft.network.play.server.SPacketChunkData;
+-import net.minecraft.network.play.server.SPacketCloseWindow;
+-import net.minecraft.network.play.server.SPacketCollectItem;
+-import net.minecraft.network.play.server.SPacketCombatEvent;
+-import net.minecraft.network.play.server.SPacketConfirmTransaction;
+-import net.minecraft.network.play.server.SPacketCooldown;
+-import net.minecraft.network.play.server.SPacketCustomPayload;
+-import net.minecraft.network.play.server.SPacketCustomSound;
+-import net.minecraft.network.play.server.SPacketDestroyEntities;
+-import net.minecraft.network.play.server.SPacketDisconnect;
+-import net.minecraft.network.play.server.SPacketDisplayObjective;
+-import net.minecraft.network.play.server.SPacketEffect;
+-import net.minecraft.network.play.server.SPacketEntity;
+-import net.minecraft.network.play.server.SPacketEntityAttach;
+-import net.minecraft.network.play.server.SPacketEntityEffect;
+-import net.minecraft.network.play.server.SPacketEntityEquipment;
+-import net.minecraft.network.play.server.SPacketEntityHeadLook;
+-import net.minecraft.network.play.server.SPacketEntityMetadata;
+-import net.minecraft.network.play.server.SPacketEntityProperties;
+-import net.minecraft.network.play.server.SPacketEntityStatus;
+-import net.minecraft.network.play.server.SPacketEntityTeleport;
+-import net.minecraft.network.play.server.SPacketEntityVelocity;
+-import net.minecraft.network.play.server.SPacketExplosion;
+-import net.minecraft.network.play.server.SPacketHeldItemChange;
+-import net.minecraft.network.play.server.SPacketJoinGame;
+-import net.minecraft.network.play.server.SPacketKeepAlive;
+-import net.minecraft.network.play.server.SPacketMaps;
+-import net.minecraft.network.play.server.SPacketMoveVehicle;
+-import net.minecraft.network.play.server.SPacketMultiBlockChange;
+-import net.minecraft.network.play.server.SPacketOpenWindow;
+-import net.minecraft.network.play.server.SPacketParticles;
+-import net.minecraft.network.play.server.SPacketPlayerAbilities;
+-import net.minecraft.network.play.server.SPacketPlayerListHeaderFooter;
+-import net.minecraft.network.play.server.SPacketPlayerListItem;
+-import net.minecraft.network.play.server.SPacketPlayerPosLook;
+-import net.minecraft.network.play.server.SPacketRecipeBook;
+-import net.minecraft.network.play.server.SPacketRemoveEntityEffect;
+-import net.minecraft.network.play.server.SPacketResourcePackSend;
+-import net.minecraft.network.play.server.SPacketRespawn;
+-import net.minecraft.network.play.server.SPacketScoreboardObjective;
+-import net.minecraft.network.play.server.SPacketSelectAdvancementsTab;
+-import net.minecraft.network.play.server.SPacketServerDifficulty;
+-import net.minecraft.network.play.server.SPacketSetExperience;
+-import net.minecraft.network.play.server.SPacketSetPassengers;
+-import net.minecraft.network.play.server.SPacketSetSlot;
+-import net.minecraft.network.play.server.SPacketSignEditorOpen;
+-import net.minecraft.network.play.server.SPacketSoundEffect;
+-import net.minecraft.network.play.server.SPacketSpawnExperienceOrb;
+-import net.minecraft.network.play.server.SPacketSpawnGlobalEntity;
+-import net.minecraft.network.play.server.SPacketSpawnMob;
+-import net.minecraft.network.play.server.SPacketSpawnObject;
+-import net.minecraft.network.play.server.SPacketSpawnPainting;
+-import net.minecraft.network.play.server.SPacketSpawnPlayer;
+-import net.minecraft.network.play.server.SPacketSpawnPosition;
+-import net.minecraft.network.play.server.SPacketStatistics;
+-import net.minecraft.network.play.server.SPacketTabComplete;
+-import net.minecraft.network.play.server.SPacketTeams;
+-import net.minecraft.network.play.server.SPacketTimeUpdate;
+-import net.minecraft.network.play.server.SPacketTitle;
+-import net.minecraft.network.play.server.SPacketUnloadChunk;
+-import net.minecraft.network.play.server.SPacketUpdateBossInfo;
+-import net.minecraft.network.play.server.SPacketUpdateHealth;
+-import net.minecraft.network.play.server.SPacketUpdateScore;
+-import net.minecraft.network.play.server.SPacketUpdateTileEntity;
+-import net.minecraft.network.play.server.SPacketUseBed;
+-import net.minecraft.network.play.server.SPacketWindowItems;
+-import net.minecraft.network.play.server.SPacketWindowProperty;
+-import net.minecraft.network.play.server.SPacketWorldBorder;
++import net.minecraft.network.play.client.*;
++import net.minecraft.network.play.server.*;
+ import net.minecraft.network.status.client.CPacketPing;
  import net.minecraft.network.status.client.CPacketServerQuery;
  import net.minecraft.network.status.server.SPacketPong;
  import net.minecraft.network.status.server.SPacketServerInfo;
+-import org.apache.logging.log4j.LogManager;
 +import net.wurstclient.WurstClient;
++import net.wurstclient.compatibility.CPacketNewKeepAlive;
 +import net.wurstclient.compatibility.CPacketSomethingNew;
++import net.wurstclient.compatibility.SPacketNewKeepAlive;
 +import net.wurstclient.compatibility.SPacketSomethingNew;
-+
- import org.apache.logging.log4j.LogManager;
  
  public enum EnumConnectionState
-@@ -177,6 +181,12 @@ public enum EnumConnectionState
+ {
+@@ -165,7 +70,15 @@ public enum EnumConnectionState
+             this.registerPacket(EnumPacketDirection.CLIENTBOUND, SPacketExplosion.class);
+             this.registerPacket(EnumPacketDirection.CLIENTBOUND, SPacketUnloadChunk.class);
+             this.registerPacket(EnumPacketDirection.CLIENTBOUND, SPacketChangeGameState.class);
+-            this.registerPacket(EnumPacketDirection.CLIENTBOUND, SPacketKeepAlive.class);
++			
++			// TODO: Client
++			if(WurstClient.INSTANCE.options.mc112x_compatibility >= 2)
++				this.registerPacket(EnumPacketDirection.CLIENTBOUND,
++					SPacketNewKeepAlive.class);
++			else
++				this.registerPacket(EnumPacketDirection.CLIENTBOUND,
++					SPacketKeepAlive.class);
++			
+             this.registerPacket(EnumPacketDirection.CLIENTBOUND, SPacketChunkData.class);
+             this.registerPacket(EnumPacketDirection.CLIENTBOUND, SPacketEffect.class);
+             this.registerPacket(EnumPacketDirection.CLIENTBOUND, SPacketParticles.class);
+@@ -177,6 +90,12 @@ public enum EnumConnectionState
              this.registerPacket(EnumPacketDirection.CLIENTBOUND, SPacketEntity.S16PacketEntityLook.class);
              this.registerPacket(EnumPacketDirection.CLIENTBOUND, SPacketMoveVehicle.class);
              this.registerPacket(EnumPacketDirection.CLIENTBOUND, SPacketSignEditorOpen.class);
 +			
 +			// TODO: Client
-+			if(WurstClient.INSTANCE.options.experimental_mc1121_mode)
++			if(WurstClient.INSTANCE.options.mc112x_compatibility >= 1)
 +				this.registerPacket(EnumPacketDirection.CLIENTBOUND,
 +					SPacketSomethingNew.class);
 +			
              this.registerPacket(EnumPacketDirection.CLIENTBOUND, SPacketPlayerAbilities.class);
              this.registerPacket(EnumPacketDirection.CLIENTBOUND, SPacketCombatEvent.class);
              this.registerPacket(EnumPacketDirection.CLIENTBOUND, SPacketPlayerListItem.class);
-@@ -214,7 +224,12 @@ public enum EnumConnectionState
+@@ -214,7 +133,12 @@ public enum EnumConnectionState
              this.registerPacket(EnumPacketDirection.CLIENTBOUND, SPacketEntityProperties.class);
              this.registerPacket(EnumPacketDirection.CLIENTBOUND, SPacketEntityEffect.class);
              this.registerPacket(EnumPacketDirection.SERVERBOUND, CPacketConfirmTeleport.class);
 -            this.registerPacket(EnumPacketDirection.SERVERBOUND, CPacketRecipePlacement.class);
 +			
 +			// TODO: Client
-+			if(!WurstClient.INSTANCE.options.experimental_mc1121_mode)
++			if(WurstClient.INSTANCE.options.mc112x_compatibility == 0)
 +				this.registerPacket(EnumPacketDirection.SERVERBOUND,
 +					CPacketRecipePlacement.class);
 +			
              this.registerPacket(EnumPacketDirection.SERVERBOUND, CPacketTabComplete.class);
              this.registerPacket(EnumPacketDirection.SERVERBOUND, CPacketChatMessage.class);
              this.registerPacket(EnumPacketDirection.SERVERBOUND, CPacketClientStatus.class);
-@@ -232,6 +247,12 @@ public enum EnumConnectionState
+@@ -225,13 +149,27 @@ public enum EnumConnectionState
+             this.registerPacket(EnumPacketDirection.SERVERBOUND, CPacketCloseWindow.class);
+             this.registerPacket(EnumPacketDirection.SERVERBOUND, CPacketCustomPayload.class);
+             this.registerPacket(EnumPacketDirection.SERVERBOUND, CPacketUseEntity.class);
+-            this.registerPacket(EnumPacketDirection.SERVERBOUND, CPacketKeepAlive.class);
++			
++			// TODO: Client
++			if(WurstClient.INSTANCE.options.mc112x_compatibility >= 2)
++				this.registerPacket(EnumPacketDirection.SERVERBOUND,
++					CPacketNewKeepAlive.class);
++			else
++				this.registerPacket(EnumPacketDirection.SERVERBOUND,
++					CPacketKeepAlive.class);
++			
+             this.registerPacket(EnumPacketDirection.SERVERBOUND, CPacketPlayer.class);
+             this.registerPacket(EnumPacketDirection.SERVERBOUND, CPacketPlayer.Position.class);
+             this.registerPacket(EnumPacketDirection.SERVERBOUND, CPacketPlayer.PositionRotation.class);
              this.registerPacket(EnumPacketDirection.SERVERBOUND, CPacketPlayer.Rotation.class);
              this.registerPacket(EnumPacketDirection.SERVERBOUND, CPacketVehicleMove.class);
              this.registerPacket(EnumPacketDirection.SERVERBOUND, CPacketSteerBoat.class);
 +			
 +			// TODO: Client
-+			if(WurstClient.INSTANCE.options.experimental_mc1121_mode)
++			if(WurstClient.INSTANCE.options.mc112x_compatibility >= 1)
 +				this.registerPacket(EnumPacketDirection.SERVERBOUND,
 +					CPacketSomethingNew.class);
 +			
@@ -4956,6 +5147,105 @@ index 2de7347..37d899e 100644
              try
              {
                  ((Packet<INetHandler>)p_channelRead0_2_).processPacket(this.packetListener);
+diff --git a/net/minecraft/network/play/INetHandlerPlayClient.java b/net/minecraft/network/play/INetHandlerPlayClient.java
+index eb0d5c2..2cb84b7 100644
+--- a/net/minecraft/network/play/INetHandlerPlayClient.java
++++ b/net/minecraft/network/play/INetHandlerPlayClient.java
+@@ -1,82 +1,8 @@
+ package net.minecraft.network.play;
+ 
+ import net.minecraft.network.INetHandler;
+-import net.minecraft.network.play.server.SPacketAdvancementInfo;
+-import net.minecraft.network.play.server.SPacketAnimation;
+-import net.minecraft.network.play.server.SPacketBlockAction;
+-import net.minecraft.network.play.server.SPacketBlockBreakAnim;
+-import net.minecraft.network.play.server.SPacketBlockChange;
+-import net.minecraft.network.play.server.SPacketCamera;
+-import net.minecraft.network.play.server.SPacketChangeGameState;
+-import net.minecraft.network.play.server.SPacketChat;
+-import net.minecraft.network.play.server.SPacketChunkData;
+-import net.minecraft.network.play.server.SPacketCloseWindow;
+-import net.minecraft.network.play.server.SPacketCollectItem;
+-import net.minecraft.network.play.server.SPacketCombatEvent;
+-import net.minecraft.network.play.server.SPacketConfirmTransaction;
+-import net.minecraft.network.play.server.SPacketCooldown;
+-import net.minecraft.network.play.server.SPacketCustomPayload;
+-import net.minecraft.network.play.server.SPacketCustomSound;
+-import net.minecraft.network.play.server.SPacketDestroyEntities;
+-import net.minecraft.network.play.server.SPacketDisconnect;
+-import net.minecraft.network.play.server.SPacketDisplayObjective;
+-import net.minecraft.network.play.server.SPacketEffect;
+-import net.minecraft.network.play.server.SPacketEntity;
+-import net.minecraft.network.play.server.SPacketEntityAttach;
+-import net.minecraft.network.play.server.SPacketEntityEffect;
+-import net.minecraft.network.play.server.SPacketEntityEquipment;
+-import net.minecraft.network.play.server.SPacketEntityHeadLook;
+-import net.minecraft.network.play.server.SPacketEntityMetadata;
+-import net.minecraft.network.play.server.SPacketEntityProperties;
+-import net.minecraft.network.play.server.SPacketEntityStatus;
+-import net.minecraft.network.play.server.SPacketEntityTeleport;
+-import net.minecraft.network.play.server.SPacketEntityVelocity;
+-import net.minecraft.network.play.server.SPacketExplosion;
+-import net.minecraft.network.play.server.SPacketHeldItemChange;
+-import net.minecraft.network.play.server.SPacketJoinGame;
+-import net.minecraft.network.play.server.SPacketKeepAlive;
+-import net.minecraft.network.play.server.SPacketMaps;
+-import net.minecraft.network.play.server.SPacketMoveVehicle;
+-import net.minecraft.network.play.server.SPacketMultiBlockChange;
+-import net.minecraft.network.play.server.SPacketOpenWindow;
+-import net.minecraft.network.play.server.SPacketParticles;
+-import net.minecraft.network.play.server.SPacketPlayerAbilities;
+-import net.minecraft.network.play.server.SPacketPlayerListHeaderFooter;
+-import net.minecraft.network.play.server.SPacketPlayerListItem;
+-import net.minecraft.network.play.server.SPacketPlayerPosLook;
+-import net.minecraft.network.play.server.SPacketRecipeBook;
+-import net.minecraft.network.play.server.SPacketRemoveEntityEffect;
+-import net.minecraft.network.play.server.SPacketResourcePackSend;
+-import net.minecraft.network.play.server.SPacketRespawn;
+-import net.minecraft.network.play.server.SPacketScoreboardObjective;
+-import net.minecraft.network.play.server.SPacketSelectAdvancementsTab;
+-import net.minecraft.network.play.server.SPacketServerDifficulty;
+-import net.minecraft.network.play.server.SPacketSetExperience;
+-import net.minecraft.network.play.server.SPacketSetPassengers;
+-import net.minecraft.network.play.server.SPacketSetSlot;
+-import net.minecraft.network.play.server.SPacketSignEditorOpen;
+-import net.minecraft.network.play.server.SPacketSoundEffect;
+-import net.minecraft.network.play.server.SPacketSpawnExperienceOrb;
+-import net.minecraft.network.play.server.SPacketSpawnGlobalEntity;
+-import net.minecraft.network.play.server.SPacketSpawnMob;
+-import net.minecraft.network.play.server.SPacketSpawnObject;
+-import net.minecraft.network.play.server.SPacketSpawnPainting;
+-import net.minecraft.network.play.server.SPacketSpawnPlayer;
+-import net.minecraft.network.play.server.SPacketSpawnPosition;
+-import net.minecraft.network.play.server.SPacketStatistics;
+-import net.minecraft.network.play.server.SPacketTabComplete;
+-import net.minecraft.network.play.server.SPacketTeams;
+-import net.minecraft.network.play.server.SPacketTimeUpdate;
+-import net.minecraft.network.play.server.SPacketTitle;
+-import net.minecraft.network.play.server.SPacketUnloadChunk;
+-import net.minecraft.network.play.server.SPacketUpdateBossInfo;
+-import net.minecraft.network.play.server.SPacketUpdateHealth;
+-import net.minecraft.network.play.server.SPacketUpdateScore;
+-import net.minecraft.network.play.server.SPacketUpdateTileEntity;
+-import net.minecraft.network.play.server.SPacketUseBed;
+-import net.minecraft.network.play.server.SPacketWindowItems;
+-import net.minecraft.network.play.server.SPacketWindowProperty;
+-import net.minecraft.network.play.server.SPacketWorldBorder;
++import net.minecraft.network.play.server.*;
++import net.wurstclient.compatibility.SPacketNewKeepAlive;
+ 
+ public interface INetHandlerPlayClient extends INetHandler
+ {
+@@ -252,6 +178,9 @@ public interface INetHandlerPlayClient extends INetHandler
+ 
+     void handleKeepAlive(SPacketKeepAlive packetIn);
+     
++    // TODO: Client
++    void handleNewKeepAlive(SPacketNewKeepAlive packetIn);
++
+     /**
+      * Updates the specified chunk with the supplied data, marks it for re-rendering and lighting recalculation
+      */
 diff --git a/net/minecraft/potion/PotionEffect.java b/net/minecraft/potion/PotionEffect.java
 index 6118ac7..1b703a6 100644
 --- a/net/minecraft/potion/PotionEffect.java
