@@ -201,23 +201,29 @@ public final class TemplateToolMod extends Mod
 			}
 			
 			// add queued blocks to template
+			BlockPos previous = template.remainingBlocks.first();
 			for(int i = 0; i < template.scanSpeed
-				&& !template.queue.isEmpty(); i++)
+				&& !template.remainingBlocks.isEmpty(); i++)
 			{
-				BlockPos current = template.queue.pop();
-				
-				for(EnumFacing facing : EnumFacing.values())
+				BlockPos current = template.remainingBlocks.first();
+				double dCurrent = Double.MAX_VALUE;
+				for(BlockPos pos : template.remainingBlocks)
 				{
-					BlockPos next = current.offset(facing);
-					
-					if(template.sortedBlocks.contains(next)
-						|| !template.remainingBlocks.contains(next))
-						continue;
-					
-					template.queue.add(next);
-					template.sortedBlocks.add(next);
-					template.remainingBlocks.remove(next);
+					double dPos = previous.distanceSq(pos);
+					if(dPos < dCurrent)
+						for(EnumFacing facing : EnumFacing.values())
+						{
+							BlockPos next = pos.offset(facing);
+							if(!template.sortedBlocks.contains(next))
+								continue;
+							
+							current = pos;
+							dCurrent = dPos;
+						}
 				}
+				template.sortedBlocks.add(current);
+				template.remainingBlocks.remove(current);
+				previous = current;
 			}
 			
 			// update progress
