@@ -17,7 +17,8 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
-import net.wurstclient.ai.AutoBuildAI;
+import net.wurstclient.ai.PathFinder;
+import net.wurstclient.ai.PathProcessor;
 import net.wurstclient.compatibility.WBlock;
 import net.wurstclient.compatibility.WMinecraft;
 import net.wurstclient.events.RightClickEvent;
@@ -29,6 +30,7 @@ import net.wurstclient.features.Feature;
 import net.wurstclient.features.HelpPage;
 import net.wurstclient.features.Mod;
 import net.wurstclient.features.SearchTags;
+import net.wurstclient.features.commands.PathCmd;
 import net.wurstclient.features.special_features.YesCheatSpf.Profile;
 import net.wurstclient.settings.CheckboxSetting;
 import net.wurstclient.settings.ModeSetting;
@@ -52,10 +54,11 @@ public final class AutoBuildMod extends Mod
 			@Override
 			public void update()
 			{
-				if(!isChecked() && ai != null)
+				if(!isChecked())
 				{
-					ai.stop();
-					ai = null;
+					pathFinder = null;
+					processor = null;
+					PathProcessor.releaseControls();
 				}
 			}
 		};
@@ -65,7 +68,9 @@ public final class AutoBuildMod extends Mod
 	private int blockIndex;
 	private final ArrayList<BlockPos> positions = new ArrayList<>();
 	
-	private AutoBuildAI ai;
+	private AutoBuildPathFinder pathFinder;
+	private PathProcessor processor;
+	private boolean done;
 	
 	public AutoBuildMod()
 	{
@@ -135,11 +140,10 @@ public final class AutoBuildMod extends Mod
 		
 		blockIndex = 0;
 		
-		if(ai != null)
-		{
-			ai.stop();
-			ai = null;
-		}
+		pathFinder = null;
+		processor = null;
+		done = false;
+		PathProcessor.releaseControls();
 	}
 	
 	@Override
@@ -200,10 +204,12 @@ public final class AutoBuildMod extends Mod
 				
 				blockIndex = 0;
 				
-				if(ai != null)
+				if(pathFinder != null)
 				{
-					ai.stop();
-					ai = null;
+					pathFinder = null;
+					processor = null;
+					done = false;
+					PathProcessor.releaseControls();
 				}
 				
 				return;
@@ -220,21 +226,57 @@ public final class AutoBuildMod extends Mod
 				|| eyesPos.squareDistanceTo(new Vec3d(pos).addVector(0.5, 0.5,
 					0.5)) > (mode.getSelected() == 0 ? 30.25 : 14.0625))
 			{
-				if(ai != null && (ai.isDone() || !ai.getGoal().equals(pos)))
+				if(pathFinder != null
+					&& (done || !pathFinder.getGoal().equals(pos)))
 				{
-					ai.stop();
-					ai = null;
+					pathFinder = null;
+					processor = null;
+					done = false;
+					PathProcessor.releaseControls();
 				}
 				
-				if(ai == null)
-					ai = new AutoBuildAI(pos);
+				if(pathFinder == null)
+				{
+					pathFinder = new AutoBuildPathFinder(pos);
+					pathFinder.setThinkTime(10);
+				}
 				
-				ai.update();
+				// find path
+				if(!pathFinder.isDone() && !pathFinder.isFailed())
+				{
+					PathProcessor.lockControls();
+					
+					pathFinder.think();
+					
+					if(!pathFinder.isDone() && !pathFinder.isFailed())
+						return;
+					
+					pathFinder.formatPath();
+					
+					// set processor
+					processor = pathFinder.getProcessor();
+				}
 				
-			}else if(ai != null)
+				// check path
+				if(processor != null
+					&& !pathFinder.isPathStillValid(processor.getIndex()))
+				{
+					pathFinder = new AutoBuildPathFinder(pathFinder);
+					return;
+				}
+				
+				// process path
+				processor.process();
+				
+				if(processor.isDone())
+					done = true;
+				
+			}else if(pathFinder != null)
 			{
-				ai.stop();
-				ai = null;
+				pathFinder = null;
+				processor = null;
+				done = false;
+				PathProcessor.releaseControls();
 			}
 		}
 		
@@ -262,6 +304,12 @@ public final class AutoBuildMod extends Mod
 	@Override
 	public void onRender(float partialTicks)
 	{
+		if(useAi.isChecked() && pathFinder != null)
+		{
+			PathCmd pathCmd = wurst.commands.pathCmd;
+			pathFinder.renderPath(pathCmd.isDebugMode(), pathCmd.isDepthTest());
+		}
+		
 		// scale and offset
 		double scale = 1D * 7D / 8D;
 		double offset = (1D - scale) / 2D;
@@ -334,5 +382,29 @@ public final class AutoBuildMod extends Mod
 			mode.lock(1);
 		else
 			mode.unlock();
+	}
+	
+	private class AutoBuildPathFinder extends PathFinder
+	{
+		public AutoBuildPathFinder(BlockPos goal)
+		{
+			super(goal);
+		}
+		
+		public AutoBuildPathFinder(AutoBuildPathFinder pathFinder)
+		{
+			super(pathFinder);
+		}
+		
+		@Override
+		protected boolean checkDone()
+		{
+			BlockPos goal = getGoal();
+			
+			return done = goal.down(2).equals(current)
+				|| goal.up().equals(current) || goal.north().equals(current)
+				|| goal.south().equals(current) || goal.west().equals(current)
+				|| goal.east().equals(current);
+		}
 	}
 }
