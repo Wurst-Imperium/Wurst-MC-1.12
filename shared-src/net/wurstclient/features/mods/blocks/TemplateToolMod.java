@@ -498,7 +498,7 @@ public final class TemplateToolMod extends Mod
 			}
 			
 			// update AutoBuild
-			wurst.files.loadAutoBuildTemplates();
+			wurst.mods.autoBuildMod.loadTemplates();
 			
 			// disable TemplateTool
 			setEnabled(false);

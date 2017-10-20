@@ -64,7 +64,6 @@ public enum WurstClient
 		
 		WurstFolders.initialize();
 		ConfigFiles.initialize();
-		files.init();
 		
 		keybinds = new KeybindList(WurstFolders.MAIN.resolve("keybinds.json"));
 		keybinds.init();

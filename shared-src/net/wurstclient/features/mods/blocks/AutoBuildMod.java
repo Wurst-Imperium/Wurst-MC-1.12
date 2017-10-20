@@ -7,10 +7,19 @@
  */
 package net.wurstclient.features.mods.blocks;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.TreeMap;
 
 import org.lwjgl.opengl.GL11;
+
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 
 import net.minecraft.block.material.Material;
 import net.minecraft.util.EnumFacing;
@@ -32,9 +41,11 @@ import net.wurstclient.features.Mod;
 import net.wurstclient.features.SearchTags;
 import net.wurstclient.features.commands.PathCmd;
 import net.wurstclient.features.special_features.YesCheatSpf.Profile;
+import net.wurstclient.files.WurstFolders;
 import net.wurstclient.settings.CheckboxSetting;
 import net.wurstclient.settings.ModeSetting;
 import net.wurstclient.utils.BlockUtils;
+import net.wurstclient.utils.JsonUtils;
 import net.wurstclient.utils.RenderUtils;
 import net.wurstclient.utils.RotationUtils;
 
@@ -93,6 +104,12 @@ public final class AutoBuildMod extends Mod
 					+ "%";
 		
 		return name;
+	}
+	
+	@Override
+	public void initSettings()
+	{
+		loadTemplates();
 	}
 	
 	public void setTemplates(TreeMap<String, int[][]> templates)
@@ -382,6 +399,148 @@ public final class AutoBuildMod extends Mod
 			mode.lock(1);
 		else
 			mode.unlock();
+	}
+	
+	public void loadTemplates()
+	{
+		File[] files = WurstFolders.AUTOBUILD.toFile().listFiles();
+		
+		boolean foundOldTemplates = false;
+		TreeMap<String, int[][]> templates = new TreeMap<>();
+		for(File file : files)
+			try
+			{
+				// read file
+				FileReader reader = new FileReader(file);
+				JsonObject json =
+					JsonUtils.jsonParser.parse(reader).getAsJsonObject();
+				reader.close();
+				
+				// get blocks
+				int[][] blocks =
+					JsonUtils.gson.fromJson(json.get("blocks"), int[][].class);
+				
+				// delete file if old template is found
+				if(blocks[0].length == 4)
+				{
+					foundOldTemplates = true;
+					file.delete();
+					continue;
+				}
+				
+				// add template
+				templates.put(file.getName().substring(0,
+					file.getName().lastIndexOf(".json")), blocks);
+			}catch(Exception e)
+			{
+				System.err
+					.println("Failed to load template: " + file.getName());
+				e.printStackTrace();
+			}
+			
+		// if directory is empty or contains old templates,
+		// add default templates and try again
+		if(foundOldTemplates
+			|| WurstFolders.AUTOBUILD.toFile().listFiles().length == 0)
+		{
+			createDefaultTemplates();
+			loadTemplates();
+			return;
+		}
+		
+		if(templates.isEmpty())
+			throw new JsonParseException(
+				"Couldn't load any AutoBuild templates.");
+		
+		setTemplates(templates);
+	}
+	
+	private void createDefaultTemplates()
+	{
+		for(DefaultTemplates template : DefaultTemplates.values())
+		{
+			JsonObject json = new JsonObject();
+			json.add("blocks", JsonUtils.gson.toJsonTree(template.data));
+			
+			Path path = WurstFolders.AUTOBUILD.resolve(template.name + ".json");
+			
+			try(BufferedWriter writer = Files.newBufferedWriter(path))
+			{
+				JsonUtils.prettyGson.toJson(json, writer);
+				
+			}catch(IOException e)
+			{
+				System.out.println("Failed to save " + path.getFileName());
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	private static enum DefaultTemplates
+	{
+		BRIDGE("Bridge",
+			new int[][]{{1, 0, 0}, {0, 0, 0}, {-1, 0, 0}, {1, 0, -1},
+				{0, 0, -1}, {-1, 0, -1}, {1, 0, -2}, {0, 0, -2}, {-1, 0, -2},
+				{1, 0, -3}, {0, 0, -3}, {-1, 0, -3}, {1, 0, -4}, {0, 0, -4},
+				{-1, 0, -4}, {1, 0, -5}, {0, 0, -5}, {-1, 0, -5}}),
+		
+		FLOOR("Floor",
+			new int[][]{{0, 0, 0}, {1, 0, 1}, {0, 0, 1}, {-1, 0, 1}, {1, 0, 0},
+				{-1, 0, 0}, {1, 0, -1}, {0, 0, -1}, {-1, 0, -1}, {2, 0, 2},
+				{1, 0, 2}, {0, 0, 2}, {-1, 0, 2}, {-2, 0, 2}, {2, 0, 1},
+				{-2, 0, 1}, {2, 0, 0}, {-2, 0, 0}, {2, 0, -1}, {-2, 0, -1},
+				{2, 0, -2}, {1, 0, -2}, {0, 0, -2}, {-1, 0, -2}, {-2, 0, -2},
+				{3, 0, 3}, {2, 0, 3}, {1, 0, 3}, {0, 0, 3}, {-1, 0, 3},
+				{-2, 0, 3}, {-3, 0, 3}, {3, 0, 2}, {-3, 0, 2}, {3, 0, 1},
+				{-3, 0, 1}, {3, 0, 0}, {-3, 0, 0}, {3, 0, -1}, {-3, 0, -1},
+				{3, 0, -2}, {-3, 0, -2}, {3, 0, -3}, {2, 0, -3}, {1, 0, -3},
+				{0, 0, -3}, {-1, 0, -3}, {-2, 0, -3}, {-3, 0, -3}}),
+		
+		NAZI("Nazi",
+			new int[][]{{0, 0, 0}, {1, 0, 0}, {2, 0, 0}, {0, 1, 0}, {0, 2, 0},
+				{1, 2, 0}, {2, 2, 0}, {2, 3, 0}, {2, 4, 0}, {0, 3, 0},
+				{0, 4, 0}, {-1, 4, 0}, {-2, 4, 0}, {-1, 2, 0}, {-2, 2, 0},
+				{-2, 1, 0}, {-2, 0, 0}}),
+		
+		PENIS("Penis", new int[][]{{0, 0, 0}, {1, 0, 0}, {1, 0, 1}, {0, 0, 1},
+			{0, 1, 0}, {1, 1, 0}, {1, 1, 1}, {0, 1, 1}, {0, 2, 0}, {1, 2, 0},
+			{1, 2, 1}, {0, 2, 1}, {0, 3, 0}, {1, 3, 0}, {1, 3, 1}, {0, 3, 1},
+			{0, 4, 0}, {1, 4, 0}, {1, 4, 1}, {0, 4, 1}, {0, 5, 0}, {1, 5, 0},
+			{1, 5, 1}, {0, 5, 1}, {0, 6, 0}, {1, 6, 0}, {1, 6, 1}, {0, 6, 1},
+			{0, 7, 0}, {1, 7, 0}, {1, 7, 1}, {0, 7, 1}, {2, 0, -1}, {3, 0, -1},
+			{3, 0, -2}, {2, 0, -2}, {2, 1, -1}, {3, 1, -1}, {3, 1, -2},
+			{2, 1, -2}, {-1, 0, -1}, {-2, 0, -1}, {-2, 0, -2}, {-1, 0, -2},
+			{-1, 1, -1}, {-2, 1, -1}, {-2, 1, -2}, {-1, 1, -2}}),
+		
+		PILLAR("Pillar", new int[][]{{0, 0, 0}, {0, 1, 0}, {0, 2, 0}, {0, 3, 0},
+			{0, 4, 0}, {0, 5, 0}, {0, 6, 0}}),
+		
+		WALL("Wall", new int[][]{{3, 0, 0}, {2, 0, 0}, {1, 0, 0}, {0, 0, 0},
+			{-1, 0, 0}, {-2, 0, 0}, {-3, 0, 0}, {3, 1, 0}, {2, 1, 0}, {1, 1, 0},
+			{0, 1, 0}, {-1, 1, 0}, {-2, 1, 0}, {-3, 1, 0}, {3, 2, 0}, {2, 2, 0},
+			{1, 2, 0}, {0, 2, 0}, {-1, 2, 0}, {-2, 2, 0}, {-3, 2, 0}, {3, 3, 0},
+			{2, 3, 0}, {1, 3, 0}, {0, 3, 0}, {-1, 3, 0}, {-2, 3, 0}, {-3, 3, 0},
+			{3, 4, 0}, {2, 4, 0}, {1, 4, 0}, {0, 4, 0}, {-1, 4, 0}, {-2, 4, 0},
+			{-3, 4, 0}, {3, 5, 0}, {2, 5, 0}, {1, 5, 0}, {0, 5, 0}, {-1, 5, 0},
+			{-2, 5, 0}, {-3, 5, 0}, {3, 6, 0}, {2, 6, 0}, {1, 6, 0}, {0, 6, 0},
+			{-1, 6, 0}, {-2, 6, 0}, {-3, 6, 0}}),
+		
+		WURST("Wurst",
+			new int[][]{{0, 0, 0}, {1, 0, 0}, {2, 0, 0}, {-1, 0, 0}, {-2, 0, 0},
+				{0, 1, 0}, {1, 1, 0}, {2, 1, 0}, {3, 1, 0}, {-1, 1, 0},
+				{-2, 1, 0}, {-3, 1, 0}, {0, 1, -1}, {1, 1, -1}, {2, 1, -1},
+				{-1, 1, -1}, {-2, 1, -1}, {0, 1, 1}, {1, 1, 1}, {2, 1, 1},
+				{-1, 1, 1}, {-2, 1, 1}, {0, 2, 0}, {1, 2, 0}, {2, 2, 0},
+				{-1, 2, 0}, {-2, 2, 0}});
+		
+		private final String name;
+		private final int[][] data;
+		
+		private DefaultTemplates(String name, int[][] data)
+		{
+			this.name = name;
+			this.data = data;
+		}
 	}
 	
 	private class AutoBuildPathFinder extends PathFinder
