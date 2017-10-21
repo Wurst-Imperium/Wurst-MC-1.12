@@ -189,7 +189,7 @@ public final class AutoBuildMod extends Mod
 		{
 			// build instantly
 			for(BlockPos pos : positions)
-				if(WBlock.getMaterial(pos) == Material.AIR)
+				if(WBlock.getMaterial(pos).isReplaceable())
 					BlockUtils.placeBlockSimple(pos);
 				
 		}else
@@ -208,7 +208,7 @@ public final class AutoBuildMod extends Mod
 		BlockPos pos = positions.get(blockIndex);
 		
 		// skip already placed blocks
-		while(WBlock.getMaterial(pos) != Material.AIR)
+		while(!WBlock.getMaterial(pos).isReplaceable())
 		{
 			blockIndex++;
 			
