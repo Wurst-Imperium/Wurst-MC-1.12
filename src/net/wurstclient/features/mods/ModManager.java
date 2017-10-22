@@ -90,6 +90,7 @@ public final class ModManager
 	public final CriticalsMod criticalsMod = new CriticalsMod();
 	public final DerpMod derpMod = new DerpMod();
 	public final DolphinMod dolphinMod = new DolphinMod();
+	public final ExcavatorMod excavatorMod = new ExcavatorMod();
 	public final ExtraElytraMod extraElytraMod = new ExtraElytraMod();
 	public final FancyChatMod fancyChatMod = new FancyChatMod();
 	public final FastBreakMod fastBreakMod = new FastBreakMod();
