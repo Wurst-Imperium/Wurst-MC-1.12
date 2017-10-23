@@ -15,7 +15,6 @@ import net.wurstclient.events.listeners.UpdateListener;
 import net.wurstclient.features.Cmd;
 import net.wurstclient.features.HelpPage;
 import net.wurstclient.utils.ChatUtils;
-import net.wurstclient.utils.EntityUtils.TargetSettings;
 
 @HelpPage("Commands/goto")
 public final class GoToCmd extends Cmd implements UpdateListener, RenderListener
@@ -23,21 +22,6 @@ public final class GoToCmd extends Cmd implements UpdateListener, RenderListener
 	private PathFinder pathFinder;
 	private PathProcessor processor;
 	private boolean enabled;
-	
-	private TargetSettings targetSettings = new TargetSettings()
-	{
-		@Override
-		public boolean targetFriends()
-		{
-			return true;
-		}
-		
-		@Override
-		public boolean targetBehindWalls()
-		{
-			return true;
-		}
-	};
 	
 	public GoToCmd()
 	{
@@ -67,9 +51,8 @@ public final class GoToCmd extends Cmd implements UpdateListener, RenderListener
 				throw new CmdError("No previous position on .path.");
 		}else
 		{
-			int[] goal = argsToPos(targetSettings, args);
-			pathFinder =
-				new PathFinder(new BlockPos(goal[0], goal[1], goal[2]));
+			BlockPos goal = argsToPos(args);
+			pathFinder = new PathFinder(goal);
 		}
 		
 		// start

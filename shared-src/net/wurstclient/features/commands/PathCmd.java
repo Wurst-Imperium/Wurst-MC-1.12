@@ -18,7 +18,6 @@ import net.wurstclient.features.Cmd;
 import net.wurstclient.features.HelpPage;
 import net.wurstclient.settings.CheckboxSetting;
 import net.wurstclient.utils.ChatUtils;
-import net.wurstclient.utils.EntityUtils.TargetSettings;
 
 @HelpPage("Commands/path")
 public final class PathCmd extends Cmd implements UpdateListener, RenderListener
@@ -27,21 +26,6 @@ public final class PathCmd extends Cmd implements UpdateListener, RenderListener
 		new CheckboxSetting("Debug mode", false);
 	private final CheckboxSetting depthTest =
 		new CheckboxSetting("Depth test", false);
-	
-	private final TargetSettings targetSettings = new TargetSettings()
-	{
-		@Override
-		public boolean targetFriends()
-		{
-			return true;
-		}
-		
-		@Override
-		public boolean targetBehindWalls()
-		{
-			return true;
-		}
-	};
 	
 	private PathFinder pathFinder;
 	private boolean enabled;
@@ -99,8 +83,7 @@ public final class PathCmd extends Cmd implements UpdateListener, RenderListener
 			goal = lastGoal;
 		else
 		{
-			int[] posArray = argsToPos(targetSettings, args);
-			goal = new BlockPos(posArray[0], posArray[1], posArray[2]);
+			goal = argsToPos(args);
 			lastGoal = goal;
 		}
 		pathFinder = new PathFinder(goal);

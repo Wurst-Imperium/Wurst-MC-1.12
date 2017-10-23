@@ -119,42 +119,6 @@ public abstract class Cmd extends Feature
 			ChatUtils.message(line);
 	}
 	
-	protected final int[] argsToPos(TargetSettings targetSettings,
-		String... args) throws CmdException
-	{
-		int[] pos = new int[3];
-		if(args.length == 3)
-		{
-			BlockPos playerBlockPos = new BlockPos(WMinecraft.getPlayer());
-			int[] playerPos = new int[]{playerBlockPos.getX(),
-				playerBlockPos.getY(), playerBlockPos.getZ()};
-			for(int i = 0; i < args.length; i++)
-				if(MiscUtils.isInteger(args[i]))
-					pos[i] = Integer.parseInt(args[i]);
-				else if(args[i].startsWith("~"))
-					if(args[i].equals("~"))
-						pos[i] = playerPos[i];
-					else if(MiscUtils.isInteger(args[i].substring(1)))
-						pos[i] = playerPos[i]
-							+ Integer.parseInt(args[i].substring(1));
-					else
-						throw new CmdSyntaxError("Invalid coordinates.");
-				else
-					throw new CmdSyntaxError("Invalid coordinates.");
-		}else if(args.length == 1)
-		{
-			Entity entity =
-				EntityUtils.getClosestEntityWithName(args[0], targetSettings);
-			if(entity == null)
-				throw new CmdError(
-					"Entity \"" + args[0] + "\" could not be found.");
-			BlockPos blockPos = new BlockPos(entity);
-			pos = new int[]{blockPos.getX(), blockPos.getY(), blockPos.getZ()};
-		}else
-			throw new CmdSyntaxError("Invalid coordinates.");
-		return pos;
-	}
-	
 	protected final BlockPos argsToPos(String... args) throws CmdException
 	{
 		if(args.length == 3)

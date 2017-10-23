@@ -7,29 +7,14 @@
  */
 package net.wurstclient.features.commands;
 
+import net.minecraft.util.math.BlockPos;
 import net.wurstclient.compatibility.WMinecraft;
 import net.wurstclient.features.Cmd;
 import net.wurstclient.features.HelpPage;
-import net.wurstclient.utils.EntityUtils.TargetSettings;
 
 @HelpPage("Commands/tp")
 public final class TpCmd extends Cmd
 {
-	private TargetSettings targetSettings = new TargetSettings()
-	{
-		@Override
-		public boolean targetFriends()
-		{
-			return true;
-		}
-		
-		@Override
-		public boolean targetBehindWalls()
-		{
-			return true;
-		}
-	};
-	
 	public TpCmd()
 	{
 		super("tp",
@@ -40,7 +25,8 @@ public final class TpCmd extends Cmd
 	@Override
 	public void call(String[] args) throws CmdException
 	{
-		int[] pos = argsToPos(targetSettings, args);
-		WMinecraft.getPlayer().setPosition(pos[0], pos[1], pos[2]);
+		BlockPos pos = argsToPos(args);
+		WMinecraft.getPlayer().setPosition(pos.getX() + 0.5, pos.getY(),
+			pos.getZ() + 0.5);
 	}
 }
