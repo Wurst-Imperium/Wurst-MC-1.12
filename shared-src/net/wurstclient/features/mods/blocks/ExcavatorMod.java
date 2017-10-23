@@ -86,7 +86,7 @@ public final class ExcavatorMod extends Mod implements UpdateListener,
 	@Override
 	public Feature[] getSeeAlso()
 	{
-		return new Feature[]{wurst.mods.nukerMod};
+		return new Feature[]{wurst.commands.excavateCmd, wurst.mods.nukerMod};
 	}
 	
 	@Override
@@ -375,6 +375,14 @@ public final class ExcavatorMod extends Mod implements UpdateListener,
 		}
 	}
 	
+	public void enableWithArea(BlockPos pos1, BlockPos pos2)
+	{
+		setEnabled(true);
+		Step.START_POS.pos = pos1;
+		Step.END_POS.pos = pos2;
+		step = Step.SCAN_AREA;
+	}
+	
 	private void handlePositionSelection()
 	{
 		// continue with next step
@@ -501,13 +509,6 @@ public final class ExcavatorMod extends Mod implements UpdateListener,
 			return;
 		}
 		
-		if(processor != null && processor.isDone())
-		{
-			pathFinder = null;
-			processor = null;
-			PathProcessor.releaseControls();
-		}
-		
 		if(pathFinder == null)
 		{
 			Comparator<BlockPos> cDistance = Comparator.comparingDouble(
@@ -545,6 +546,12 @@ public final class ExcavatorMod extends Mod implements UpdateListener,
 		// process path
 		processor.process();
 		
+		if(processor.isDone())
+		{
+			pathFinder = null;
+			processor = null;
+			PathProcessor.releaseControls();
+		}
 	}
 	
 	private static enum Step
