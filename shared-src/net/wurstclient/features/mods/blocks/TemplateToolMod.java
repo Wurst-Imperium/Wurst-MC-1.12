@@ -11,7 +11,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -191,39 +190,45 @@ public final class TemplateToolMod extends Mod
 				return;
 			}
 			
-			// add closest block to queue
-			if(template.queue.isEmpty() && !template.remainingBlocks.isEmpty())
+			// add closest block first
+			if(template.sortedBlocks.isEmpty()
+				&& !template.remainingBlocks.isEmpty())
 			{
-				BlockPos next = template.remainingBlocks.first();
-				template.queue.add(next);
-				template.sortedBlocks.add(next);
-				template.remainingBlocks.remove(next);
+				BlockPos first = template.remainingBlocks.first();
+				template.sortedBlocks.add(first);
+				template.remainingBlocks.remove(first);
+				template.lastAddedBlock = first;
 			}
 			
-			// add queued blocks to template
-			BlockPos previous = template.remainingBlocks.first();
+			// add remaining blocks
 			for(int i = 0; i < template.scanSpeed
 				&& !template.remainingBlocks.isEmpty(); i++)
 			{
 				BlockPos current = template.remainingBlocks.first();
 				double dCurrent = Double.MAX_VALUE;
+				
 				for(BlockPos pos : template.remainingBlocks)
 				{
-					double dPos = previous.distanceSq(pos);
-					if(dPos < dCurrent)
-						for(EnumFacing facing : EnumFacing.values())
-						{
-							BlockPos next = pos.offset(facing);
-							if(!template.sortedBlocks.contains(next))
-								continue;
-							
-							current = pos;
-							dCurrent = dPos;
-						}
+					double dPos = template.lastAddedBlock.distanceSq(pos);
+					if(dPos >= dCurrent)
+						continue;
+					
+					for(EnumFacing facing : EnumFacing.values())
+					{
+						BlockPos next = pos.offset(facing);
+						if(!template.sortedBlocks.contains(next))
+							continue;
+						
+						current = pos;
+						dCurrent = dPos;
+					}
 				}
+				
+				System.out.println(
+					dCurrent + "\t" + template.lastAddedBlock + "\t" + current);
 				template.sortedBlocks.add(current);
 				template.remainingBlocks.remove(current);
-				previous = current;
+				template.lastAddedBlock = current;
 			}
 			
 			// update progress
@@ -580,10 +585,9 @@ public final class TemplateToolMod extends Mod
 		private float progress;
 		
 		private final TreeSet<BlockPos> remainingBlocks;
-		
-		private final ArrayDeque<BlockPos> queue = new ArrayDeque<>();
 		private final LinkedHashSet<BlockPos> sortedBlocks =
 			new LinkedHashSet<>();
+		private BlockPos lastAddedBlock;
 		
 		public Template(BlockPos firstBlock, int blocksFound)
 		{
