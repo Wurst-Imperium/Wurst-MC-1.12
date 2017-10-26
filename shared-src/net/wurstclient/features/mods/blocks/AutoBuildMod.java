@@ -23,6 +23,7 @@ import com.google.gson.JsonParseException;
 
 import net.minecraft.block.material.Material;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
@@ -237,11 +238,11 @@ public final class AutoBuildMod extends Mod
 		// move automatically
 		if(useAi.isChecked())
 		{
-			BlockPos playerPos = new BlockPos(WMinecraft.getPlayer());
 			Vec3d eyesPos = RotationUtils.getEyesPos();
-			if(playerPos.equals(pos) || playerPos.equals(pos.down())
-				|| eyesPos.squareDistanceTo(new Vec3d(pos).addVector(0.5, 0.5,
-					0.5)) > (mode.getSelected() == 0 ? 30.25 : 14.0625))
+			if(WMinecraft.getPlayer().boundingBox
+				.intersectsWith(new AxisAlignedBB(pos))
+				|| eyesPos.squareDistanceTo(
+					new Vec3d(pos).addVector(0.5, 0.5, 0.5)) > 9)
 			{
 				if(pathFinder != null
 					&& (done || !pathFinder.getGoal().equals(pos)))
@@ -275,8 +276,7 @@ public final class AutoBuildMod extends Mod
 				}
 				
 				// check path
-				if(processor != null
-					&& !pathFinder.isPathStillValid(processor.getIndex()))
+				if(processor != null && !pathFinder.isPathStillValid(0))
 				{
 					pathFinder = new AutoBuildPathFinder(pathFinder);
 					return;
@@ -304,8 +304,14 @@ public final class AutoBuildMod extends Mod
 				&& i < blockIndex + 64; i++)
 			{
 				pos = positions.get(i);
-				if(WBlock.getMaterial(pos) == Material.AIR)
-					BlockUtils.placeBlockSimple(pos);
+				if(!WBlock.getMaterial(pos).isReplaceable())
+					continue;
+				
+				if(WMinecraft.getPlayer().boundingBox
+					.intersectsWith(new AxisAlignedBB(pos)))
+					break;
+				
+				BlockUtils.placeBlockSimple(pos);
 			}
 		else if(mode.getSelected() == 1)
 		{
@@ -563,7 +569,11 @@ public final class AutoBuildMod extends Mod
 			return done = goal.down(2).equals(current)
 				|| goal.up().equals(current) || goal.north().equals(current)
 				|| goal.south().equals(current) || goal.west().equals(current)
-				|| goal.east().equals(current);
+				|| goal.east().equals(current)
+				|| goal.down().north().equals(current)
+				|| goal.down().south().equals(current)
+				|| goal.down().west().equals(current)
+				|| goal.down().east().equals(current);
 		}
 	}
 }

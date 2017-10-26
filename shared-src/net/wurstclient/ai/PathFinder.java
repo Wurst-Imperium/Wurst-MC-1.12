@@ -581,6 +581,15 @@ public class PathFinder
 			|| spider != wurst.mods.spiderMod.isActive())
 			return false;
 		
+		// if index is zero, check if first pos is safe
+		if(index == 0)
+		{
+			PathPos pos = path.get(0);
+			if(!isPassable(pos) || !canFlyAt(pos) && !canGoThrough(pos.down())
+				&& !canSafelyStandOn(pos.down()))
+				return false;
+		}
+		
 		// check path
 		for(int i = Math.max(1, index); i < path.size(); i++)
 			if(!getNeighbors(path.get(i - 1)).contains(path.get(i)))

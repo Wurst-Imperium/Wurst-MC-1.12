@@ -9,6 +9,7 @@ package net.wurstclient.ai;
 
 import java.util.ArrayList;
 
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
@@ -32,16 +33,23 @@ public class FlyPathProcessor extends PathProcessor
 	{
 		// get positions
 		BlockPos pos = new BlockPos(WMinecraft.getPlayer());
+		Vec3d posVec = WMinecraft.getPlayer().getPositionVector();
 		BlockPos nextPos = path.get(index);
 		int posIndex = path.indexOf(pos);
+		AxisAlignedBB nextBox = new AxisAlignedBB(nextPos.getX() + 0.3,
+			nextPos.getY(), nextPos.getZ() + 0.3, nextPos.getX() + 0.7,
+			nextPos.getY() + 0.2, nextPos.getZ() + 0.7);
 		
 		// update index
-		if(pos.equals(nextPos) || posIndex > index)
+		if(posIndex > index || posVec.xCoord >= nextBox.minX
+			&& posVec.xCoord <= nextBox.maxX && posVec.yCoord >= nextBox.minY
+			&& posVec.yCoord <= nextBox.maxY && posVec.zCoord >= nextBox.minZ
+			&& posVec.zCoord <= nextBox.maxZ)
 		{
-			if(pos.equals(nextPos))
-				index++;
-			else
+			if(posIndex > index)
 				index = posIndex + 1;
+			else
+				index++;
 			
 			if(index < path.size())
 			{
@@ -89,13 +97,19 @@ public class FlyPathProcessor extends PathProcessor
 		
 		lockControls();
 		WMinecraft.getPlayer().capabilities.isFlying = creativeFlying;
+		boolean horizontal =
+			posVec.xCoord < nextBox.minX || posVec.xCoord > nextBox.maxX
+				|| posVec.zCoord < nextBox.minZ || posVec.zCoord > nextBox.maxZ;
 		
 		// face next position
-		facePosition(nextPos);
-		if(WMath.wrapDegrees(
-			Math.abs(RotationUtils.getHorizontalAngleToClientRotation(
-				new Vec3d(nextPos).addVector(0.5, 0.5, 0.5)))) > 1)
-			return;
+		if(horizontal)
+		{
+			facePosition(nextPos);
+			if(Math.abs(WMath
+				.wrapDegrees(RotationUtils.getHorizontalAngleToClientRotation(
+					new Vec3d(nextPos).addVector(0.5, 0.5, 0.5)))) > 1)
+				return;
+		}
 		
 		// skip mid-air nodes
 		Vec3i offset = nextPos.subtract(pos);
@@ -104,7 +118,7 @@ public class FlyPathProcessor extends PathProcessor
 			index++;
 		
 		// horizontal movement
-		if(pos.getX() != nextPos.getX() || pos.getZ() != nextPos.getZ())
+		if(horizontal)
 		{
 			if(!creativeFlying && WMinecraft.getPlayer().getDistance(
 				nextPos.getX() + 0.5, pos.getY() + 0.1,
@@ -118,13 +132,13 @@ public class FlyPathProcessor extends PathProcessor
 			mc.gameSettings.keyBindForward.pressed = true;
 			
 			if(WMinecraft.getPlayer().isCollidedHorizontally)
-				if(WMinecraft.getPlayer().posY > nextPos.getY() + 0.2)
+				if(posVec.yCoord > nextBox.maxY)
 					mc.gameSettings.keyBindSneak.pressed = true;
-				else if(WMinecraft.getPlayer().posY < nextPos.getY())
+				else if(posVec.yCoord < nextBox.minY)
 					mc.gameSettings.keyBindJump.pressed = true;
 				
 			// vertical movement
-		}else if(pos.getY() != nextPos.getY())
+		}else if(posVec.yCoord < nextBox.minY || posVec.yCoord > nextBox.maxY)
 		{
 			if(!creativeFlying
 				&& WMinecraft.getPlayer().getDistance(pos.getX() + 0.5,
@@ -136,7 +150,7 @@ public class FlyPathProcessor extends PathProcessor
 				return;
 			}
 			
-			if(pos.getY() < nextPos.getY())
+			if(posVec.yCoord < nextBox.minY)
 				mc.gameSettings.keyBindJump.pressed = true;
 			else
 				mc.gameSettings.keyBindSneak.pressed = true;
