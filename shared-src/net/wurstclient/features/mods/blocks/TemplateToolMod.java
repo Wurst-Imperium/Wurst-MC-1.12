@@ -224,8 +224,6 @@ public final class TemplateToolMod extends Mod
 					}
 				}
 				
-				System.out.println(
-					dCurrent + "\t" + template.lastAddedBlock + "\t" + current);
 				template.sortedBlocks.add(current);
 				template.remainingBlocks.remove(current);
 				template.lastAddedBlock = current;
