@@ -69,9 +69,8 @@ public class GuiWurstMainMenu extends GuiMainMenu
 		super.initGui();
 		
 		// adjust position of options, quit & language buttons
-		for(int i = 3; i <= 5; i++)
-			buttonList.get(i).yPosition =
-				Math.min(buttonList.get(i).yPosition, height - 56);
+		for(GuiButton button : buttonList)
+			button.yPosition = Math.min(button.yPosition, height - 56);
 		
 		// notice
 		noticeWidth1 = fontRendererObj.getStringWidth(noticeText);
