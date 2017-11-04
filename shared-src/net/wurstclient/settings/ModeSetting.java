@@ -204,6 +204,9 @@ public class ModeSetting implements Setting
 			
 		}
 		
+		if(selected < 0 || selected > modes.length - 1)
+			return;
+		
 		setSelected(selected);
 	}
 	
