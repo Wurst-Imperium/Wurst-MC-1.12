@@ -11,6 +11,8 @@ import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.TreeMap;
 
+import net.minecraft.crash.CrashReport;
+import net.minecraft.util.ReportedException;
 import net.wurstclient.features.Spf;
 
 public final class SpfManager
@@ -37,9 +39,11 @@ public final class SpfManager
 					Spf spf = (Spf)field.get(this);
 					features.put(spf.getName(), spf);
 				}
+			
 		}catch(Exception e)
 		{
-			e.printStackTrace();
+			throw new ReportedException(CrashReport.makeCrashReport(e,
+				"Initializing other Wurst features"));
 		}
 	}
 	
