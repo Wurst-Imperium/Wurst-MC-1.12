@@ -12,6 +12,8 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.TreeMap;
 
+import net.minecraft.crash.CrashReport;
+import net.minecraft.util.ReportedException;
 import net.wurstclient.features.Mod;
 import net.wurstclient.features.mods.blocks.*;
 import net.wurstclient.features.mods.chat.AntiSpamMod;
@@ -186,9 +188,11 @@ public final class ModManager
 					mods.put(mod.getName(), mod);
 					mod.initSettings();
 				}
+			
 		}catch(Exception e)
 		{
-			e.printStackTrace();
+			throw new ReportedException(
+				CrashReport.makeCrashReport(e, "Initializing Wurst mods"));
 		}
 	}
 	
