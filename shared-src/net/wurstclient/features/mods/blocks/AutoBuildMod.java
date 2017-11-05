@@ -7,10 +7,11 @@
  */
 package net.wurstclient.features.mods.blocks;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.DirectoryIteratorException;
+import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -19,10 +20,11 @@ import java.util.TreeMap;
 import org.lwjgl.opengl.GL11;
 
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
 
 import net.minecraft.block.material.Material;
+import net.minecraft.crash.CrashReport;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.ReportedException;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
@@ -409,54 +411,63 @@ public final class AutoBuildMod extends Mod
 	
 	public void loadTemplates()
 	{
-		File[] files = WurstFolders.AUTOBUILD.toFile().listFiles();
-		
-		boolean foundOldTemplates = false;
 		TreeMap<String, int[][]> templates = new TreeMap<>();
-		for(File file : files)
+		ArrayList<Path> oldTemplates = new ArrayList<>();
+		
+		try(DirectoryStream<Path> stream =
+			Files.newDirectoryStream(WurstFolders.AUTOBUILD, "*.json"))
+		{
+			for(Path path : stream)
+				try(BufferedReader reader = Files.newBufferedReader(path))
+				{
+					JsonObject json =
+						JsonUtils.jsonParser.parse(reader).getAsJsonObject();
+					int[][] blocks = JsonUtils.gson.fromJson(json.get("blocks"),
+						int[][].class);
+					
+					if(blocks[0].length == 4)
+					{
+						oldTemplates.add(path);
+						continue;
+					}
+					
+					String name = path.getFileName().toString();
+					name = name.substring(0, name.lastIndexOf(".json"));
+					templates.put(name, blocks);
+					
+				}catch(Exception e)
+				{
+					System.err.println(
+						"Failed to load template: " + path.getFileName());
+					e.printStackTrace();
+				}
+			
+		}catch(IOException | DirectoryIteratorException e)
+		{
+			throw new ReportedException(
+				CrashReport.makeCrashReport(e, "Loading AutoBuild templates"));
+		}
+		
+		// rename old templates
+		for(Path path : oldTemplates)
 			try
 			{
-				// read file
-				FileReader reader = new FileReader(file);
-				JsonObject json =
-					JsonUtils.jsonParser.parse(reader).getAsJsonObject();
-				reader.close();
+				Path newPath = path.resolveSibling(path.getFileName() + "_old");
+				Files.move(path, newPath);
 				
-				// get blocks
-				int[][] blocks =
-					JsonUtils.gson.fromJson(json.get("blocks"), int[][].class);
-				
-				// delete file if old template is found
-				if(blocks[0].length == 4)
-				{
-					foundOldTemplates = true;
-					file.delete();
-					continue;
-				}
-				
-				// add template
-				templates.put(file.getName().substring(0,
-					file.getName().lastIndexOf(".json")), blocks);
-			}catch(Exception e)
+			}catch(IOException e)
 			{
-				System.err
-					.println("Failed to load template: " + file.getName());
 				e.printStackTrace();
 			}
 			
 		// if directory is empty or contains old templates,
 		// add default templates and try again
-		if(foundOldTemplates
-			|| WurstFolders.AUTOBUILD.toFile().listFiles().length == 0)
+		if(templates.isEmpty() || !oldTemplates.isEmpty())
 		{
 			createDefaultTemplates();
 			loadTemplates();
 			return;
 		}
-		
-		if(templates.isEmpty())
-			throw new JsonParseException(
-				"Couldn't load any AutoBuild templates.");
 		
 		setTemplates(templates);
 	}
