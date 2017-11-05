@@ -51,6 +51,7 @@ public enum WurstClient
 	public void startClient()
 	{
 		Fonts.loadFonts();
+		WurstFolders.initialize();
 		
 		events = new EventManager();
 		mods = new ModManager();
@@ -62,7 +63,6 @@ public enum WurstClient
 		friends = new FriendsList();
 		navigator = new Navigator();
 		
-		WurstFolders.initialize();
 		ConfigFiles.initialize();
 		
 		keybinds = new KeybindList(WurstFolders.MAIN.resolve("keybinds.json"));
