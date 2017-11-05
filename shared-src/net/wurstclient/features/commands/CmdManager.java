@@ -93,9 +93,11 @@ public final class CmdManager implements ChatOutputListener
 					Cmd cmd = (Cmd)field.get(this);
 					cmds.put(cmd.getCmdName(), cmd);
 				}
+			
 		}catch(Exception e)
 		{
-			e.printStackTrace();
+			throw new ReportedException(
+				CrashReport.makeCrashReport(e, "Initializing Wurst commands"));
 		}
 	}
 	
