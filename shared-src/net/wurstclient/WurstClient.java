@@ -30,7 +30,7 @@ public enum WurstClient
 {
 	INSTANCE;
 	
-	public static final String VERSION = "6.14";
+	public static final String VERSION = "6.15";
 	
 	public AnalyticsManager analytics;
 	public CmdManager commands;
