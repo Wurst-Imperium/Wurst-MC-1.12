@@ -41,6 +41,7 @@ public final class AntiAfkMod extends Mod
 	
 	private RandomPathFinder pathFinder;
 	private PathProcessor processor;
+	private boolean creativeFlying;
 	
 	public AntiAfkMod()
 	{
@@ -62,6 +63,7 @@ public final class AntiAfkMod extends Mod
 		start = new BlockPos(WMinecraft.getPlayer());
 		nextBlock = null;
 		pathFinder = new RandomPathFinder(start);
+		creativeFlying = WMinecraft.getPlayer().capabilities.isFlying;
 		
 		wurst.events.add(UpdateListener.class, this);
 		wurst.events.add(RenderListener.class, this);
@@ -92,6 +94,8 @@ public final class AntiAfkMod extends Mod
 			setEnabled(false);
 			return;
 		}
+		
+		WMinecraft.getPlayer().capabilities.isFlying = creativeFlying;
 		
 		if(useAi.isChecked())
 		{
