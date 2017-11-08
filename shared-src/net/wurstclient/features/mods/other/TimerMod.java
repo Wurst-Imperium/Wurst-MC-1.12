@@ -26,6 +26,12 @@ public final class TimerMod extends Mod
 	}
 	
 	@Override
+	public String getRenderName()
+	{
+		return getName() + " [" + speed.getValueString() + "]";
+	}
+	
+	@Override
 	public void initSettings()
 	{
 		addSetting(speed);
