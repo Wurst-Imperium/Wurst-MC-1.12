@@ -360,6 +360,9 @@ public final class AutoBuildMod extends Mod
 		{
 			BlockPos pos = positions.get(i);
 			
+			if(!WBlock.getMaterial(pos).isReplaceable())
+				continue;
+			
 			GL11.glPushMatrix();
 			GL11.glTranslated(pos.getX(), pos.getY(), pos.getZ());
 			GL11.glTranslated(offset, offset, offset);
