@@ -14,7 +14,7 @@ public final class WMinecraft
 	public static final String VERSION = "1.12";
 	public static final String DISPLAY_VERSION = "1.12";
 	public static final boolean OPTIFINE = false;
-	public static final boolean REALMS = true;
+	public static final boolean REALMS = false;
 	public static final boolean COOLDOWN = true;
 	
 	public static final NavigableMap<Integer, String> PROTOCOLS;
