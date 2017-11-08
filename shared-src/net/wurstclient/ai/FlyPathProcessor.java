@@ -39,6 +39,11 @@ public class FlyPathProcessor extends PathProcessor
 			nextPos.getY(), nextPos.getZ() + 0.3, nextPos.getX() + 0.7,
 			nextPos.getY() + 0.2, nextPos.getZ() + 0.7);
 		
+		if(posIndex == -1)
+			ticksOffPath++;
+		else
+			ticksOffPath = 0;
+		
 		// update index
 		if(posIndex > index || posVec.xCoord >= nextBox.minX
 			&& posVec.xCoord <= nextBox.maxX && posVec.yCoord >= nextBox.minY

@@ -292,7 +292,7 @@ public final class AutoBuildMod extends Mod
 				// process path
 				processor.process();
 				
-				if(processor.isDone())
+				if(processor.isDone() || processor.getTicksOffPath() >= 40)
 					done = true;
 				
 			}else if(pathFinder != null)

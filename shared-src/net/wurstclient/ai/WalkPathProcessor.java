@@ -39,6 +39,11 @@ public class WalkPathProcessor extends PathProcessor
 		PathPos nextPos = path.get(index);
 		int posIndex = path.indexOf(pos);
 		
+		if(posIndex == -1)
+			ticksOffPath++;
+		else
+			ticksOffPath = 0;
+		
 		// update index
 		if(pos.equals(nextPos))
 		{

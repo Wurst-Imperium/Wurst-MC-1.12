@@ -31,6 +31,7 @@ public abstract class PathProcessor
 	protected final ArrayList<PathPos> path;
 	protected int index;
 	protected boolean done;
+	protected int ticksOffPath;
 	
 	public PathProcessor(ArrayList<PathPos> path)
 	{
@@ -50,6 +51,11 @@ public abstract class PathProcessor
 	public final boolean isDone()
 	{
 		return done;
+	}
+	
+	public final int getTicksOffPath()
+	{
+		return ticksOffPath;
 	}
 	
 	protected final void facePosition(BlockPos pos)
