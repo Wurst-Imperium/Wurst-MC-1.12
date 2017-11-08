@@ -207,6 +207,11 @@ public final class AutoBuildMod extends Mod
 	@Override
 	public void onUpdate()
 	{
+		// Timer fix
+		if(wurst.mods.timerMod.isActive()
+			&& wurst.mods.timerMod.getTimerSpeed() > 1)
+			blockIndex = 0;
+		
 		// get next block
 		BlockPos pos = positions.get(blockIndex);
 		
