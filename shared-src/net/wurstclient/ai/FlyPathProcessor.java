@@ -20,7 +20,6 @@ import net.wurstclient.utils.RotationUtils;
 public class FlyPathProcessor extends PathProcessor
 {
 	private final boolean creativeFlying;
-	private boolean stopped;
 	
 	public FlyPathProcessor(ArrayList<PathPos> path, boolean creativeFlying)
 	{
@@ -51,55 +50,32 @@ public class FlyPathProcessor extends PathProcessor
 			else
 				index++;
 			
-			if(index < path.size())
+			// stop when changing directions
+			if(creativeFlying)
 			{
-				// stop when changing directions
-				if(creativeFlying && index >= 2)
-				{
-					BlockPos prevPos = path.get(index - 1);
-					if(!path.get(index).subtract(prevPos)
-						.equals(prevPos.subtract(path.get(index - 2))))
-						if(!stopped)
-						{
-							WMinecraft.getPlayer().motionX /= Math.max(
-								Math.abs(WMinecraft.getPlayer().motionX) * 50,
-								1);
-							WMinecraft.getPlayer().motionY /= Math.max(
-								Math.abs(WMinecraft.getPlayer().motionY) * 50,
-								1);
-							WMinecraft.getPlayer().motionZ /= Math.max(
-								Math.abs(WMinecraft.getPlayer().motionZ) * 50,
-								1);
-							stopped = true;
-						}
-				}
-				
-				// disable when done
-			}else
-			{
-				if(creativeFlying)
-				{
-					WMinecraft.getPlayer().motionX /= Math
-						.max(Math.abs(WMinecraft.getPlayer().motionX) * 50, 1);
-					WMinecraft.getPlayer().motionY /= Math
-						.max(Math.abs(WMinecraft.getPlayer().motionY) * 50, 1);
-					WMinecraft.getPlayer().motionZ /= Math
-						.max(Math.abs(WMinecraft.getPlayer().motionZ) * 50, 1);
-				}
-				
-				done = true;
+				WMinecraft.getPlayer().motionX /=
+					Math.max(Math.abs(WMinecraft.getPlayer().motionX) * 50, 1);
+				WMinecraft.getPlayer().motionY /=
+					Math.max(Math.abs(WMinecraft.getPlayer().motionY) * 50, 1);
+				WMinecraft.getPlayer().motionZ /=
+					Math.max(Math.abs(WMinecraft.getPlayer().motionZ) * 50, 1);
 			}
+			
+			if(index >= path.size())
+				done = true;
 			
 			return;
 		}
 		
-		stopped = false;
-		
 		lockControls();
 		WMinecraft.getPlayer().capabilities.isFlying = creativeFlying;
-		boolean horizontal =
-			posVec.xCoord < nextBox.minX || posVec.xCoord > nextBox.maxX
-				|| posVec.zCoord < nextBox.minZ || posVec.zCoord > nextBox.maxZ;
+		boolean x =
+			posVec.xCoord < nextBox.minX || posVec.xCoord > nextBox.maxX;
+		boolean y =
+			posVec.yCoord < nextBox.minY || posVec.yCoord > nextBox.maxY;
+		boolean z =
+			posVec.zCoord < nextBox.minZ || posVec.zCoord > nextBox.maxZ;
+		boolean horizontal = x || z;
 		
 		// face next position
 		if(horizontal)
@@ -116,6 +92,19 @@ public class FlyPathProcessor extends PathProcessor
 		while(index < path.size() - 1
 			&& path.get(index).add(offset).equals(path.get(index + 1)))
 			index++;
+		
+		if(creativeFlying)
+		{
+			if(!x)
+				WMinecraft.getPlayer().motionX /=
+					Math.max(Math.abs(WMinecraft.getPlayer().motionX) * 50, 1);
+			if(!y)
+				WMinecraft.getPlayer().motionY /=
+					Math.max(Math.abs(WMinecraft.getPlayer().motionY) * 50, 1);
+			if(!z)
+				WMinecraft.getPlayer().motionZ /=
+					Math.max(Math.abs(WMinecraft.getPlayer().motionZ) * 50, 1);
+		}
 		
 		// horizontal movement
 		if(horizontal)
@@ -138,7 +127,7 @@ public class FlyPathProcessor extends PathProcessor
 					mc.gameSettings.keyBindJump.pressed = true;
 				
 			// vertical movement
-		}else if(posVec.yCoord < nextBox.minY || posVec.yCoord > nextBox.maxY)
+		}else if(y)
 		{
 			if(!creativeFlying
 				&& WMinecraft.getPlayer().getDistance(pos.getX() + 0.5,
