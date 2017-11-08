@@ -32,8 +32,7 @@ import net.wurstclient.utils.RotationUtils;
 public final class AntiAfkMod extends Mod
 	implements UpdateListener, RenderListener
 {
-	private final CheckboxSetting useAi =
-		new CheckboxSetting("Use AI (experimental)", false);
+	private final CheckboxSetting useAi = new CheckboxSetting("Use AI", true);
 	
 	private int timer;
 	private Random random = new Random();
