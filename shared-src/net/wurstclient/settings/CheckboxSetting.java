@@ -11,6 +11,8 @@ import java.util.ArrayList;
 
 import com.google.gson.JsonObject;
 
+import net.wurstclient.clickgui.Checkbox;
+import net.wurstclient.clickgui.Component;
 import net.wurstclient.files.ConfigFiles;
 import net.wurstclient.keybinds.PossibleKeybind;
 import net.wurstclient.navigator.NavigatorFeatureScreen;
@@ -106,6 +108,12 @@ public class CheckboxSetting implements Setting, CheckboxLock
 	public final int getY()
 	{
 		return y;
+	}
+	
+	@Override
+	public Component getComponent()
+	{
+		return new Checkbox(this);
 	}
 	
 	@Override

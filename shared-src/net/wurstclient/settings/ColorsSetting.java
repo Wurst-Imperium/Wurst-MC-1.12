@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
+import net.wurstclient.clickgui.Component;
 import net.wurstclient.keybinds.PossibleKeybind;
 import net.wurstclient.navigator.NavigatorFeatureScreen;
 import net.wurstclient.utils.JsonUtils;
@@ -196,6 +197,12 @@ public class ColorsSetting implements Setting, ColorsLock
 	public final boolean isLocked()
 	{
 		return lock != null;
+	}
+	
+	@Override
+	public Component getComponent()
+	{
+		return null;
 	}
 	
 	@Override

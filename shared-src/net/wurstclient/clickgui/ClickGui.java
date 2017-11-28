@@ -34,6 +34,7 @@ import net.wurstclient.utils.JsonUtils;
 public final class ClickGui
 {
 	private final ArrayList<Window> windows = new ArrayList<>();
+	private final ArrayList<Popup> popups = new ArrayList<>();
 	private final Path windowsFile;
 	
 	private float[] bgColor = new float[]{0.25F, 0.25F, 0.25F};
@@ -136,6 +137,9 @@ public final class ClickGui
 		
 		for(Window window : windows)
 		{
+			if(window.isClosable())
+				continue;
+			
 			JsonObject jsonWindow = new JsonObject();
 			jsonWindow.addProperty("x", window.getX());
 			jsonWindow.addProperty("y", window.getY());
@@ -156,6 +160,57 @@ public final class ClickGui
 	}
 	
 	public void handleMouseClick(int mouseX, int mouseY, int mouseButton)
+	{
+		boolean popupClicked =
+			handlePopupMouseClick(mouseX, mouseY, mouseButton);
+		
+		if(!popupClicked)
+			handleWindowMouseClick(mouseX, mouseY, mouseButton);
+		
+		for(Popup popup : popups)
+			if(popup.getOwner().getParent().isClosing())
+				popup.close();
+			
+		windows.removeIf(w -> w.isClosing());
+		popups.removeIf(p -> p.isClosing());
+	}
+	
+	private boolean handlePopupMouseClick(int mouseX, int mouseY,
+		int mouseButton)
+	{
+		for(int i = popups.size() - 1; i >= 0; i--)
+		{
+			Popup popup = popups.get(i);
+			Component owner = popup.getOwner();
+			Window parent = owner.getParent();
+			
+			int x0 = parent.getX() + owner.getX();
+			int y0 =
+				parent.getY() + 13 + parent.getScrollOffset() + owner.getY();
+			
+			int x1 = x0 + popup.getX();
+			int y1 = y0 + popup.getY();
+			int x2 = x1 + popup.getWidth();
+			int y2 = y1 + popup.getHeight();
+			
+			if(mouseX < x1 || mouseY < y1)
+				continue;
+			if(mouseX >= x2 || mouseY >= y2)
+				continue;
+			
+			int cMouseX = mouseX - x0;
+			int cMouseY = mouseY - y0;
+			popup.handleMouseClick(cMouseX, cMouseY, mouseButton);
+			
+			popups.remove(i);
+			popups.add(popup);
+			return true;
+		}
+		
+		return false;
+	}
+	
+	private void handleWindowMouseClick(int mouseX, int mouseY, int mouseButton)
 	{
 		for(int i = windows.size() - 1; i >= 0; i--)
 		{
@@ -196,8 +251,7 @@ public final class ClickGui
 				continue;
 			
 			windows.remove(i);
-			if(!window.isClosing())
-				windows.add(window);
+			windows.add(window);
 			break;
 		}
 	}
@@ -346,6 +400,26 @@ public final class ClickGui
 					window.stopDraggingScrollbar();
 				
 			renderWindow(window, mouseX, mouseY);
+		}
+		
+		GL11.glDisable(GL11.GL_TEXTURE_2D);
+		for(Popup popup : popups)
+		{
+			Component owner = popup.getOwner();
+			Window parent = owner.getParent();
+			
+			int x1 = parent.getX() + owner.getX();
+			int y1 =
+				parent.getY() + 13 + parent.getScrollOffset() + owner.getY();
+			
+			GL11.glPushMatrix();
+			GL11.glTranslated(x1, y1, 0);
+			
+			int cMouseX = mouseX - x1;
+			int cMouseY = mouseY - y1;
+			popup.render(cMouseX, cMouseY);
+			
+			GL11.glPopMatrix();
 		}
 		
 		// tooltip
@@ -941,5 +1015,15 @@ public final class ClickGui
 	public void setTooltip(String tooltip)
 	{
 		this.tooltip = tooltip;
+	}
+	
+	public void addWindow(Window window)
+	{
+		windows.add(window);
+	}
+	
+	public void addPopup(Popup popup)
+	{
+		popups.add(popup);
 	}
 }

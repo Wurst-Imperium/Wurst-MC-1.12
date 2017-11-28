@@ -11,6 +11,7 @@ import java.util.ArrayList;
 
 import com.google.gson.JsonObject;
 
+import net.wurstclient.clickgui.Component;
 import net.wurstclient.keybinds.PossibleKeybind;
 import net.wurstclient.navigator.NavigatorFeatureScreen;
 
@@ -21,6 +22,8 @@ public interface Setting
 	public void addToFeatureScreen(NavigatorFeatureScreen featureScreen);
 	
 	public ArrayList<PossibleKeybind> getPossibleKeybinds(String featureName);
+	
+	public abstract Component getComponent();
 	
 	public void save(JsonObject json);
 	

@@ -11,6 +11,8 @@ import java.util.ArrayList;
 
 import com.google.gson.JsonObject;
 
+import net.wurstclient.clickgui.Component;
+import net.wurstclient.clickgui.Slider;
 import net.wurstclient.compatibility.WMath;
 import net.wurstclient.keybinds.PossibleKeybind;
 import net.wurstclient.navigator.NavigatorFeatureScreen;
@@ -19,6 +21,7 @@ public class SliderSetting implements Setting, SliderLock
 {
 	private final String name;
 	private double value;
+	private final double defaultValue;
 	
 	private final double minimum;
 	private final double maximum;
@@ -39,6 +42,7 @@ public class SliderSetting implements Setting, SliderLock
 	{
 		this.name = name;
 		this.value = value;
+		defaultValue = value;
 		
 		this.minimum = minimum;
 		this.maximum = maximum;
@@ -146,6 +150,11 @@ public class SliderSetting implements Setting, SliderLock
 		return display.getValueString(getValue());
 	}
 	
+	public double getDefaultValue()
+	{
+		return defaultValue;
+	}
+	
 	public final double getMinimum()
 	{
 		return minimum;
@@ -229,6 +238,12 @@ public class SliderSetting implements Setting, SliderLock
 	public final float getPercentage()
 	{
 		return (float)((getValue() - minimum) / getRange());
+	}
+	
+	@Override
+	public Component getComponent()
+	{
+		return new Slider(this);
 	}
 	
 	@Override
