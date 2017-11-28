@@ -522,6 +522,9 @@ public final class ClickGui
 		if(window.isMinimized())
 			y2 = y3;
 		
+		if(mouseX >= x1 && mouseY >= y1 && mouseX < x2 && mouseY < y2)
+			tooltip = null;
+		
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
 		
 		if(!window.isMinimized())
