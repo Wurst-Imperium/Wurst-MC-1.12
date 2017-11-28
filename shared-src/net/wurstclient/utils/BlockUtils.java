@@ -337,6 +337,35 @@ public final class BlockUtils
 		}
 	}
 	
+	public static void breakBlocksPacketSpam(Iterable<BlockPos> blocks)
+	{
+		Vec3d eyesPos = RotationUtils.getEyesPos();
+		
+		for(BlockPos pos : blocks)
+		{
+			Vec3d posVec = new Vec3d(pos).addVector(0.5, 0.5, 0.5);
+			double distanceSqPosVec = eyesPos.squareDistanceTo(posVec);
+			
+			for(EnumFacing side : EnumFacing.values())
+			{
+				Vec3d hitVec =
+					posVec.add(new Vec3d(side.getDirectionVec()).scale(0.5));
+				
+				// check if side is facing towards player
+				if(eyesPos.squareDistanceTo(hitVec) >= distanceSqPosVec)
+					continue;
+				
+				// break block
+				WConnection.sendPacket(new CPacketPlayerDigging(
+					Action.START_DESTROY_BLOCK, pos, side));
+				WConnection.sendPacket(new CPacketPlayerDigging(
+					Action.STOP_DESTROY_BLOCK, pos, side));
+				
+				break;
+			}
+		}
+	}
+	
 	public static boolean rightClickBlockLegit(BlockPos pos)
 	{
 		Vec3d eyesPos = RotationUtils.getEyesPos();

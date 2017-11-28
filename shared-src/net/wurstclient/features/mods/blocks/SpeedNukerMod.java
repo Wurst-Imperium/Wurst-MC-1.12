@@ -73,7 +73,7 @@ public final class SpeedNukerMod extends Mod
 				case 1:
 				// id mode
 				validator =
-					(pos) -> wurst.mods.nukerMod.id == WBlock.getId(pos);
+					(pos) -> wurst.mods.nukerMod.getId() == WBlock.getId(pos);
 				break;
 				
 				case 2:
@@ -113,7 +113,7 @@ public final class SpeedNukerMod extends Mod
 			return "SpeedNuker";
 			
 			case 1:
-			return "IDSpeedNuker [" + wurst.mods.nukerMod.id + "]";
+			return "IDSpeedNuker [" + wurst.mods.nukerMod.getId() + "]";
 			
 			default:
 			return mode.getSelectedMode() + "SpeedNuker";
@@ -148,14 +148,14 @@ public final class SpeedNukerMod extends Mod
 		wurst.events.remove(UpdateListener.class, this);
 		
 		// resets
-		wurst.mods.nukerMod.id = 0;
+		wurst.mods.nukerMod.setId(0);
 	}
 	
 	@Override
 	public void onUpdate()
 	{
 		// abort if using IDNuker without an ID being set
-		if(mode.getSelected() == 1 && wurst.mods.nukerMod.id == 0)
+		if(mode.getSelected() == 1 && wurst.mods.nukerMod.getId() == 0)
 			return;
 		
 		// get valid blocks
@@ -191,6 +191,7 @@ public final class SpeedNukerMod extends Mod
 			return;
 		
 		// set id
-		wurst.mods.nukerMod.id = WBlock.getId(mc.objectMouseOver.getBlockPos());
+		wurst.mods.nukerMod
+			.setId(WBlock.getId(mc.objectMouseOver.getBlockPos()));
 	}
 }

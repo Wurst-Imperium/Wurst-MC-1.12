@@ -71,7 +71,7 @@ public final class NukerLegitMod extends Mod
 				case 1:
 				// id mode
 				validator =
-					(pos) -> wurst.mods.nukerMod.id == WBlock.getId(pos);
+					(pos) -> wurst.mods.nukerMod.getId() == WBlock.getId(pos);
 				break;
 				
 				case 2:
@@ -115,7 +115,7 @@ public final class NukerLegitMod extends Mod
 			return "NukerLegit";
 			
 			case 1:
-			return "IDNukerLegit [" + wurst.mods.nukerMod.id + "]";
+			return "IDNukerLegit [" + wurst.mods.nukerMod.getId() + "]";
 			
 			default:
 			return mode.getSelectedMode() + "NukerLegit";
@@ -154,7 +154,7 @@ public final class NukerLegitMod extends Mod
 		// resets
 		mc.gameSettings.keyBindAttack.pressed = false;
 		currentBlock = null;
-		wurst.mods.nukerMod.id = 0;
+		wurst.mods.nukerMod.setId(0);
 	}
 	
 	@Override
@@ -174,14 +174,15 @@ public final class NukerLegitMod extends Mod
 			return;
 		
 		// set id
-		wurst.mods.nukerMod.id = WBlock.getId(mc.objectMouseOver.getBlockPos());
+		wurst.mods.nukerMod
+			.setId(WBlock.getId(mc.objectMouseOver.getBlockPos()));
 	}
 	
 	@Override
 	public void onUpdate()
 	{
 		// abort if using IDNuker without an ID being set
-		if(mode.getSelected() == 1 && wurst.mods.nukerMod.id == 0)
+		if(mode.getSelected() == 1 && wurst.mods.nukerMod.getId() == 0)
 			return;
 		
 		currentBlock = null;
