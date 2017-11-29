@@ -135,7 +135,7 @@ public class RenderUtils
 	
 	public static void drawCrossBox()
 	{
-		drawOutlinedBox(DEFAULT_AABB);
+		drawCrossBox(DEFAULT_AABB);
 	}
 	
 	public static void drawCrossBox(AxisAlignedBB bb)

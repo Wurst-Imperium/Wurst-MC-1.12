@@ -38,18 +38,14 @@ import net.wurstclient.utils.RenderUtils;
 public final class ChestEspMod extends Mod
 	implements UpdateListener, RenderListener
 {
-	private final ArrayList<AxisAlignedBB> basicNew = new ArrayList<>();
-	private final ArrayList<AxisAlignedBB> basicEmpty = new ArrayList<>();
-	private final ArrayList<AxisAlignedBB> basicNotEmpty = new ArrayList<>();
+	private int solidBox;
+	private int outlinedBox;
+	private int crossBox;
 	
-	private final ArrayList<AxisAlignedBB> trappedNew = new ArrayList<>();
-	private final ArrayList<AxisAlignedBB> trappedEmpty = new ArrayList<>();
-	private final ArrayList<AxisAlignedBB> trappedNotEmpty = new ArrayList<>();
+	private int normalChests;
+	private final ArrayList<Entity> minecarts = new ArrayList<>();
 	
-	private final ArrayList<AxisAlignedBB> specialEnder = new ArrayList<>();
-	private final ArrayList<Entity> specialCart = new ArrayList<>();
-	
-	private int totalChests;
+	private int chestCounter;
 	
 	private TileEntityChest openChest;
 	private final LinkedHashSet<BlockPos> emptyChests = new LinkedHashSet<>();
@@ -74,20 +70,35 @@ public final class ChestEspMod extends Mod
 	@Override
 	public String getRenderName()
 	{
-		if(totalChests == 1)
-			return getName() + " [1 chest]";
-		else
-			return getName() + " [" + totalChests + " chests]";
+		return getName() + (chestCounter == 1 ? " [1 chest]"
+			: " [" + chestCounter + " chests]");
 	}
 	
 	@Override
 	public void onEnable()
 	{
+		wurst.events.add(UpdateListener.class, this);
+		wurst.events.add(RenderListener.class, this);
+		
 		emptyChests.clear();
 		nonEmptyChests.clear();
 		
-		wurst.events.add(UpdateListener.class, this);
-		wurst.events.add(RenderListener.class, this);
+		solidBox = GL11.glGenLists(1);
+		GL11.glNewList(solidBox, GL11.GL_COMPILE);
+		RenderUtils.drawSolidBox();
+		GL11.glEndList();
+		
+		outlinedBox = GL11.glGenLists(1);
+		GL11.glNewList(outlinedBox, GL11.GL_COMPILE);
+		RenderUtils.drawOutlinedBox();
+		GL11.glEndList();
+		
+		crossBox = GL11.glGenLists(1);
+		GL11.glNewList(crossBox, GL11.GL_COMPILE);
+		RenderUtils.drawCrossBox();
+		GL11.glEndList();
+		
+		normalChests = GL11.glGenLists(1);
 	}
 	
 	@Override
@@ -95,29 +106,36 @@ public final class ChestEspMod extends Mod
 	{
 		wurst.events.remove(UpdateListener.class, this);
 		wurst.events.remove(RenderListener.class, this);
+		
+		GL11.glDeleteLists(solidBox, 1);
+		solidBox = 0;
+		
+		GL11.glDeleteLists(outlinedBox, 1);
+		outlinedBox = 0;
+		
+		GL11.glDeleteLists(crossBox, 1);
+		crossBox = 0;
+		
+		GL11.glDeleteLists(normalChests, 1);
+		normalChests = 0;
 	}
 	
 	@Override
 	public void onUpdate()
 	{
-		// clear lists
-		basicNew.clear();
-		basicEmpty.clear();
-		basicNotEmpty.clear();
-		trappedNew.clear();
-		trappedEmpty.clear();
-		trappedNotEmpty.clear();
-		specialEnder.clear();
-		specialCart.clear();
+		ArrayList<AxisAlignedBB> basicNew = new ArrayList<>();
+		ArrayList<AxisAlignedBB> basicEmpty = new ArrayList<>();
+		ArrayList<AxisAlignedBB> basicNotEmpty = new ArrayList<>();
+		ArrayList<AxisAlignedBB> trappedNew = new ArrayList<>();
+		ArrayList<AxisAlignedBB> trappedEmpty = new ArrayList<>();
+		ArrayList<AxisAlignedBB> trappedNotEmpty = new ArrayList<>();
+		ArrayList<AxisAlignedBB> enderChests = new ArrayList<>();
 		
 		for(TileEntity tileEntity : WMinecraft.getWorld().loadedTileEntityList)
-		{
-			// normal chests
 			if(tileEntity instanceof TileEntityChest)
 			{
-				TileEntityChest chest = (TileEntityChest)tileEntity;
-				
 				// ignore other block in double chest
+				TileEntityChest chest = (TileEntityChest)tileEntity;
 				if(chest.adjacentChestXPos != null
 					|| chest.adjacentChestZPos != null)
 					continue;
@@ -129,55 +147,73 @@ public final class ChestEspMod extends Mod
 				
 				// larger box for double chest
 				if(chest.adjacentChestXNeg != null)
-					bb = bb.union(WBlock
-						.getBoundingBox(chest.adjacentChestXNeg.getPos()));
-				else if(chest.adjacentChestZNeg != null)
-					bb = bb.union(WBlock
-						.getBoundingBox(chest.adjacentChestZNeg.getPos()));
-				
-				boolean trapped = WTileEntity.isTrappedChest(chest);
+				{
+					BlockPos pos2 = chest.adjacentChestXNeg.getPos();
+					AxisAlignedBB bb2 = WBlock.getBoundingBox(pos2);
+					bb = bb.union(bb2);
+					
+				}else if(chest.adjacentChestZNeg != null)
+				{
+					BlockPos pos2 = chest.adjacentChestZNeg.getPos();
+					AxisAlignedBB bb2 = WBlock.getBoundingBox(pos2);
+					bb = bb.union(bb2);
+				}
 				
 				// add to appropriate list
+				boolean trapped = WTileEntity.isTrappedChest(chest);
 				if(emptyChests.contains(chest.getPos()))
-				{
 					if(trapped)
 						trappedEmpty.add(bb);
 					else
 						basicEmpty.add(bb);
-					
-				}else if(nonEmptyChests.contains(chest.getPos()))
-				{
+				else if(nonEmptyChests.contains(chest.getPos()))
 					if(trapped)
 						trappedNotEmpty.add(bb);
 					else
 						basicNotEmpty.add(bb);
-					
-				}else if(trapped)
+				else if(trapped)
 					trappedNew.add(bb);
 				else
 					basicNew.add(bb);
 				
-				continue;
-			}
-			
-			// ender chests
-			if(tileEntity instanceof TileEntityEnderChest)
+			}else if(tileEntity instanceof TileEntityEnderChest)
 			{
 				AxisAlignedBB bb = WBlock.getBoundingBox(
 					((TileEntityEnderChest)tileEntity).getPos());
-				specialEnder.add(bb);
+				enderChests.add(bb);
 			}
-		}
+		
+		GL11.glNewList(normalChests, GL11.GL_COMPILE);
+		GL11.glColor4f(0, 1, 0, 0.25F);
+		renderBoxes(basicNew, solidBox);
+		GL11.glColor4f(0, 1, 0, 0.5F);
+		renderBoxes(basicNew, outlinedBox);
+		renderBoxes(basicEmpty, outlinedBox);
+		renderBoxes(basicNotEmpty, outlinedBox);
+		renderBoxes(basicNotEmpty, crossBox);
+		GL11.glColor4f(1, 0.5F, 0, 0.25F);
+		renderBoxes(trappedNew, solidBox);
+		GL11.glColor4f(1, 0.5F, 0, 0.5F);
+		renderBoxes(trappedNew, outlinedBox);
+		renderBoxes(trappedEmpty, outlinedBox);
+		renderBoxes(trappedNotEmpty, outlinedBox);
+		renderBoxes(trappedNotEmpty, crossBox);
+		GL11.glColor4f(0, 1, 1, 0.25F);
+		renderBoxes(enderChests, solidBox);
+		GL11.glColor4f(0, 1, 1, 0.5F);
+		renderBoxes(enderChests, outlinedBox);
+		GL11.glEndList();
 		
 		// minecarts
+		minecarts.clear();
 		for(Entity entity : WMinecraft.getWorld().loadedEntityList)
 			if(entity instanceof EntityMinecartChest)
-				specialCart.add(entity);
+				minecarts.add(entity);
 			
 		// chest counter
-		totalChests = basicNew.size() + basicEmpty.size() + basicNotEmpty.size()
-			+ trappedNew.size() + trappedEmpty.size() + trappedNotEmpty.size()
-			+ specialEnder.size() + specialCart.size();
+		chestCounter = basicNew.size() + basicEmpty.size()
+			+ basicNotEmpty.size() + trappedNew.size() + trappedEmpty.size()
+			+ trappedNotEmpty.size() + enderChests.size() + minecarts.size();
 	}
 	
 	@Override
@@ -191,6 +227,7 @@ public final class ChestEspMod extends Mod
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
 		GL11.glEnable(GL11.GL_CULL_FACE);
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
+		GL11.glDisable(GL11.GL_LIGHTING);
 		
 		GL11.glPushMatrix();
 		GL11.glTranslated(-mc.getRenderManager().renderPosX,
@@ -199,8 +236,8 @@ public final class ChestEspMod extends Mod
 		
 		// minecart interpolation
 		ArrayList<AxisAlignedBB> minecartBoxes =
-			new ArrayList<>(specialCart.size());
-		specialCart.forEach(e -> {
+			new ArrayList<>(minecarts.size());
+		minecarts.forEach(e -> {
 			double offsetX = -(e.posX - e.lastTickPosX)
 				+ (e.posX - e.lastTickPosX) * partialTicks;
 			double offsetY = -(e.posY - e.lastTickPosY)
@@ -210,39 +247,35 @@ public final class ChestEspMod extends Mod
 			minecartBoxes.add(e.boundingBox.offset(offsetX, offsetY, offsetZ));
 		});
 		
+		GL11.glCallList(normalChests);
+		
 		GL11.glColor4f(0, 1, 0, 0.25F);
-		basicNew.forEach(bb -> RenderUtils.drawSolidBox(bb));
-		minecartBoxes.forEach(bb -> RenderUtils.drawSolidBox(bb));
-		
+		renderBoxes(minecartBoxes, solidBox);
 		GL11.glColor4f(0, 1, 0, 0.5F);
-		basicNew.forEach(bb -> RenderUtils.drawOutlinedBox(bb));
-		basicEmpty.forEach(bb -> RenderUtils.drawOutlinedBox(bb));
-		basicNotEmpty.forEach(bb -> RenderUtils.drawOutlinedBox(bb));
-		basicNotEmpty.forEach(bb -> RenderUtils.drawCrossBox(bb));
-		minecartBoxes.forEach(bb -> RenderUtils.drawOutlinedBox(bb));
-		
-		GL11.glColor4f(1, 0.5F, 0, 0.25F);
-		trappedNew.forEach(bb -> RenderUtils.drawSolidBox(bb));
-		
-		GL11.glColor4f(1, 0.5F, 0, 0.5F);
-		trappedNew.forEach(bb -> RenderUtils.drawOutlinedBox(bb));
-		trappedEmpty.forEach(bb -> RenderUtils.drawOutlinedBox(bb));
-		trappedNotEmpty.forEach(bb -> RenderUtils.drawOutlinedBox(bb));
-		trappedNotEmpty.forEach(bb -> RenderUtils.drawCrossBox(bb));
-		
-		GL11.glColor4f(0, 1, 1, 0.25F);
-		specialEnder.forEach(bb -> RenderUtils.drawSolidBox(bb));
-		
-		GL11.glColor4f(0, 1, 1, 0.5F);
-		specialEnder.forEach(bb -> RenderUtils.drawOutlinedBox(bb));
+		renderBoxes(minecartBoxes, outlinedBox);
 		
 		GL11.glPopMatrix();
 		
 		// GL resets
+		GL11.glColor4f(1, 1, 1, 1);
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		GL11.glDisable(GL11.GL_BLEND);
 		GL11.glDisable(GL11.GL_LINE_SMOOTH);
+		GL11.glEnable(GL11.GL_LIGHTING);
+	}
+	
+	private void renderBoxes(ArrayList<AxisAlignedBB> boxes, int displayList)
+	{
+		for(AxisAlignedBB bb : boxes)
+		{
+			GL11.glPushMatrix();
+			GL11.glTranslated(bb.minX, bb.minY, bb.minZ);
+			GL11.glScaled(bb.maxX - bb.minX, bb.maxY - bb.minY,
+				bb.maxZ - bb.minZ);
+			GL11.glCallList(displayList);
+			GL11.glPopMatrix();
+		}
 	}
 	
 	public void openChest(BlockPos pos)
