@@ -47,4 +47,9 @@ public final class WItem
 	{
 		return Item.REGISTRY.getObject(location);
 	}
+	
+	public static int getStackSize(ItemStack stack)
+	{
+		return stack.func_190916_E();
+	}
 }

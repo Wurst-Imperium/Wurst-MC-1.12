@@ -90,6 +90,26 @@ public final class Version implements Comparable<Version>
 		return isInvalid() || other.isInvalid() || compareTo(other) < 0;
 	}
 	
+	public boolean isLowerThan(Version other)
+	{
+		return compareTo(other) < 0;
+	}
+	
+	public boolean isLowerThan(String other)
+	{
+		return isLowerThan(new Version(other));
+	}
+	
+	public boolean isHigherThan(Version other)
+	{
+		return compareTo(other) < 0;
+	}
+	
+	public boolean isHigherThan(String other)
+	{
+		return isHigherThan(new Version(other));
+	}
+	
 	@Override
 	public String toString()
 	{
