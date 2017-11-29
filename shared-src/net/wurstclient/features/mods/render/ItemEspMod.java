@@ -122,7 +122,7 @@ public final class ItemEspMod extends Mod
 					WItem.getStackSize(stack) + "x " + stack.getDisplayName(),
 					x, y + 1, z, 0, mc.getRenderManager().playerViewY,
 					mc.getRenderManager().playerViewX,
-					mc.getRenderManager().options.thirdPersonView == 2, false);
+					mc.gameSettings.thirdPersonView == 2, false);
 			}
 		}
 		
