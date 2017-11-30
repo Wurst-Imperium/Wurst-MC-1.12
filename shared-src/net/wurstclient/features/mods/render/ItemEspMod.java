@@ -123,6 +123,7 @@ public final class ItemEspMod extends Mod
 					x, y + 1, z, 0, mc.getRenderManager().playerViewY,
 					mc.getRenderManager().playerViewX,
 					mc.gameSettings.thirdPersonView == 2, false);
+				GL11.glDisable(GL11.GL_LIGHTING);
 			}
 		}
 		

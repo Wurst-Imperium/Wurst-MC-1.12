@@ -227,7 +227,6 @@ public final class ChestEspMod extends Mod
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
 		GL11.glEnable(GL11.GL_CULL_FACE);
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
-		GL11.glDisable(GL11.GL_LIGHTING);
 		
 		GL11.glPushMatrix();
 		GL11.glTranslated(-mc.getRenderManager().renderPosX,
@@ -262,7 +261,6 @@ public final class ChestEspMod extends Mod
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		GL11.glDisable(GL11.GL_BLEND);
 		GL11.glDisable(GL11.GL_LINE_SMOOTH);
-		GL11.glEnable(GL11.GL_LIGHTING);
 	}
 	
 	private void renderBoxes(ArrayList<AxisAlignedBB> boxes, int displayList)
