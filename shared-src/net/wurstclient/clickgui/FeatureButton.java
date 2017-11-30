@@ -97,7 +97,7 @@ public final class FeatureButton extends Component
 		boolean hSettings = hovering && mouseX >= x3;
 		
 		// tooltip
-		if(hovering)
+		if(hHack)
 			gui.setTooltip(feature.getDescription());
 		
 		// color
