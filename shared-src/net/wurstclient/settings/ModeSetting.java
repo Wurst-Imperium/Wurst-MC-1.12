@@ -24,6 +24,7 @@ public class ModeSetting implements Setting
 	private String name;
 	private String[] modes;
 	private int selected;
+	private final int defaultSelected;
 	private ButtonData[] buttons;
 	
 	private boolean locked;
@@ -34,6 +35,7 @@ public class ModeSetting implements Setting
 		this.name = name;
 		this.modes = modes;
 		this.selected = selected;
+		defaultSelected = selected;
 	}
 	
 	@Override
@@ -115,6 +117,11 @@ public class ModeSetting implements Setting
 	public final int getSelected()
 	{
 		return locked ? lockSelected : selected;
+	}
+	
+	public int getDefaultSelected()
+	{
+		return defaultSelected;
 	}
 	
 	public final void setSelected(int selected)
