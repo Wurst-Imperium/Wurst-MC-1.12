@@ -28,10 +28,10 @@ public final class Checkbox extends Component
 	@Override
 	public void handleMouseClick(int mouseX, int mouseY, int mouseButton)
 	{
-		if(mouseButton != 0)
-			return;
-		
-		setting.setChecked(!setting.isChecked());
+		if(mouseButton == 0)
+			setting.setChecked(!setting.isChecked());
+		else if(mouseButton == 1)
+			setting.setChecked(setting.isCheckedByDefault());
 	}
 	
 	@Override
@@ -54,7 +54,7 @@ public final class Checkbox extends Component
 			&& mouseY < getParent().getHeight() - 13 - scroll;
 		
 		// tooltip
-		if(hovering)
+		if(hovering && mouseX >= x3)
 			gui.setTooltip(null);
 		
 		// background

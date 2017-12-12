@@ -21,6 +21,7 @@ public class CheckboxSetting implements Setting, CheckboxLock
 {
 	private final String name;
 	private boolean checked;
+	private final boolean checkedByDefault;
 	private CheckboxLock lock;
 	private int y;
 	
@@ -28,6 +29,7 @@ public class CheckboxSetting implements Setting, CheckboxLock
 	{
 		this.name = name;
 		this.checked = checked;
+		checkedByDefault = checked;
 	}
 	
 	@Override
@@ -67,6 +69,11 @@ public class CheckboxSetting implements Setting, CheckboxLock
 	public final boolean isChecked()
 	{
 		return isLocked() ? lock.isChecked() : checked;
+	}
+	
+	public boolean isCheckedByDefault()
+	{
+		return checkedByDefault;
 	}
 	
 	public final void setChecked(boolean checked)
