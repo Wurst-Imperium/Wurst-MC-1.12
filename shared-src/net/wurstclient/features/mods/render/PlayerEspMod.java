@@ -7,12 +7,18 @@
  */
 package net.wurstclient.features.mods.render;
 
+import java.util.ArrayList;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import org.lwjgl.opengl.GL11;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.world.World;
 import net.wurstclient.compatibility.WMinecraft;
 import net.wurstclient.events.listeners.RenderListener;
+import net.wurstclient.events.listeners.UpdateListener;
 import net.wurstclient.features.Category;
 import net.wurstclient.features.Feature;
 import net.wurstclient.features.Mod;
@@ -22,14 +28,15 @@ import net.wurstclient.utils.RenderUtils;
 
 @SearchTags({"player esp"})
 @Mod.Bypasses
-public final class PlayerEspMod extends Mod implements RenderListener
+public final class PlayerEspMod extends Mod
+	implements UpdateListener, RenderListener
 {
-	private static final AxisAlignedBB PLAYER_BOX =
-		new AxisAlignedBB(-0.35, 0, -0.35, 0.35, 1.9, 0.35);
+	private int playerBox;
+	private final ArrayList<EntityPlayer> players = new ArrayList<>();
 	
 	public PlayerEspMod()
 	{
-		super("PlayerESP", "Allows you to see players through walls.");
+		super("PlayerESP", "Highlights nearby players.");
 		setCategory(Category.RENDER);
 	}
 	
@@ -43,13 +50,45 @@ public final class PlayerEspMod extends Mod implements RenderListener
 	@Override
 	public void onEnable()
 	{
+		wurst.events.add(UpdateListener.class, this);
 		wurst.events.add(RenderListener.class, this);
+		
+		playerBox = GL11.glGenLists(1);
+		GL11.glNewList(playerBox, GL11.GL_COMPILE);
+		AxisAlignedBB bb = new AxisAlignedBB(-0.5, 0, -0.5, 0.5, 1, 0.5);
+		RenderUtils.drawOutlinedBox(bb);
+		GL11.glEndList();
 	}
 	
 	@Override
 	public void onDisable()
 	{
+		wurst.events.remove(UpdateListener.class, this);
 		wurst.events.remove(RenderListener.class, this);
+		
+		GL11.glDeleteLists(playerBox, 1);
+		playerBox = 0;
+	}
+	
+	@Override
+	public void onUpdate()
+	{
+		EntityPlayer player = WMinecraft.getPlayer();
+		World world = WMinecraft.getWorld();
+		
+		players.clear();
+		Stream<EntityPlayer> stream = world.playerEntities.parallelStream()
+			.filter(e -> !e.isDead && e.getHealth() > 0)
+			.filter(e -> e != player)
+			.filter(e -> !(e instanceof EntityFakePlayer));
+		
+		if(!wurst.special.targetSpf.sleepingPlayers.isChecked())
+			stream = stream.filter(e -> !e.isPlayerSleeping());
+		
+		if(!wurst.special.targetSpf.invisiblePlayers.isChecked())
+			stream = stream.filter(e -> !e.isInvisible());
+		
+		players.addAll(stream.collect(Collectors.toList()));
 	}
 	
 	@Override
@@ -69,44 +108,26 @@ public final class PlayerEspMod extends Mod implements RenderListener
 			-mc.getRenderManager().renderPosZ);
 		
 		// draw boxes
-		for(EntityPlayer entity : WMinecraft.getWorld().playerEntities)
+		for(EntityPlayer e : players)
 		{
-			if(entity == WMinecraft.getPlayer()
-				|| entity instanceof EntityFakePlayer)
-				continue;
-			
-			if(!wurst.special.targetSpf.sleepingPlayers.isChecked()
-				&& entity.isPlayerSleeping())
-				continue;
-			
-			if(!wurst.special.targetSpf.invisiblePlayers.isChecked()
-				&& entity.isInvisible())
-				continue;
+			// set position
+			GL11.glPushMatrix();
+			GL11.glTranslated(e.prevPosX + (e.posX - e.prevPosX) * partialTicks,
+				e.prevPosY + (e.posY - e.prevPosY) * partialTicks,
+				e.prevPosZ + (e.posZ - e.prevPosZ) * partialTicks);
+			GL11.glScaled(e.width + 0.1, e.height + 0.1, e.width + 0.1);
 			
 			// set color
-			if(wurst.friends.contains(entity.getName()))
+			if(wurst.friends.contains(e.getName()))
 				GL11.glColor4f(0, 0, 1, 0.5F);
 			else
 			{
-				float factor =
-					WMinecraft.getPlayer().getDistanceToEntity(entity) / 20F;
-				if(factor > 2)
-					factor = 2;
-				GL11.glColor4f(2 - factor, factor, 0, 0.5F);
+				float f = WMinecraft.getPlayer().getDistanceToEntity(e) / 20F;
+				GL11.glColor4f(2 - f, f, 0, 0.5F);
 			}
 			
-			// set position
-			GL11.glPushMatrix();
-			GL11.glTranslated(
-				entity.prevPosX
-					+ (entity.posX - entity.prevPosX) * partialTicks,
-				entity.prevPosY
-					+ (entity.posY - entity.prevPosY) * partialTicks,
-				entity.prevPosZ
-					+ (entity.posZ - entity.prevPosZ) * partialTicks);
-			
 			// draw box
-			RenderUtils.drawOutlinedBox(PLAYER_BOX);
+			GL11.glCallList(playerBox);
 			
 			GL11.glPopMatrix();
 		}
