@@ -7,37 +7,45 @@
  */
 package net.wurstclient.features.mods.movement;
 
-import java.util.ArrayList;
+import java.util.ArrayDeque;
 
-import net.minecraft.network.Packet;
 import net.minecraft.network.play.client.CPacketPlayer;
 import net.wurstclient.compatibility.WConnection;
 import net.wurstclient.events.PacketOutputEvent;
 import net.wurstclient.events.listeners.PacketOutputListener;
+import net.wurstclient.events.listeners.UpdateListener;
 import net.wurstclient.features.Category;
 import net.wurstclient.features.Feature;
 import net.wurstclient.features.Mod;
+import net.wurstclient.settings.SliderSetting;
 import net.wurstclient.utils.EntityFakePlayer;
 
 @Mod.Bypasses
 @Mod.DontSaveState
-public final class BlinkMod extends Mod implements PacketOutputListener
+public final class BlinkMod extends Mod
+	implements UpdateListener, PacketOutputListener
 {
-	private final ArrayList<Packet> packets = new ArrayList<>();
+	private final SliderSetting limit = new SliderSetting("Limit", 0, 0, 500, 1,
+		v -> v == 0 ? "disabled" : (int)v + "");
+	
+	private final ArrayDeque<CPacketPlayer> packets = new ArrayDeque<>();
 	private EntityFakePlayer fakePlayer;
-	private int blinkTime;
 	
 	public BlinkMod()
 	{
-		super("Blink", "Suspends all motion updates while enabled.\n"
-			+ "Can be used for teleportation, instant picking up of items and more.");
+		super("Blink", "Suspends all motion updates while enabled.");
 		setCategory(Category.MOVEMENT);
+		addSetting(limit);
 	}
 	
 	@Override
 	public String getRenderName()
 	{
-		return "Blink [" + blinkTime + "ms]";
+		if(limit.getValueI() == 0)
+			return getName() + " [" + packets.size() + "]";
+		else
+			return getName() + " [" + packets.size() + "/" + limit.getValueI()
+				+ "]";
 	}
 	
 	@Override
@@ -49,58 +57,62 @@ public final class BlinkMod extends Mod implements PacketOutputListener
 	@Override
 	public void onEnable()
 	{
-		// reset timer
-		blinkTime = 0;
-		
 		fakePlayer = new EntityFakePlayer();
 		
-		// add listener
+		wurst.events.add(UpdateListener.class, this);
 		wurst.events.add(PacketOutputListener.class, this);
 	}
 	
 	@Override
 	public void onDisable()
 	{
-		// remove listener
+		wurst.events.remove(UpdateListener.class, this);
 		wurst.events.remove(PacketOutputListener.class, this);
 		
-		// send & delete saved packets
-		for(Packet packet : packets)
-			WConnection.sendPacket(packet);
-		packets.clear();
-		
 		fakePlayer.despawn();
+		packets.forEach(p -> WConnection.sendPacket(p));
+		packets.clear();
+	}
+	
+	@Override
+	public void onUpdate()
+	{
+		if(limit.getValueI() == 0)
+			return;
+		
+		if(packets.size() >= limit.getValueI())
+		{
+			setEnabled(false);
+			setEnabled(true);
+		}
 	}
 	
 	@Override
 	public void onSentPacket(PacketOutputEvent event)
 	{
-		Packet packet = event.getPacket();
-		
-		// check for player packets
-		if(!(packet instanceof CPacketPlayer))
+		if(!(event.getPacket() instanceof CPacketPlayer))
 			return;
 		
-		// cancel player packets
 		event.cancel();
 		
-		// check for movement packets
-		if(!(packet instanceof CPacketPlayer.Position)
-			&& !(packet instanceof CPacketPlayer.PositionRotation))
+		CPacketPlayer packet = (CPacketPlayer)event.getPacket();
+		CPacketPlayer prevPacket = packets.peekLast();
+		
+		if(prevPacket != null && packet.isOnGround() == prevPacket.isOnGround()
+			&& packet.getYaw(-1) == prevPacket.getYaw(-1)
+			&& packet.getPitch(-1) == prevPacket.getPitch(-1)
+			&& packet.getX(-1) == prevPacket.getX(-1)
+			&& packet.getY(-1) == prevPacket.getY(-1)
+			&& packet.getZ(-1) == prevPacket.getZ(-1))
 			return;
 		
-		// save movement packets
-		packets.add(packet);
-		blinkTime += 50;
+		packets.addLast(packet);
 	}
 	
 	public void cancel()
 	{
-		// delete saved packets
 		packets.clear();
-		
 		fakePlayer.resetPlayerPosition();
-		
 		setEnabled(false);
 	}
 }
