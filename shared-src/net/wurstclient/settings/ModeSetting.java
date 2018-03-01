@@ -19,9 +19,8 @@ import net.wurstclient.keybinds.PossibleKeybind;
 import net.wurstclient.navigator.NavigatorFeatureScreen;
 import net.wurstclient.navigator.NavigatorFeatureScreen.ButtonData;
 
-public class ModeSetting implements Setting
+public class ModeSetting extends Setting
 {
-	private String name;
 	private String[] modes;
 	private int selected;
 	private final int defaultSelected;
@@ -32,23 +31,17 @@ public class ModeSetting implements Setting
 	
 	public ModeSetting(String name, String[] modes, int selected)
 	{
-		this.name = name;
+		super(name, null);
 		this.modes = modes;
 		this.selected = selected;
 		defaultSelected = selected;
 	}
 	
 	@Override
-	public final String getName()
-	{
-		return name;
-	}
-	
-	@Override
 	public final void addToFeatureScreen(NavigatorFeatureScreen featureScreen)
 	{
 		// heading
-		featureScreen.addText("\n" + name + ":");
+		featureScreen.addText("\n" + getName() + ":");
 		
 		// buttons
 		int y = 0;
@@ -96,9 +89,9 @@ public class ModeSetting implements Setting
 	public ArrayList<PossibleKeybind> getPossibleKeybinds(String featureName)
 	{
 		ArrayList<PossibleKeybind> possibleKeybinds = new ArrayList<>();
-		String fullName = featureName + " " + name;
+		String fullName = featureName + " " + getName();
 		String command = ".setmode " + featureName.toLowerCase() + " "
-			+ name.toLowerCase().replace(" ", "_") + " ";
+			+ getName().toLowerCase().replace(" ", "_") + " ";
 		String description = "Set " + fullName + " to ";
 		
 		possibleKeybinds
@@ -203,7 +196,7 @@ public class ModeSetting implements Setting
 	@Override
 	public final void save(JsonObject json)
 	{
-		json.addProperty(name, selected);
+		json.addProperty(getName(), selected);
 	}
 	
 	@Override
@@ -213,7 +206,7 @@ public class ModeSetting implements Setting
 		
 		try
 		{
-			selected = json.get(name).getAsInt();
+			selected = json.get(getName()).getAsInt();
 		}catch(Exception e)
 		{
 			

@@ -17,9 +17,8 @@ import net.wurstclient.files.ConfigFiles;
 import net.wurstclient.keybinds.PossibleKeybind;
 import net.wurstclient.navigator.NavigatorFeatureScreen;
 
-public class CheckboxSetting implements Setting, CheckboxLock
+public class CheckboxSetting extends Setting implements CheckboxLock
 {
-	private final String name;
 	private boolean checked;
 	private final boolean checkedByDefault;
 	private CheckboxLock lock;
@@ -27,15 +26,9 @@ public class CheckboxSetting implements Setting, CheckboxLock
 	
 	public CheckboxSetting(String name, boolean checked)
 	{
-		this.name = name;
+		super(name, null);
 		this.checked = checked;
 		checkedByDefault = checked;
-	}
-	
-	@Override
-	public final String getName()
-	{
-		return name;
 	}
 	
 	@Override
@@ -51,9 +44,9 @@ public class CheckboxSetting implements Setting, CheckboxLock
 	public ArrayList<PossibleKeybind> getPossibleKeybinds(String featureName)
 	{
 		ArrayList<PossibleKeybind> possibleKeybinds = new ArrayList<>();
-		String fullName = featureName + " " + name;
+		String fullName = featureName + " " + getName();
 		String command = ".setcheckbox " + featureName.toLowerCase() + " "
-			+ name.toLowerCase().replace(" ", "_") + " ";
+			+ getName().toLowerCase().replace(" ", "_") + " ";
 		
 		possibleKeybinds
 			.add(new PossibleKeybind(command + "toggle", "Toggle " + fullName));
@@ -126,7 +119,7 @@ public class CheckboxSetting implements Setting, CheckboxLock
 	@Override
 	public final void save(JsonObject json)
 	{
-		json.addProperty(name, checked);
+		json.addProperty(getName(), checked);
 	}
 	
 	@Override
@@ -134,7 +127,7 @@ public class CheckboxSetting implements Setting, CheckboxLock
 	{
 		try
 		{
-			checked = json.get(name).getAsBoolean();
+			checked = json.get(getName()).getAsBoolean();
 		}catch(Exception e)
 		{
 			

@@ -18,34 +18,27 @@ import net.wurstclient.keybinds.PossibleKeybind;
 import net.wurstclient.navigator.NavigatorFeatureScreen;
 import net.wurstclient.utils.JsonUtils;
 
-public class ColorsSetting implements Setting, ColorsLock
+public class ColorsSetting extends Setting implements ColorsLock
 {
-	private String name;
 	private boolean[] selected;
 	private ColorsLock lock;
 	
 	public ColorsSetting(String name, boolean[] selected)
 	{
+		super(name, null);
 		if(selected.length != 16)
 			throw new IllegalArgumentException(
 				"Length of 'selected' must be 16 but was " + selected.length
 					+ " instead.");
 		
-		this.name = name;
 		this.selected = selected;
-	}
-	
-	@Override
-	public String getName()
-	{
-		return name;
 	}
 	
 	@Override
 	public final void addToFeatureScreen(NavigatorFeatureScreen featureScreen)
 	{
 		// text
-		featureScreen.addText("\n" + name + ":\n\n\n\n\n\n\n");
+		featureScreen.addText("\n" + getName() + ":\n\n\n\n\n\n\n");
 		
 		// color buttons
 		class ColorButton extends NavigatorFeatureScreen.ButtonData
@@ -208,7 +201,7 @@ public class ColorsSetting implements Setting, ColorsLock
 	@Override
 	public final void save(JsonObject json)
 	{
-		json.add(name, JsonUtils.gson.toJsonTree(selected));
+		json.add(getName(), JsonUtils.gson.toJsonTree(selected));
 	}
 	
 	@Override
@@ -216,7 +209,7 @@ public class ColorsSetting implements Setting, ColorsLock
 	{
 		try
 		{
-			JsonArray jsonColors = json.get(name).getAsJsonArray();
+			JsonArray jsonColors = json.get(getName()).getAsJsonArray();
 			for(int i = 0; i < selected.length; i++)
 				selected[i] = jsonColors.get(i).getAsBoolean();
 		}catch(Exception e)

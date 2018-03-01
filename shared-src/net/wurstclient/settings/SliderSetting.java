@@ -17,9 +17,8 @@ import net.wurstclient.compatibility.WMath;
 import net.wurstclient.keybinds.PossibleKeybind;
 import net.wurstclient.navigator.NavigatorFeatureScreen;
 
-public class SliderSetting implements Setting, SliderLock
+public class SliderSetting extends Setting implements SliderLock
 {
-	private final String name;
 	private double value;
 	private final double defaultValue;
 	
@@ -40,7 +39,7 @@ public class SliderSetting implements Setting, SliderLock
 	public SliderSetting(String name, double value, double minimum,
 		double maximum, double increment, ValueDisplay display)
 	{
-		this.name = name;
+		super(name, null);
 		this.value = value;
 		defaultValue = value;
 		
@@ -55,15 +54,9 @@ public class SliderSetting implements Setting, SliderLock
 	}
 	
 	@Override
-	public final String getName()
-	{
-		return name;
-	}
-	
-	@Override
 	public final void addToFeatureScreen(NavigatorFeatureScreen featureScreen)
 	{
-		featureScreen.addText("\n" + name + ":");
+		featureScreen.addText("\n" + getName() + ":");
 		y = 60 + featureScreen.getTextHeight();
 		featureScreen.addText("\n");
 		
@@ -75,9 +68,9 @@ public class SliderSetting implements Setting, SliderLock
 	{
 		ArrayList<PossibleKeybind> binds = new ArrayList<>();
 		
-		String fullName = featureName + " " + name;
+		String fullName = featureName + " " + getName();
 		String cmd = ".setslider " + featureName.toLowerCase() + " "
-			+ name.toLowerCase().replace(" ", "_") + " ";
+			+ getName().toLowerCase().replace(" ", "_") + " ";
 		
 		binds.add(new PossibleKeybind(cmd + "more", "Increase " + fullName));
 		binds.add(new PossibleKeybind(cmd + "less", "Decrease " + fullName));
@@ -253,7 +246,7 @@ public class SliderSetting implements Setting, SliderLock
 		
 		try
 		{
-			newValue = json.get(name).getAsDouble();
+			newValue = json.get(getName()).getAsDouble();
 		}catch(Exception e)
 		{
 			
@@ -268,7 +261,7 @@ public class SliderSetting implements Setting, SliderLock
 	@Override
 	public final void save(JsonObject json)
 	{
-		json.addProperty(name, getValue());
+		json.addProperty(getName(), getValue());
 	}
 	
 	@Override

@@ -8,6 +8,7 @@
 package net.wurstclient.settings;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 import com.google.gson.JsonObject;
 
@@ -15,19 +16,38 @@ import net.wurstclient.clickgui.Component;
 import net.wurstclient.keybinds.PossibleKeybind;
 import net.wurstclient.navigator.NavigatorFeatureScreen;
 
-public interface Setting
+public abstract class Setting
 {
-	public String getName();
+	private final String name;
+	private final String description;
 	
-	public void addToFeatureScreen(NavigatorFeatureScreen featureScreen);
+	public Setting(String name, String description)
+	{
+		this.name = Objects.requireNonNull(name);
+		this.description = description;
+	}
 	
-	public ArrayList<PossibleKeybind> getPossibleKeybinds(String featureName);
+	public final String getName()
+	{
+		return name;
+	}
+	
+	public String getDescription()
+	{
+		return description;
+	}
 	
 	public abstract Component getComponent();
 	
-	public void save(JsonObject json);
+	public abstract void save(JsonObject json);
 	
-	public void load(JsonObject json);
+	public abstract void load(JsonObject json);
 	
-	public void update();
+	public abstract void update();
+	
+	public abstract void addToFeatureScreen(
+		NavigatorFeatureScreen featureScreen);
+	
+	public abstract ArrayList<PossibleKeybind> getPossibleKeybinds(
+		String featureName);
 }
