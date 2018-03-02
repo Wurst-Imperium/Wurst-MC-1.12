@@ -15,7 +15,6 @@ import net.wurstclient.settings.Setting;
 
 public final class NavigatorConfig extends Config
 {
-	// TODO: split into settings and preferences
 	public NavigatorConfig()
 	{
 		super("navigator.json");
@@ -47,7 +46,7 @@ public final class NavigatorConfig extends Config
 				for(Setting setting : feature.getSettings())
 					try
 					{
-						setting.load(jsonSettings);
+						setting.legacyFromJson(jsonSettings);
 					}catch(Exception e)
 					{
 						e.printStackTrace();
@@ -70,23 +69,6 @@ public final class NavigatorConfig extends Config
 				WurstClient.INSTANCE.navigator.getPreference(feature.getName());
 			if(preference != 0L)
 				jsonFeature.addProperty("preference", preference);
-			
-			// save settings
-			if(!feature.getSettings().isEmpty())
-			{
-				JsonObject jsonSettings = new JsonObject();
-				
-				for(Setting setting : feature.getSettings())
-					try
-					{
-						setting.save(jsonSettings);
-					}catch(Exception e)
-					{
-						e.printStackTrace();
-					}
-				
-				jsonFeature.add("settings", jsonSettings);
-			}
 			
 			if(!jsonFeature.entrySet().isEmpty())
 				json.add(feature.getName(), jsonFeature);

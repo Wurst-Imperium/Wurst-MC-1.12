@@ -11,7 +11,9 @@ import java.awt.Color;
 import java.util.ArrayList;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 
 import net.wurstclient.clickgui.Component;
 import net.wurstclient.keybinds.PossibleKeybind;
@@ -151,18 +153,19 @@ public class ColorsSetting extends Setting implements ColorsLock
 	}
 	
 	@Override
-	public ArrayList<PossibleKeybind> getPossibleKeybinds(String featureName)
+	public final ArrayList<PossibleKeybind> getPossibleKeybinds(
+		String featureName)
 	{
 		return new ArrayList<>();
 	}
 	
 	@Override
-	public boolean[] getSelected()
+	public final boolean[] getSelected()
 	{
 		return isLocked() ? lock.getSelected() : selected;
 	}
 	
-	public void setSelected(int index, boolean selected)
+	public final void setSelected(int index, boolean selected)
 	{
 		if(isLocked())
 			return;
@@ -193,19 +196,45 @@ public class ColorsSetting extends Setting implements ColorsLock
 	}
 	
 	@Override
-	public Component getComponent()
+	public final Component getComponent()
 	{
 		return null;
 	}
 	
 	@Override
-	public final void save(JsonObject json)
+	public final void fromJson(JsonElement json)
 	{
-		json.add(getName(), JsonUtils.gson.toJsonTree(selected));
+		if(!json.isJsonArray())
+			return;
+		
+		JsonArray array = json.getAsJsonArray();
+		if(array.size() != selected.length)
+			return;
+		
+		for(int i = 0; i < selected.length; i++)
+		{
+			JsonElement element = array.get(i);
+			if(!element.isJsonPrimitive())
+				continue;
+			
+			JsonPrimitive primitive = element.getAsJsonPrimitive();
+			if(!primitive.isBoolean())
+				continue;
+			
+			selected[i] = primitive.getAsBoolean();
+		}
+		
+		update();
 	}
 	
 	@Override
-	public final void load(JsonObject json)
+	public final JsonElement toJson()
+	{
+		return JsonUtils.gson.toJsonTree(selected);
+	}
+	
+	@Override
+	public final void legacyFromJson(JsonObject json)
 	{
 		try
 		{
@@ -218,11 +247,5 @@ public class ColorsSetting extends Setting implements ColorsLock
 		}
 		
 		update();
-	}
-	
-	@Override
-	public void update()
-	{
-		
 	}
 }

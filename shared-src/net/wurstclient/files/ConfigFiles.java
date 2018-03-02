@@ -16,6 +16,7 @@ public final class ConfigFiles
 {
 	public static final OptionsConfig OPTIONS = new OptionsConfig();
 	public static final ModsConfig MODS = new ModsConfig();
+	public static final SettingsConfig SETTINGS = new SettingsConfig();
 	public static final NavigatorConfig NAVIGATOR = new NavigatorConfig();
 	public static final AltsConfig ALTS = new AltsConfig();
 	public static final FriendsConfig FRIENDS = new FriendsConfig();

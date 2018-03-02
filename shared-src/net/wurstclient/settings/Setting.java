@@ -10,6 +10,7 @@ package net.wurstclient.settings;
 import java.util.ArrayList;
 import java.util.Objects;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import net.wurstclient.clickgui.Component;
@@ -32,18 +33,23 @@ public abstract class Setting
 		return name;
 	}
 	
-	public String getDescription()
+	public final String getDescription()
 	{
 		return description;
 	}
 	
 	public abstract Component getComponent();
 	
-	public abstract void save(JsonObject json);
+	public abstract void fromJson(JsonElement json);
 	
-	public abstract void load(JsonObject json);
+	public abstract JsonElement toJson();
 	
-	public abstract void update();
+	public abstract void legacyFromJson(JsonObject json);
+	
+	public void update()
+	{
+		
+	}
 	
 	public abstract void addToFeatureScreen(
 		NavigatorFeatureScreen featureScreen);

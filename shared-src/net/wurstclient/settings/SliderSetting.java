@@ -9,7 +9,9 @@ package net.wurstclient.settings;
 
 import java.util.ArrayList;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 
 import net.wurstclient.clickgui.Component;
 import net.wurstclient.clickgui.Slider;
@@ -64,7 +66,8 @@ public class SliderSetting extends Setting implements SliderLock
 	}
 	
 	@Override
-	public ArrayList<PossibleKeybind> getPossibleKeybinds(String featureName)
+	public final ArrayList<PossibleKeybind> getPossibleKeybinds(
+		String featureName)
 	{
 		ArrayList<PossibleKeybind> binds = new ArrayList<>();
 		
@@ -143,7 +146,7 @@ public class SliderSetting extends Setting implements SliderLock
 		return display.getValueString(getValue());
 	}
 	
-	public double getDefaultValue()
+	public final double getDefaultValue()
 	{
 		return defaultValue;
 	}
@@ -234,13 +237,40 @@ public class SliderSetting extends Setting implements SliderLock
 	}
 	
 	@Override
-	public Component getComponent()
+	public final Component getComponent()
 	{
 		return new Slider(this);
 	}
 	
 	@Override
-	public final void load(JsonObject json)
+	public final void fromJson(JsonElement json)
+	{
+		if(!json.isJsonPrimitive())
+			return;
+		
+		JsonPrimitive primitive = json.getAsJsonPrimitive();
+		if(!primitive.isNumber())
+			return;
+		
+		double value = primitive.getAsDouble();
+		if(value > maximum || value < minimum)
+			return;
+		
+		value = (int)(value / increment) * increment;
+		value = WMath.clamp(value, usableMin, usableMax);
+		this.value = value;
+		
+		update();
+	}
+	
+	@Override
+	public final JsonElement toJson()
+	{
+		return new JsonPrimitive(Math.round(value * 1e6) / 1e6);
+	}
+	
+	@Override
+	public final void legacyFromJson(JsonObject json)
 	{
 		double newValue = value;
 		
@@ -256,18 +286,6 @@ public class SliderSetting extends Setting implements SliderLock
 			return;
 		
 		setValue(newValue);
-	}
-	
-	@Override
-	public final void save(JsonObject json)
-	{
-		json.addProperty(getName(), getValue());
-	}
-	
-	@Override
-	public void update()
-	{
-		
 	}
 	
 	public static interface ValueDisplay

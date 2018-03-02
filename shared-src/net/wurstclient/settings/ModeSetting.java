@@ -10,7 +10,9 @@ package net.wurstclient.settings;
 import java.awt.Color;
 import java.util.ArrayList;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 
 import net.wurstclient.clickgui.ComboBox;
 import net.wurstclient.clickgui.Component;
@@ -86,7 +88,8 @@ public class ModeSetting extends Setting
 	}
 	
 	@Override
-	public ArrayList<PossibleKeybind> getPossibleKeybinds(String featureName)
+	public final ArrayList<PossibleKeybind> getPossibleKeybinds(
+		String featureName)
 	{
 		ArrayList<PossibleKeybind> possibleKeybinds = new ArrayList<>();
 		String fullName = featureName + " " + getName();
@@ -112,7 +115,7 @@ public class ModeSetting extends Setting
 		return locked ? lockSelected : selected;
 	}
 	
-	public int getDefaultSelected()
+	public final int getDefaultSelected()
 	{
 		return defaultSelected;
 	}
@@ -188,19 +191,42 @@ public class ModeSetting extends Setting
 	}
 	
 	@Override
-	public Component getComponent()
+	public final Component getComponent()
 	{
 		return new ComboBox(this);
 	}
 	
 	@Override
-	public final void save(JsonObject json)
+	public final void fromJson(JsonElement json)
 	{
-		json.addProperty(getName(), selected);
+		if(!json.isJsonPrimitive())
+			return;
+		
+		JsonPrimitive primitive = json.getAsJsonPrimitive();
+		if(!primitive.isNumber())
+			return;
+		
+		int selected = primitive.getAsInt();
+		if(selected < 0 || selected > modes.length - 1)
+			return;
+		
+		this.selected = selected;
+		if(buttons != null)
+			for(int i = 0; i < buttons.length; i++)
+				buttons[i].color =
+					i == selected ? new Color(0x00ff00) : new Color(0x404040);
+			
+		update();
 	}
 	
 	@Override
-	public final void load(JsonObject json)
+	public final JsonElement toJson()
+	{
+		return new JsonPrimitive(selected);
+	}
+	
+	@Override
+	public final void legacyFromJson(JsonObject json)
 	{
 		int selected = this.selected;
 		
@@ -216,11 +242,5 @@ public class ModeSetting extends Setting
 			return;
 		
 		setSelected(selected);
-	}
-	
-	@Override
-	public void update()
-	{
-		
 	}
 }

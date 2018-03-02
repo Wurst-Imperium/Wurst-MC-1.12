@@ -8,9 +8,11 @@
 package net.wurstclient.navigator;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.function.Consumer;
 
 import net.wurstclient.WurstClient;
@@ -102,6 +104,11 @@ public final class Navigator
 	public Iterator<Feature> iterator()
 	{
 		return navigatorList.iterator();
+	}
+	
+	public List<Feature> getList()
+	{
+		return Collections.unmodifiableList(navigatorList);
 	}
 	
 	public void sortFeatures()

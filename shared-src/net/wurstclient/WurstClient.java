@@ -25,6 +25,7 @@ import net.wurstclient.navigator.Navigator;
 import net.wurstclient.options.FriendsList;
 import net.wurstclient.options.OptionsManager;
 import net.wurstclient.update.Updater;
+import net.wurstclient.update.Version;
 
 public enum WurstClient
 {
@@ -83,6 +84,13 @@ public enum WurstClient
 			"Wurst " + VERSION + " MC" + WMinecraft.VERSION
 				+ (WMinecraft.OPTIFINE ? " OF" : ""));
 		ConfigFiles.OPTIONS.save();
+		
+		Version last = new Version(options.lastLaunchedVersion);
+		if(last.isLowerThan("6.17") && last.isHigherThan("0"))
+		{
+			ConfigFiles.SETTINGS.save();
+			ConfigFiles.NAVIGATOR.save();
+		}
 		
 		FrameHook.maximize();
 	}

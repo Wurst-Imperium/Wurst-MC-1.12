@@ -9,7 +9,9 @@ package net.wurstclient.settings;
 
 import java.util.ArrayList;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 
 import net.wurstclient.clickgui.Checkbox;
 import net.wurstclient.clickgui.Component;
@@ -41,7 +43,8 @@ public class CheckboxSetting extends Setting implements CheckboxLock
 	}
 	
 	@Override
-	public ArrayList<PossibleKeybind> getPossibleKeybinds(String featureName)
+	public final ArrayList<PossibleKeybind> getPossibleKeybinds(
+		String featureName)
 	{
 		ArrayList<PossibleKeybind> possibleKeybinds = new ArrayList<>();
 		String fullName = featureName + " " + getName();
@@ -64,7 +67,7 @@ public class CheckboxSetting extends Setting implements CheckboxLock
 		return isLocked() ? lock.isChecked() : checked;
 	}
 	
-	public boolean isCheckedByDefault()
+	public final boolean isCheckedByDefault()
 	{
 		return checkedByDefault;
 	}
@@ -111,19 +114,33 @@ public class CheckboxSetting extends Setting implements CheckboxLock
 	}
 	
 	@Override
-	public Component getComponent()
+	public final Component getComponent()
 	{
 		return new Checkbox(this);
 	}
 	
 	@Override
-	public final void save(JsonObject json)
+	public final void fromJson(JsonElement json)
 	{
-		json.addProperty(getName(), checked);
+		if(!json.isJsonPrimitive())
+			return;
+		
+		JsonPrimitive primitive = json.getAsJsonPrimitive();
+		if(!primitive.isBoolean())
+			return;
+		
+		checked = primitive.getAsBoolean();
+		update();
 	}
 	
 	@Override
-	public final void load(JsonObject json)
+	public final JsonElement toJson()
+	{
+		return new JsonPrimitive(checked);
+	}
+	
+	@Override
+	public final void legacyFromJson(JsonObject json)
 	{
 		try
 		{
@@ -134,11 +151,5 @@ public class CheckboxSetting extends Setting implements CheckboxLock
 		}
 		
 		update();
-	}
-	
-	@Override
-	public void update()
-	{
-		
 	}
 }

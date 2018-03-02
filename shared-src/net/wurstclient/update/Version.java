@@ -102,7 +102,7 @@ public final class Version implements Comparable<Version>
 	
 	public boolean isHigherThan(Version other)
 	{
-		return compareTo(other) < 0;
+		return compareTo(other) > 0;
 	}
 	
 	public boolean isHigherThan(String other)
