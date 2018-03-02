@@ -79,14 +79,14 @@ public final class Slider extends Component
 		
 		int scroll = getParent().isScrollingEnabled()
 			? getParent().getScrollOffset() : 0;
-		boolean hovering = mouseX >= x1 && mouseY >= y3 && mouseX < x2
+		boolean hovering = mouseX >= x1 && mouseY >= y1 && mouseX < x2
 			&& mouseY < y2 && mouseY >= -scroll
 			&& mouseY < getParent().getHeight() - 13 - scroll;
-		boolean hovering2 = hovering || dragging;
+		boolean hSlider = hovering && mouseY >= y3 || dragging;
 		
 		// tooltip
-		if(hovering)
-			gui.setTooltip(null);
+		if(hovering && mouseY < y3)
+			gui.setTooltip(setting.getDescription());
 		
 		// background
 		GL11.glColor4f(bgColor[0], bgColor[1], bgColor[2], 0.5F);
@@ -111,7 +111,7 @@ public final class Slider extends Component
 		
 		// rail
 		GL11.glColor4f(bgColor[0], bgColor[1], bgColor[2],
-			hovering2 ? 0.75F : 0.5F);
+			hSlider ? 0.75F : 0.5F);
 		GL11.glBegin(GL11.GL_QUADS);
 		GL11.glVertex2i(x3, y4);
 		GL11.glVertex2i(x3, y5);
@@ -135,7 +135,7 @@ public final class Slider extends Component
 		
 		// knob
 		float f = (float)(2 * percentage);
-		GL11.glColor4f(f, 2 - f, 0, hovering2 ? 1 : 0.75F);
+		GL11.glColor4f(f, 2 - f, 0, hSlider ? 1 : 0.75F);
 		GL11.glBegin(GL11.GL_QUADS);
 		GL11.glVertex2d(xk1, yk1);
 		GL11.glVertex2d(xk1, yk2);

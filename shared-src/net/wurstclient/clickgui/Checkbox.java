@@ -55,7 +55,7 @@ public final class Checkbox extends Component
 		
 		// tooltip
 		if(hovering && mouseX >= x3)
-			gui.setTooltip(null);
+			gui.setTooltip(setting.getDescription());
 		
 		// background
 		GL11.glColor4f(bgColor[0], bgColor[1], bgColor[2], 0.5F);

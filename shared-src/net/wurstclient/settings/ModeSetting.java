@@ -31,12 +31,18 @@ public class ModeSetting extends Setting
 	private boolean locked;
 	private int lockSelected;
 	
-	public ModeSetting(String name, String[] modes, int selected)
+	public ModeSetting(String name, String description, String[] modes,
+		int selected)
 	{
-		super(name, null);
+		super(name, description);
 		this.modes = modes;
 		this.selected = selected;
 		defaultSelected = selected;
+	}
+	
+	public ModeSetting(String name, String[] modes, int selected)
+	{
+		this(name, null, modes, selected);
 	}
 	
 	@Override

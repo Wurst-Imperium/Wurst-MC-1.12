@@ -38,10 +38,10 @@ public class SliderSetting extends Setting implements SliderLock
 	
 	private int y;
 	
-	public SliderSetting(String name, double value, double minimum,
-		double maximum, double increment, ValueDisplay display)
+	public SliderSetting(String name, String description, double value,
+		double minimum, double maximum, double increment, ValueDisplay display)
 	{
-		super(name, null);
+		super(name, description);
 		this.value = value;
 		defaultValue = value;
 		
@@ -53,6 +53,12 @@ public class SliderSetting extends Setting implements SliderLock
 		
 		this.increment = increment;
 		this.display = display;
+	}
+	
+	public SliderSetting(String name, double value, double minimum,
+		double maximum, double increment, ValueDisplay display)
+	{
+		this(name, null, value, minimum, maximum, increment, display);
 	}
 	
 	@Override

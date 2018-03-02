@@ -25,8 +25,10 @@ import net.wurstclient.utils.EntityFakePlayer;
 public final class BlinkMod extends Mod
 	implements UpdateListener, PacketOutputListener
 {
-	private final SliderSetting limit = new SliderSetting("Limit", 0, 0, 500, 1,
-		v -> v == 0 ? "disabled" : (int)v + "");
+	private final SliderSetting limit = new SliderSetting("Limit",
+		"Automatically restarts Blink once\n" + "the given number of packets\n"
+			+ "have been suspended.\n\n" + "0 = no limit",
+		0, 0, 500, 1, v -> v == 0 ? "disabled" : (int)v + "");
 	
 	private final ArrayDeque<CPacketPlayer> packets = new ArrayDeque<>();
 	private EntityFakePlayer fakePlayer;

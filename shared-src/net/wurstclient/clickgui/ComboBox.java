@@ -81,7 +81,7 @@ public final class ComboBox extends Component
 		
 		// tooltip
 		if(hText)
-			gui.setTooltip(null);
+			gui.setTooltip(setting.getDescription());
 		
 		// background
 		GL11.glColor4f(bgColor[0], bgColor[1], bgColor[2], 0.5F);

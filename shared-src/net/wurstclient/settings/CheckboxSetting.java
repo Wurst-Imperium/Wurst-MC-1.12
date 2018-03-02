@@ -26,11 +26,16 @@ public class CheckboxSetting extends Setting implements CheckboxLock
 	private CheckboxLock lock;
 	private int y;
 	
-	public CheckboxSetting(String name, boolean checked)
+	public CheckboxSetting(String name, String description, boolean checked)
 	{
-		super(name, null);
+		super(name, description);
 		this.checked = checked;
 		checkedByDefault = checked;
+	}
+	
+	public CheckboxSetting(String name, boolean checked)
+	{
+		this(name, null, checked);
 	}
 	
 	@Override
