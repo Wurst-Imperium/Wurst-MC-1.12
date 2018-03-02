@@ -30,7 +30,7 @@ public final class ModListSpf extends Spf
 			}
 		};
 	private final ModeSetting position =
-		new ModeSetting("Position", new String[]{"Left", "Right"}, 1);
+		new ModeSetting("Position", new String[]{"Left", "Right"}, 0);
 	private final CheckboxSetting animations =
 		new CheckboxSetting("Animations", true);
 	

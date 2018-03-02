@@ -16,7 +16,7 @@ import net.wurstclient.settings.ModeSetting;
 public final class TabGuiSpf extends Spf
 {
 	private final ModeSetting status =
-		new ModeSetting("Status", new String[]{"Enabled", "Disabled"}, 0);
+		new ModeSetting("Status", new String[]{"Enabled", "Disabled"}, 1);
 	
 	public TabGuiSpf()
 	{

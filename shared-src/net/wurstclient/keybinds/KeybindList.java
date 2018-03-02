@@ -100,7 +100,7 @@ public final class KeybindList
 		keybinds.add(new Keybind("H", "/home"));
 		keybinds.add(new Keybind("J", "jesus"));
 		keybinds.add(new Keybind("K", "multiaura"));
-		keybinds.add(new Keybind("LCONTROL", "navigator"));
+		keybinds.add(new Keybind("LCONTROL", "clickgui"));
 		keybinds.add(new Keybind("N", "nuker"));
 		keybinds.add(new Keybind("R", "killaura"));
 		keybinds.add(new Keybind("RSHIFT", "navigator"));
