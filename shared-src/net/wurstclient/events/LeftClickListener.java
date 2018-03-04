@@ -22,9 +22,10 @@ public interface LeftClickListener extends Listener
 		@Override
 		public void fire(ArrayList<LeftClickListener> listeners)
 		{
-			for(int i = 0; i < listeners.size(); i++)
+			for(LeftClickListener listener : listeners)
 			{
-				listeners.get(i).onLeftClick(this);
+				listener.onLeftClick(this);
+				
 				if(isCancelled())
 					break;
 			}

@@ -53,7 +53,10 @@ public final class EventManager
 		
 		try
 		{
-			event.fire(listenerMap.get(event.getListenerType()));
+			ArrayList<? extends Listener> listeners =
+				listenerMap.get(event.getListenerType());
+			
+			event.fire(new ArrayList<>(listeners));
 			
 		}catch(Throwable e)
 		{

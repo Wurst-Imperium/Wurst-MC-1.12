@@ -23,8 +23,8 @@ public interface PostUpdateListener extends Listener
 		@Override
 		public void fire(ArrayList<PostUpdateListener> listeners)
 		{
-			for(int i = 0; i < listeners.size(); i++)
-				listeners.get(i).afterUpdate();
+			for(PostUpdateListener listener : listeners)
+				listener.afterUpdate();
 		}
 		
 		@Override

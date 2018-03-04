@@ -40,9 +40,10 @@ public interface PacketInputListener extends Listener
 		@Override
 		public void fire(ArrayList<PacketInputListener> listeners)
 		{
-			for(int i = 0; i < listeners.size(); i++)
+			for(PacketInputListener listener : listeners)
 			{
-				listeners.get(i).onReceivedPacket(this);
+				listener.onReceivedPacket(this);
+				
 				if(isCancelled())
 					break;
 			}

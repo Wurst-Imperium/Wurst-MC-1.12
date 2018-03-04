@@ -28,8 +28,8 @@ public interface RenderListener extends Listener
 		@Override
 		public void fire(ArrayList<RenderListener> listeners)
 		{
-			for(int i = 0; i < listeners.size(); i++)
-				listeners.get(i).onRender(partialTicks);
+			for(RenderListener listener : listeners)
+				listener.onRender(partialTicks);
 		}
 		
 		@Override

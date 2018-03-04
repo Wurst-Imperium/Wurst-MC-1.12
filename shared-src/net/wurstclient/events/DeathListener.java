@@ -23,8 +23,8 @@ public interface DeathListener extends Listener
 		@Override
 		public void fire(ArrayList<DeathListener> listeners)
 		{
-			for(int i = 0; i < listeners.size(); i++)
-				listeners.get(i).onDeath();
+			for(DeathListener listener : listeners)
+				listener.onDeath();
 		}
 		
 		@Override

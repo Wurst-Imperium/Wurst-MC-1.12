@@ -22,9 +22,10 @@ public interface RightClickListener extends Listener
 		@Override
 		public void fire(ArrayList<RightClickListener> listeners)
 		{
-			for(int i = 0; i < listeners.size(); i++)
+			for(RightClickListener listener : listeners)
 			{
-				listeners.get(i).onRightClick(this);
+				listener.onRightClick(this);
+				
 				if(isCancelled())
 					break;
 			}

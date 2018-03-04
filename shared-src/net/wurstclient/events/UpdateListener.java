@@ -23,8 +23,8 @@ public interface UpdateListener extends Listener
 		@Override
 		public void fire(ArrayList<UpdateListener> listeners)
 		{
-			for(int i = 0; i < listeners.size(); i++)
-				listeners.get(i).onUpdate();
+			for(UpdateListener listener : listeners)
+				listener.onUpdate();
 		}
 		
 		@Override

@@ -23,8 +23,8 @@ public interface GUIRenderListener extends Listener
 		@Override
 		public void fire(ArrayList<GUIRenderListener> listeners)
 		{
-			for(int i = 0; i < listeners.size(); i++)
-				listeners.get(i).onRenderGUI();
+			for(GUIRenderListener listener : listeners)
+				listener.onRenderGUI();
 		}
 		
 		@Override

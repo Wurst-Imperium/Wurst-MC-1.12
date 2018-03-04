@@ -46,9 +46,10 @@ public interface ChatOutputListener extends Listener
 		@Override
 		public void fire(ArrayList<ChatOutputListener> listeners)
 		{
-			for(int i = 0; i < listeners.size(); i++)
+			for(ChatOutputListener listener : listeners)
 			{
-				listeners.get(i).onSentMessage(this);
+				listener.onSentMessage(this);
+				
 				if(isCancelled())
 					break;
 			}
