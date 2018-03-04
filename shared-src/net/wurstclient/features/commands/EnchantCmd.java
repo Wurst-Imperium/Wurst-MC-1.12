@@ -11,7 +11,7 @@ import net.minecraft.enchantment.Enchantment;
 import net.minecraft.item.ItemStack;
 import net.wurstclient.compatibility.WEnchantments;
 import net.wurstclient.compatibility.WMinecraft;
-import net.wurstclient.events.ChatOutputEvent;
+import net.wurstclient.events.ChatOutputListener.ChatOutputEvent;
 import net.wurstclient.features.Cmd;
 import net.wurstclient.features.HelpPage;
 import net.wurstclient.utils.ChatUtils;

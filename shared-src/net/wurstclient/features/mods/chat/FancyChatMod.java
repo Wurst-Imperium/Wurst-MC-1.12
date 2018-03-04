@@ -7,8 +7,7 @@
  */
 package net.wurstclient.features.mods.chat;
 
-import net.wurstclient.events.ChatOutputEvent;
-import net.wurstclient.events.listeners.ChatOutputListener;
+import net.wurstclient.events.ChatOutputListener;
 import net.wurstclient.features.Category;
 import net.wurstclient.features.Mod;
 import net.wurstclient.features.SearchTags;

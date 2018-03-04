@@ -13,7 +13,7 @@ import net.minecraft.client.Minecraft;
 import net.wurstclient.WurstClient;
 import net.wurstclient.clickgui.ClickGui;
 import net.wurstclient.clickgui.ClickGuiScreen;
-import net.wurstclient.events.GUIRenderEvent;
+import net.wurstclient.events.GUIRenderListener.GUIRenderEvent;
 
 public final class UIRenderer
 {

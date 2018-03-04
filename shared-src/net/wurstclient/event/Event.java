@@ -5,9 +5,13 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package net.wurstclient.events.listeners;
+package net.wurstclient.event;
 
-public interface GUIRenderListener extends Listener
+import java.util.ArrayList;
+
+public abstract class Event<T extends Listener>
 {
-	public void onRenderGUI();
+	public abstract void fire(ArrayList<T> listeners);
+	
+	public abstract Class<T> getListenerType();
 }

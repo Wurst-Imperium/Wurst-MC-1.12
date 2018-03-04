@@ -8,7 +8,7 @@
 package net.wurstclient.features.mods.render;
 
 import net.wurstclient.compatibility.WMinecraft;
-import net.wurstclient.events.listeners.UpdateListener;
+import net.wurstclient.events.UpdateListener;
 import net.wurstclient.features.Category;
 import net.wurstclient.features.Mod;
 import net.wurstclient.features.SearchTags;

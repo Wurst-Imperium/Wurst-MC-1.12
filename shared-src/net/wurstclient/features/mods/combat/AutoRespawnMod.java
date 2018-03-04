@@ -8,7 +8,7 @@
 package net.wurstclient.features.mods.combat;
 
 import net.wurstclient.compatibility.WMinecraft;
-import net.wurstclient.events.listeners.DeathListener;
+import net.wurstclient.events.DeathListener;
 import net.wurstclient.features.Category;
 import net.wurstclient.features.Mod;
 import net.wurstclient.features.SearchTags;

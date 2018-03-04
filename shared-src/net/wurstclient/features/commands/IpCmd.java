@@ -10,7 +10,7 @@ package net.wurstclient.features.commands;
 import java.awt.Toolkit;
 import java.awt.datatransfer.StringSelection;
 
-import net.wurstclient.events.ChatOutputEvent;
+import net.wurstclient.events.ChatOutputListener.ChatOutputEvent;
 import net.wurstclient.features.Cmd;
 import net.wurstclient.features.HelpPage;
 import net.wurstclient.hooks.ServerHook;

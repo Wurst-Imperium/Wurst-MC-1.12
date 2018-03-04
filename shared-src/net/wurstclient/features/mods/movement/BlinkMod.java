@@ -11,9 +11,8 @@ import java.util.ArrayDeque;
 
 import net.minecraft.network.play.client.CPacketPlayer;
 import net.wurstclient.compatibility.WConnection;
-import net.wurstclient.events.PacketOutputEvent;
-import net.wurstclient.events.listeners.PacketOutputListener;
-import net.wurstclient.events.listeners.UpdateListener;
+import net.wurstclient.events.PacketOutputListener;
+import net.wurstclient.events.UpdateListener;
 import net.wurstclient.features.Category;
 import net.wurstclient.features.Feature;
 import net.wurstclient.features.Mod;

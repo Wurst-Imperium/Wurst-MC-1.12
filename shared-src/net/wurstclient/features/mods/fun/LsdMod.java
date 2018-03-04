@@ -12,7 +12,7 @@ import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.wurstclient.compatibility.WPlayer;
 import net.wurstclient.compatibility.WPotionEffects;
-import net.wurstclient.events.listeners.UpdateListener;
+import net.wurstclient.events.UpdateListener;
 import net.wurstclient.features.Category;
 import net.wurstclient.features.Mod;
 

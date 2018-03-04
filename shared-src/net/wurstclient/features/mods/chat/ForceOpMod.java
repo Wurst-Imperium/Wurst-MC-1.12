@@ -29,8 +29,7 @@ import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import net.wurstclient.compatibility.WMinecraft;
-import net.wurstclient.events.ChatInputEvent;
-import net.wurstclient.events.listeners.ChatInputListener;
+import net.wurstclient.events.ChatInputListener;
 import net.wurstclient.features.Category;
 import net.wurstclient.features.Feature;
 import net.wurstclient.features.HelpPage;

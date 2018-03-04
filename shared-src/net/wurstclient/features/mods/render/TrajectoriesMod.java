@@ -20,7 +20,7 @@ import net.minecraft.util.math.Vec3d;
 import net.wurstclient.compatibility.WItem;
 import net.wurstclient.compatibility.WMath;
 import net.wurstclient.compatibility.WMinecraft;
-import net.wurstclient.events.listeners.RenderListener;
+import net.wurstclient.events.RenderListener;
 import net.wurstclient.features.Category;
 import net.wurstclient.features.Feature;
 import net.wurstclient.features.Mod;

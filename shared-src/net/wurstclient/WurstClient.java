@@ -10,7 +10,7 @@ package net.wurstclient;
 import net.wurstclient.analytics.AnalyticsManager;
 import net.wurstclient.clickgui.ClickGui;
 import net.wurstclient.compatibility.WMinecraft;
-import net.wurstclient.events.EventManager;
+import net.wurstclient.event.EventManager;
 import net.wurstclient.features.commands.CmdManager;
 import net.wurstclient.features.mods.ModManager;
 import net.wurstclient.features.special_features.SpfManager;

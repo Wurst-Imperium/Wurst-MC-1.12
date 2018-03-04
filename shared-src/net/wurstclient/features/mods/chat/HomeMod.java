@@ -8,9 +8,8 @@
 package net.wurstclient.features.mods.chat;
 
 import net.wurstclient.compatibility.WMinecraft;
-import net.wurstclient.events.ChatInputEvent;
-import net.wurstclient.events.listeners.ChatInputListener;
-import net.wurstclient.events.listeners.UpdateListener;
+import net.wurstclient.events.ChatInputListener;
+import net.wurstclient.events.UpdateListener;
 import net.wurstclient.features.Category;
 import net.wurstclient.features.Mod;
 import net.wurstclient.utils.ChatUtils;

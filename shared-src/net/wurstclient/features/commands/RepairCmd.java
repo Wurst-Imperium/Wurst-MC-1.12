@@ -12,7 +12,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.client.CPacketCreativeInventoryAction;
 import net.wurstclient.compatibility.WConnection;
 import net.wurstclient.compatibility.WMinecraft;
-import net.wurstclient.events.ChatOutputEvent;
+import net.wurstclient.events.ChatOutputListener.ChatOutputEvent;
 import net.wurstclient.features.Cmd;
 import net.wurstclient.features.HelpPage;
 

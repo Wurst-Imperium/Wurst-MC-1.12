@@ -10,7 +10,7 @@ package net.wurstclient.keybinds;
 import org.lwjgl.input.Keyboard;
 
 import net.wurstclient.WurstClient;
-import net.wurstclient.events.KeyPressEvent;
+import net.wurstclient.events.KeyPressListener.KeyPressEvent;
 import net.wurstclient.features.Mod;
 import net.wurstclient.features.commands.CmdManager;
 import net.wurstclient.features.mods.ModManager;

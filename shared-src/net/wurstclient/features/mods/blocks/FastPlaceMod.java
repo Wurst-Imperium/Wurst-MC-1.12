@@ -7,7 +7,7 @@
  */
 package net.wurstclient.features.mods.blocks;
 
-import net.wurstclient.events.listeners.UpdateListener;
+import net.wurstclient.events.UpdateListener;
 import net.wurstclient.features.Category;
 import net.wurstclient.features.Feature;
 import net.wurstclient.features.Mod;

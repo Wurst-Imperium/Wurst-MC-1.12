@@ -14,7 +14,7 @@ import java.util.Iterator;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 import net.wurstclient.WurstClient;
-import net.wurstclient.events.listeners.UpdateListener;
+import net.wurstclient.events.UpdateListener;
 import net.wurstclient.features.Mod;
 import net.wurstclient.features.mods.other.NavigatorMod;
 import net.wurstclient.features.special_features.ModListSpf;

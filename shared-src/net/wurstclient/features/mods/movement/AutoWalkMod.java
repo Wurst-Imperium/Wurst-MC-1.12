@@ -8,7 +8,7 @@
 package net.wurstclient.features.mods.movement;
 
 import net.minecraft.client.settings.GameSettings;
-import net.wurstclient.events.listeners.UpdateListener;
+import net.wurstclient.events.UpdateListener;
 import net.wurstclient.features.Category;
 import net.wurstclient.features.Feature;
 import net.wurstclient.features.Mod;
