@@ -7,9 +7,9 @@
  */
 package net.wurstclient.events;
 
-import java.util.EventListener;
+import net.wurstclient.events.listeners.Listener;
 
-public abstract class CancellableEvent<T extends EventListener> extends Event<T>
+public abstract class CancellableEvent<T extends Listener> extends Event<T>
 {
 	private boolean cancelled = false;
 	

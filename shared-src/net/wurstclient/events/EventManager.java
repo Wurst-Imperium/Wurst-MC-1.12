@@ -8,7 +8,6 @@
 package net.wurstclient.events;
 
 import java.util.ArrayList;
-import java.util.EventListener;
 import java.util.HashMap;
 
 import net.minecraft.crash.CrashReport;
@@ -19,7 +18,7 @@ import net.wurstclient.events.listeners.*;
 
 public final class EventManager
 {
-	private final HashMap<Class<? extends EventListener>, ArrayList<? extends EventListener>> listenerMap =
+	private final HashMap<Class<? extends Listener>, ArrayList<? extends Listener>> listenerMap =
 		new HashMap<>();
 	
 	{
@@ -71,7 +70,7 @@ public final class EventManager
 	}
 	
 	@SuppressWarnings("unchecked")
-	public <T extends EventListener> void add(Class<T> type, T listener)
+	public <T extends Listener> void add(Class<T> type, T listener)
 	{
 		try
 		{
@@ -94,7 +93,7 @@ public final class EventManager
 	}
 	
 	@SuppressWarnings("unchecked")
-	public <T extends EventListener> void remove(Class<T> type, T listener)
+	public <T extends Listener> void remove(Class<T> type, T listener)
 	{
 		try
 		{
