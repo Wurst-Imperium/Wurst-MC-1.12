@@ -8,53 +8,32 @@
 package net.wurstclient.event;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 import net.minecraft.crash.CrashReport;
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.util.ReportedException;
 import net.wurstclient.WurstClient;
-import net.wurstclient.events.*;
 
 public final class EventManager
 {
 	private final HashMap<Class<? extends Listener>, ArrayList<? extends Listener>> listenerMap =
 		new HashMap<>();
 	
-	{
-		listenerMap.put(ChatInputListener.class,
-			new ArrayList<ChatInputListener>());
-		listenerMap.put(ChatOutputListener.class,
-			new ArrayList<ChatOutputListener>());
-		listenerMap.put(DeathListener.class, new ArrayList<DeathListener>());
-		listenerMap.put(GUIRenderListener.class,
-			new ArrayList<GUIRenderListener>());
-		listenerMap.put(LeftClickListener.class,
-			new ArrayList<LeftClickListener>());
-		listenerMap.put(RightClickListener.class,
-			new ArrayList<RightClickListener>());
-		listenerMap.put(KeyPressListener.class,
-			new ArrayList<KeyPressListener>());
-		listenerMap.put(PacketInputListener.class,
-			new ArrayList<PacketInputListener>());
-		listenerMap.put(PacketOutputListener.class,
-			new ArrayList<PacketOutputListener>());
-		listenerMap.put(RenderListener.class, new ArrayList<RenderListener>());
-		listenerMap.put(UpdateListener.class, new ArrayList<UpdateListener>());
-		listenerMap.put(PostUpdateListener.class,
-			new ArrayList<PostUpdateListener>());
-	}
-	
-	@SuppressWarnings("unchecked")
-	public <T extends Event> void fire(T event)
+	public <L extends Listener, E extends Event<L>> void fire(E event)
 	{
 		if(!WurstClient.INSTANCE.isEnabled())
 			return;
 		
 		try
 		{
-			ArrayList<? extends Listener> listeners =
-				listenerMap.get(event.getListenerType());
+			Class<L> type = event.getListenerType();
+			@SuppressWarnings("unchecked")
+			ArrayList<L> listeners = (ArrayList<L>)listenerMap.get(type);
+			
+			if(listeners == null || listeners.isEmpty())
+				return;
 			
 			event.fire(new ArrayList<>(listeners));
 			
@@ -72,12 +51,21 @@ public final class EventManager
 		}
 	}
 	
-	@SuppressWarnings("unchecked")
-	public <T extends Listener> void add(Class<T> type, T listener)
+	public <L extends Listener> void add(Class<L> type, L listener)
 	{
 		try
 		{
-			((ArrayList<T>)listenerMap.get(type)).add(listener);
+			@SuppressWarnings("unchecked")
+			ArrayList<L> listeners = (ArrayList<L>)listenerMap.get(type);
+			
+			if(listeners == null)
+			{
+				listeners = new ArrayList<>(Arrays.asList(listener));
+				listenerMap.put(type, listeners);
+				return;
+			}
+			
+			listeners.add(listener);
 			
 		}catch(Throwable e)
 		{
@@ -95,12 +83,15 @@ public final class EventManager
 		}
 	}
 	
-	@SuppressWarnings("unchecked")
-	public <T extends Listener> void remove(Class<T> type, T listener)
+	public <L extends Listener> void remove(Class<L> type, L listener)
 	{
 		try
 		{
-			((ArrayList<T>)listenerMap.get(type)).remove(listener);
+			@SuppressWarnings("unchecked")
+			ArrayList<L> listeners = (ArrayList<L>)listenerMap.get(type);
+			
+			if(listeners != null)
+				listeners.remove(listener);
 			
 		}catch(Throwable e)
 		{
