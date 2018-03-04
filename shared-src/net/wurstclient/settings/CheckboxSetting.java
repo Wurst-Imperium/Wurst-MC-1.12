@@ -84,7 +84,7 @@ public class CheckboxSetting extends Setting implements CheckboxLock
 		
 		this.checked = checked;
 		update();
-		ConfigFiles.NAVIGATOR.save();
+		ConfigFiles.SETTINGS.save();
 	}
 	
 	public final void toggle()

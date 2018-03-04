@@ -11,7 +11,6 @@ import net.minecraft.block.Block;
 import net.wurstclient.features.Cmd;
 import net.wurstclient.features.HelpPage;
 import net.wurstclient.features.mods.blocks.NukerMod;
-import net.wurstclient.files.ConfigFiles;
 import net.wurstclient.utils.ChatUtils;
 import net.wurstclient.utils.MiscUtils;
 
@@ -46,10 +45,7 @@ public final class NukerCmd extends Cmd
 				throw new CmdSyntaxError("Invalid mode");
 			
 			if(newMode != nuker.mode.getSelected())
-			{
 				nuker.mode.setSelected(newMode);
-				ConfigFiles.NAVIGATOR.save();
-			}
 			
 			ChatUtils.message("Nuker mode set to \"" + args[1] + "\".");
 		}else if(args[0].equalsIgnoreCase("id") && MiscUtils.isInteger(args[1]))
@@ -57,7 +53,6 @@ public final class NukerCmd extends Cmd
 			if(nuker.mode.getSelected() != 1)
 			{
 				nuker.mode.setSelected(1);
-				ConfigFiles.NAVIGATOR.save();
 				ChatUtils.message("Nuker mode set to \"" + args[0] + "\".");
 			}
 			
@@ -68,7 +63,6 @@ public final class NukerCmd extends Cmd
 			if(nuker.mode.getSelected() != 1)
 			{
 				nuker.mode.setSelected(1);
-				ConfigFiles.NAVIGATOR.save();
 				ChatUtils.message("Nuker mode set to \"" + args[0] + "\".");
 			}
 			

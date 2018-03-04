@@ -15,7 +15,6 @@ import net.wurstclient.compatibility.WPlayer;
 import net.wurstclient.events.ChatOutputListener.ChatOutputEvent;
 import net.wurstclient.features.Cmd;
 import net.wurstclient.features.HelpPage;
-import net.wurstclient.files.ConfigFiles;
 import net.wurstclient.utils.ChatUtils;
 
 @HelpPage("Commands/leave")
@@ -50,7 +49,6 @@ public final class LeaveCmd extends Cmd
 			break;
 			case 2:
 			wurst.mods.autoLeaveMod.mode.setSelected(parseMode(args[1]));
-			ConfigFiles.OPTIONS.save();
 			ChatUtils.message("AutoLeave mode set to \"" + args[1] + "\".");
 			break;
 			default:

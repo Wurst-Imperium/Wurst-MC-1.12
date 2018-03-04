@@ -79,7 +79,6 @@ public class ModeSetting extends Setting
 				public void press()
 				{
 					setSelected(iFinal);
-					ConfigFiles.NAVIGATOR.save();
 				}
 				
 				@Override
@@ -131,11 +130,14 @@ public class ModeSetting extends Setting
 		if(!locked)
 		{
 			this.selected = selected;
+			
 			if(buttons != null)
 				for(int i = 0; i < buttons.length; i++)
 					buttons[i].color = i == selected ? new Color(0x00ff00)
 						: new Color(0x404040);
+				
 			update();
+			ConfigFiles.SETTINGS.save();
 		}
 	}
 	
@@ -247,6 +249,16 @@ public class ModeSetting extends Setting
 		if(selected < 0 || selected > modes.length - 1)
 			return;
 		
-		setSelected(selected);
+		if(!locked)
+		{
+			this.selected = selected;
+			
+			if(buttons != null)
+				for(int i = 0; i < buttons.length; i++)
+					buttons[i].color = i == selected ? new Color(0x00ff00)
+						: new Color(0x404040);
+				
+			update();
+		}
 	}
 }

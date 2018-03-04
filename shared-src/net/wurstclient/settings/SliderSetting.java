@@ -16,6 +16,7 @@ import com.google.gson.JsonPrimitive;
 import net.wurstclient.clickgui.Component;
 import net.wurstclient.clickgui.Slider;
 import net.wurstclient.compatibility.WMath;
+import net.wurstclient.files.ConfigFiles;
 import net.wurstclient.keybinds.PossibleKeybind;
 import net.wurstclient.navigator.NavigatorFeatureScreen;
 
@@ -114,6 +115,7 @@ public class SliderSetting extends Setting implements SliderLock
 		this.value = value;
 		
 		update();
+		ConfigFiles.SETTINGS.save();
 	}
 	
 	public final void increaseValue()
@@ -291,7 +293,14 @@ public class SliderSetting extends Setting implements SliderLock
 		if(newValue > maximum || newValue < minimum)
 			return;
 		
-		setValue(newValue);
+		if(disabled || isLocked())
+			return;
+		
+		newValue = (int)(newValue / increment) * increment;
+		newValue = WMath.clamp(newValue, usableMin, usableMax);
+		value = newValue;
+		
+		update();
 	}
 	
 	public static interface ValueDisplay
