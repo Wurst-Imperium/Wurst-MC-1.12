@@ -7,10 +7,13 @@
  */
 package net.wurstclient.features.mods.blocks;
 
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemSword;
 import net.minecraft.util.math.BlockPos;
 import net.wurstclient.compatibility.WBlock;
+import net.wurstclient.compatibility.WEnchantments;
 import net.wurstclient.compatibility.WItem;
 import net.wurstclient.compatibility.WMinecraft;
 import net.wurstclient.events.UpdateListener;
@@ -19,14 +22,13 @@ import net.wurstclient.features.Feature;
 import net.wurstclient.features.Mod;
 import net.wurstclient.features.SearchTags;
 import net.wurstclient.settings.CheckboxSetting;
-import net.wurstclient.utils.InventoryUtils;
 
 @SearchTags({"auto tool"})
 @Mod.Bypasses
 public final class AutoToolMod extends Mod implements UpdateListener
 {
-	private final CheckboxSetting useSwords =
-		new CheckboxSetting("Use swords as tools", false);
+	private final CheckboxSetting useSwords = new CheckboxSetting("Use swords",
+		"Uses swords to break\n" + "leaves, cobwebs, etc.", false);
 	
 	private int oldSlot = -1;
 	private BlockPos pos;
@@ -35,14 +37,10 @@ public final class AutoToolMod extends Mod implements UpdateListener
 	public AutoToolMod()
 	{
 		super("AutoTool",
-			"Automatically uses the best tool in your hotbar to mine blocks.\n"
-				+ "Tip: This works with Nuker.");
+			"Automatically equips the fastest\n"
+				+ "applicable tool in your hotbar\n"
+				+ "when you try to break a block.");
 		setCategory(Category.BLOCKS);
-	}
-	
-	@Override
-	public void initSettings()
-	{
 		addSetting(useSwords);
 	}
 	
@@ -105,7 +103,8 @@ public final class AutoToolMod extends Mod implements UpdateListener
 			return;
 		
 		// check gamemode
-		if(WMinecraft.getPlayer().capabilities.isCreativeMode)
+		EntityPlayer player = WMinecraft.getPlayer();
+		if(player.capabilities.isCreativeMode)
 			return;
 		
 		// check if block can be clicked
@@ -113,36 +112,27 @@ public final class AutoToolMod extends Mod implements UpdateListener
 			return;
 		
 		// initialize speed & slot
-		float bestSpeed;
-		if(WMinecraft.getPlayer().inventory.getCurrentItem() != null)
-			bestSpeed = InventoryUtils.getStrVsBlock(
-				WMinecraft.getPlayer().inventory.getCurrentItem(), pos);
-		else
-			bestSpeed = 1;
+		IBlockState state = WBlock.getState(pos);
+		float bestSpeed = getDestroySpeed(player.getHeldItemMainhand(), state);
 		int bestSlot = -1;
 		
 		// find best tool
-		for(int i = 0; i < 9; i++)
+		for(int slot = 0; slot < 9; slot++)
 		{
-			// skip empty slots
-			ItemStack stack =
-				WMinecraft.getPlayer().inventory.getStackInSlot(i);
-			if(WItem.isNullOrEmpty(stack))
+			if(slot == player.inventory.currentItem)
 				continue;
 			
-			// skip swords
+			ItemStack stack = player.inventory.getStackInSlot(slot);
+			
+			float speed = getDestroySpeed(stack, state);
+			if(speed <= bestSpeed)
+				continue;
+			
 			if(!useSwords.isChecked() && stack.getItem() instanceof ItemSword)
 				continue;
 			
-			// get speed
-			float speed = InventoryUtils.getStrVsBlock(stack, pos);
-			
-			// compare with best tool
-			if(speed > bestSpeed)
-			{
-				bestSpeed = speed;
-				bestSlot = i;
-			}
+			bestSpeed = speed;
+			bestSlot = slot;
 		}
 		
 		// check if any tool was found
@@ -151,15 +141,77 @@ public final class AutoToolMod extends Mod implements UpdateListener
 		
 		// save old slot
 		if(oldSlot == -1)
-			oldSlot = WMinecraft.getPlayer().inventory.currentItem;
+			oldSlot = player.inventory.currentItem;
 		
 		// set slot
-		WMinecraft.getPlayer().inventory.currentItem = bestSlot;
+		player.inventory.currentItem = bestSlot;
 		
 		// save position
 		this.pos = pos;
 		
 		// start timer
 		timer = 4;
+	}
+	
+	public void equipBestTool(BlockPos pos, boolean useSwords, boolean useHands)
+	{
+		EntityPlayer player = WMinecraft.getPlayer();
+		if(player.capabilities.isCreativeMode)
+			return;
+		
+		IBlockState state = WBlock.getState(pos);
+		
+		ItemStack heldItem = player.getHeldItemMainhand();
+		float bestSpeed = getDestroySpeed(heldItem, state);
+		int bestSlot = -1;
+		
+		boolean useFallback = useHands && isDamageable(heldItem);
+		int fallbackSlot = -1;
+		
+		for(int slot = 0; slot < 9; slot++)
+		{
+			if(slot == player.inventory.currentItem)
+				continue;
+			
+			ItemStack stack = player.inventory.getStackInSlot(slot);
+			
+			if(fallbackSlot == -1 && !isDamageable(stack))
+				fallbackSlot = slot;
+			
+			float speed = getDestroySpeed(stack, state);
+			if(speed <= bestSpeed)
+				continue;
+			
+			if(!useSwords && stack.getItem() instanceof ItemSword)
+				continue;
+			
+			bestSpeed = speed;
+			bestSlot = slot;
+		}
+		
+		if(bestSlot != -1)
+			player.inventory.currentItem = bestSlot;
+		else if(useFallback && bestSpeed <= 1 && fallbackSlot != -1)
+			player.inventory.currentItem = fallbackSlot;
+	}
+	
+	private float getDestroySpeed(ItemStack stack, IBlockState state)
+	{
+		float speed = WItem.getDestroySpeed(stack, state);
+		
+		if(speed > 1)
+		{
+			int efficiency = WEnchantments
+				.getEnchantmentLevel(WEnchantments.EFFICIENCY, stack);
+			if(efficiency > 0 && !WItem.isNullOrEmpty(stack))
+				speed += efficiency * efficiency + 1;
+		}
+		
+		return speed;
+	}
+	
+	private boolean isDamageable(ItemStack stack)
+	{
+		return !WItem.isNullOrEmpty(stack) && stack.getItem().isDamageable();
 	}
 }

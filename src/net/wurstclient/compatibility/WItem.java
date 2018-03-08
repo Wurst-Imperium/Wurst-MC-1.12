@@ -7,6 +7,7 @@
  */
 package net.wurstclient.compatibility;
 
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.*;
 import net.minecraft.util.ResourceLocation;
 
@@ -51,5 +52,10 @@ public final class WItem
 	public static int getStackSize(ItemStack stack)
 	{
 		return stack.func_190916_E();
+	}
+	
+	public static float getDestroySpeed(ItemStack stack, IBlockState state)
+	{
+		return isNullOrEmpty(stack) ? 1 : stack.getStrVsBlock(state);
 	}
 }
