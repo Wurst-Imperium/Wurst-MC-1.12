@@ -127,7 +127,7 @@ public final class AutoToolMod extends Mod implements UpdateListener
 			// skip empty slots
 			ItemStack stack =
 				WMinecraft.getPlayer().inventory.getStackInSlot(i);
-			if(WItem.isNull(stack))
+			if(WItem.isNullOrEmpty(stack))
 				continue;
 			
 			// skip swords

@@ -86,7 +86,7 @@ public final class AutoFishMod extends Mod
 			// skip non-rod items
 			ItemStack stack =
 				WMinecraft.getPlayer().inventory.getStackInSlot(i);
-			if(WItem.isNull(stack)
+			if(WItem.isNullOrEmpty(stack)
 				|| !(stack.getItem() instanceof ItemFishingRod))
 				continue;
 			
@@ -127,7 +127,7 @@ public final class AutoFishMod extends Mod
 			// skip non-rod items
 			ItemStack stack =
 				WMinecraft.getPlayer().inventory.getStackInSlot(i);
-			if(WItem.isNull(stack)
+			if(WItem.isNullOrEmpty(stack)
 				|| !(stack.getItem() instanceof ItemFishingRod))
 				continue;
 			
@@ -191,7 +191,8 @@ public final class AutoFishMod extends Mod
 	{
 		// check held item
 		ItemStack stack = WMinecraft.getPlayer().inventory.getCurrentItem();
-		if(WItem.isNull(stack) || !(stack.getItem() instanceof ItemFishingRod))
+		if(WItem.isNullOrEmpty(stack)
+			|| !(stack.getItem() instanceof ItemFishingRod))
 			return;
 		
 		// right click

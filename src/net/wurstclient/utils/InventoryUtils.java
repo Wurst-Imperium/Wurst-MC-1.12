@@ -42,8 +42,8 @@ public class InventoryUtils
 	
 	public static boolean isSlotEmpty(int slot)
 	{
-		return WItem
-			.isNull(WMinecraft.getPlayer().inventory.getStackInSlot(slot));
+		return WItem.isNullOrEmpty(
+			WMinecraft.getPlayer().inventory.getStackInSlot(slot));
 	}
 	
 	public static boolean isSplashPotion(ItemStack stack)
@@ -74,7 +74,7 @@ public class InventoryUtils
 	{
 		ItemStack stack = WMinecraft.getPlayer().inventory.getCurrentItem();
 		
-		if(WItem.isNull(stack))
+		if(WItem.isNullOrEmpty(stack))
 			return false;
 		
 		return validator.isValid(stack.getItem());

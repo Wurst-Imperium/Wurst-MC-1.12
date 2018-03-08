@@ -70,7 +70,8 @@ public final class AutoArmorMod extends Mod implements UpdateListener
 		{
 			ItemStack oldArmor =
 				WMinecraft.getPlayer().inventory.armorItemInSlot(armorType);
-			if(oldArmor != null && oldArmor.getItem() instanceof ItemArmor)
+			if(!WItem.isNullOrEmpty(oldArmor)
+				&& oldArmor.getItem() instanceof ItemArmor)
 				bestArmorValues[armorType] =
 					((ItemArmor)oldArmor.getItem()).damageReduceAmount;
 			
@@ -82,7 +83,8 @@ public final class AutoArmorMod extends Mod implements UpdateListener
 		{
 			ItemStack stack =
 				WMinecraft.getPlayer().inventory.getStackInSlot(slot);
-			if(stack == null || !(stack.getItem() instanceof ItemArmor))
+			if(WItem.isNullOrEmpty(stack)
+				|| !(stack.getItem() instanceof ItemArmor))
 				continue;
 			
 			ItemArmor armor = (ItemArmor)stack.getItem();
@@ -108,7 +110,7 @@ public final class AutoArmorMod extends Mod implements UpdateListener
 			// needs 1 free slot where it can put the old armor
 			ItemStack oldArmor =
 				WMinecraft.getPlayer().inventory.armorItemInSlot(armorType);
-			if(oldArmor == null || !WItem.isNull(oldArmor)
+			if(WItem.isNullOrEmpty(oldArmor)
 				|| WMinecraft.getPlayer().inventory.getFirstEmptyStack() != -1)
 			{
 				// hotbar fix
@@ -116,7 +118,8 @@ public final class AutoArmorMod extends Mod implements UpdateListener
 					slot += 36;
 				
 				// swap armor
-				WPlayerController.windowClick_QUICK_MOVE(8 - armorType);
+				if(!WItem.isNullOrEmpty(oldArmor))
+					WPlayerController.windowClick_QUICK_MOVE(8 - armorType);
 				WPlayerController.windowClick_QUICK_MOVE(slot);
 				
 				break;

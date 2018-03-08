@@ -90,7 +90,7 @@ public final class AutoSoupMod extends Mod implements UpdateListener
 			// check if empty bowl slot contains a non-bowl item
 			ItemStack emptyBowlStack =
 				WMinecraft.getPlayer().inventory.getStackInSlot(9);
-			boolean swap = !WItem.isNull(emptyBowlStack)
+			boolean swap = !WItem.isNullOrEmpty(emptyBowlStack)
 				&& emptyBowlStack.getItem() != Items.BOWL;
 			
 			// place bowl in empty bowl slot

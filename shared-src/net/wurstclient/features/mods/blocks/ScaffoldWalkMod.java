@@ -65,7 +65,8 @@ public final class ScaffoldWalkMod extends Mod implements UpdateListener
 			// filter out non-block items
 			ItemStack stack =
 				WMinecraft.getPlayer().inventory.getStackInSlot(i);
-			if(WItem.isNull(stack) || !(stack.getItem() instanceof ItemBlock))
+			if(WItem.isNullOrEmpty(stack)
+				|| !(stack.getItem() instanceof ItemBlock))
 				continue;
 			
 			// filter out non-solid blocks

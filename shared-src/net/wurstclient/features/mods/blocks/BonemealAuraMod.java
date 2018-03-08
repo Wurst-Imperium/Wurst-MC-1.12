@@ -92,7 +92,7 @@ public final class BonemealAuraMod extends Mod implements UpdateListener
 		
 		// check held item
 		ItemStack stack = WMinecraft.getPlayer().inventory.getCurrentItem();
-		if(WItem.isNull(stack) || !(stack.getItem() instanceof ItemDye)
+		if(WItem.isNullOrEmpty(stack) || !(stack.getItem() instanceof ItemDye)
 			|| stack.getMetadata() != 15)
 			return;
 		

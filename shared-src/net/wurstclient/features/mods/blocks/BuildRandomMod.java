@@ -92,7 +92,8 @@ public final class BuildRandomMod extends Mod
 		
 		// check held item
 		ItemStack stack = WMinecraft.getPlayer().inventory.getCurrentItem();
-		if(WItem.isNull(stack) || !(stack.getItem() instanceof ItemBlock))
+		if(WItem.isNullOrEmpty(stack)
+			|| !(stack.getItem() instanceof ItemBlock))
 			return;
 		
 		// set mode & range

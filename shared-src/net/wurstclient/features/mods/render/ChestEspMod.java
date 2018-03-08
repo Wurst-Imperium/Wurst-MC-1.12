@@ -296,7 +296,7 @@ public final class ChestEspMod extends Mod
 		
 		boolean empty = true;
 		for(int i = 0; i < chest.inventorySlots.size() - 36; i++)
-			if(!WItem.isNull(chest.inventorySlots.get(i).getStack()))
+			if(!WItem.isNullOrEmpty(chest.inventorySlots.get(i).getStack()))
 			{
 				empty = false;
 				break;

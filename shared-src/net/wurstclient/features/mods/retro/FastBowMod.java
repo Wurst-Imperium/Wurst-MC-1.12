@@ -62,7 +62,7 @@ public final class FastBowMod extends RetroMod implements UpdateListener
 		
 		// check held item
 		ItemStack stack = WMinecraft.getPlayer().inventory.getCurrentItem();
-		if(WItem.isNull(stack) || !(stack.getItem() instanceof ItemBow))
+		if(WItem.isNullOrEmpty(stack) || !(stack.getItem() instanceof ItemBow))
 			return;
 		
 		WPlayerController.processRightClick();
