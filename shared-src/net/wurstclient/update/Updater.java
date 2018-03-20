@@ -22,13 +22,28 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.event.ClickEvent;
 import net.wurstclient.WurstClient;
 import net.wurstclient.compatibility.WMinecraft;
+import net.wurstclient.events.UpdateListener;
+import net.wurstclient.utils.ChatUtils;
 
-public class Updater
+public final class Updater implements UpdateListener
 {
 	private boolean outdated;
 	private String latestVersionString;
+	private ITextComponent component;
+	
+	@Override
+	public void onUpdate()
+	{
+		if(component != null)
+			ChatUtils.component(component);
+		
+		WurstClient.INSTANCE.events.remove(UpdateListener.class, this);
+	}
 	
 	public void checkForUpdate()
 	{
@@ -62,16 +77,38 @@ public class Updater
 			if(latestVersion == null)
 				throw new NullPointerException("Latest version is missing!");
 			
+			System.out.println("[Updater] Current version: " + currentVersion);
+			System.out.println("[Updater] Latest version: " + latestVersion);
+			outdated = currentVersion.shouldUpdateTo(latestVersion);
+			
 		}catch(Exception e)
 		{
 			System.err.println("[Updater] An error occurred!");
 			e.printStackTrace();
+		}
+		
+		if(latestVersion == null || latestVersion.isInvalid())
+		{
+			component = new TextComponentString(
+				"An error occurred while checking for updates."
+					+ " Click \u00a7nhere\u00a7r to check manually.");
+			ClickEvent event = new ClickEvent(ClickEvent.Action.OPEN_URL,
+				"https://www.wurstclient.net/download/");
+			component.getStyle().setClickEvent(event);
+			WurstClient.INSTANCE.events.add(UpdateListener.class, this);
 			return;
 		}
 		
-		System.out.println("[Updater] Current version: " + currentVersion);
-		System.out.println("[Updater] Latest version: " + latestVersion);
-		outdated = currentVersion.shouldUpdateTo(latestVersion);
+		if(!latestVersion.isHigherThan(WurstClient.VERSION))
+			return;
+		
+		component = new TextComponentString(
+			"Wurst " + latestVersion + " is now available."
+				+ " Click \u00a7nhere\u00a7r to download the update.");
+		ClickEvent event = new ClickEvent(ClickEvent.Action.OPEN_URL,
+			"https://www.wurstclient.net/download/");
+		component.getStyle().setClickEvent(event);
+		WurstClient.INSTANCE.events.add(UpdateListener.class, this);
 	}
 	
 	private boolean containsCompatibleAsset(JsonArray assets)
