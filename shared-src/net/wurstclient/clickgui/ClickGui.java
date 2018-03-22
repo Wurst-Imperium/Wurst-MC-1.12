@@ -175,6 +175,22 @@ public final class ClickGui
 		popups.removeIf(p -> p.isClosing());
 	}
 	
+	public void handleNavigatorMouseClick(int mouseX, int mouseY,
+		int mouseButton, Window window, int cMouseX, int cMouseY)
+	{
+		boolean popupClicked =
+			handlePopupMouseClick(mouseX, mouseY, mouseButton);
+		
+		if(!popupClicked)
+			handleComponentMouseClick(window, cMouseX, cMouseY, mouseButton);
+		
+		for(Popup popup : popups)
+			if(popup.getOwner().getParent().isClosing())
+				popup.close();
+			
+		popups.removeIf(p -> p.isClosing());
+	}
+	
 	private boolean handlePopupMouseClick(int mouseX, int mouseY,
 		int mouseButton)
 	{
@@ -403,6 +419,16 @@ public final class ClickGui
 		}
 		
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
+		renderPopupsAndTooltip(mouseX, mouseY);
+		
+		GL11.glEnable(GL11.GL_CULL_FACE);
+		GL11.glEnable(GL11.GL_TEXTURE_2D);
+		GL11.glDisable(GL11.GL_BLEND);
+	}
+	
+	public void renderPopupsAndTooltip(int mouseX, int mouseY)
+	{
+		// popups
 		for(Popup popup : popups)
 		{
 			Component owner = popup.getOwner();
@@ -470,10 +496,6 @@ public final class ClickGui
 				fr.drawString(lines[i], xt1 + 2, yt1 - 1 + i * fr.FONT_HEIGHT,
 					0xffffff);
 		}
-		
-		GL11.glEnable(GL11.GL_CULL_FACE);
-		GL11.glEnable(GL11.GL_TEXTURE_2D);
-		GL11.glDisable(GL11.GL_BLEND);
 	}
 	
 	public void renderPinnedWindows()

@@ -16,8 +16,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.TreeMap;
 
+import org.lwjgl.opengl.GL11;
+
 import net.minecraft.client.gui.GuiButton;
 import net.wurstclient.WurstClient;
+import net.wurstclient.clickgui.Component;
+import net.wurstclient.clickgui.Window;
 import net.wurstclient.compatibility.WMath;
 import net.wurstclient.compatibility.WSoundEvents;
 import net.wurstclient.features.Feature;
@@ -46,10 +50,25 @@ public class NavigatorFeatureScreen extends NavigatorScreen
 	private ArrayList<SliderSetting> sliders = new ArrayList<>();
 	private ArrayList<CheckboxSetting> checkboxes = new ArrayList<>();
 	
+	private Window window = new Window("");
+	
 	public NavigatorFeatureScreen(Feature feature, NavigatorMainScreen parent)
 	{
 		this.feature = feature;
 		this.parent = parent;
+		hasBackground = false;
+		
+		if(feature.isComponentSettingsInNavigator())
+			for(Setting setting : feature.getSettings())
+			{
+				Component c = setting.getComponent();
+				
+				if(c != null)
+					window.add(c);
+			}
+		
+		window.pack();
+		window.setWidth(308);
 	}
 	
 	@Override
@@ -115,10 +134,19 @@ public class NavigatorFeatureScreen extends NavigatorScreen
 		if(!settings.isEmpty())
 		{
 			text += "\n\nSettings:";
+			window.setY(Fonts.segoe15.getStringHeight(text) + 2);
 			sliders.clear();
 			checkboxes.clear();
+			
+			if(feature.isComponentSettingsInNavigator())
+				for(int i = 0; i < Math
+					.ceil(window.getInnerHeight() / 9.0); i++)
+					text += "\n";
+				
 			for(Setting setting : settings)
-				setting.addToFeatureScreen(this);
+				if(setting.getComponent() == null
+					|| !feature.isComponentSettingsInNavigator())
+					setting.addToFeatureScreen(this);
 		}
 		
 		// keybinds
@@ -287,6 +315,10 @@ public class NavigatorFeatureScreen extends NavigatorScreen
 				return;
 			}
 		}
+		
+		WurstClient.INSTANCE.getGui().handleNavigatorMouseClick(
+			x - middleX + 154, y - 60 - scroll + 13, button, window,
+			x - middleX + 154, y - 60 - scroll - window.getY());
 	}
 	
 	@Override
@@ -340,10 +372,94 @@ public class NavigatorFeatureScreen extends NavigatorScreen
 		int bgy1 = 60;
 		int bgy2 = height - 43;
 		
+		setColorToBackground();
+		drawQuads(bgx1, bgy1, bgx2,
+			Math.max(bgy1, Math.min(bgy2 - (buttonList.isEmpty() ? 0 : 24),
+				bgy1 + scroll + window.getY())));
+		drawQuads(bgx1,
+			Math.max(bgy1,
+				Math.min(bgy2 - (buttonList.isEmpty() ? 0 : 24),
+					bgy1 + scroll + window.getY() + window.getInnerHeight())),
+			bgx2, bgy2);
+		drawBoxShadow(bgx1, bgy1, bgx2, bgy2);
+		
 		// scissor box
 		RenderUtils.scissorBox(bgx1, bgy1, bgx2,
 			bgy2 - (buttonList.isEmpty() ? 0 : 24));
 		glEnable(GL_SCISSOR_TEST);
+		
+		// settings
+		WurstClient.INSTANCE.getGui().setTooltip(null);
+		window.validate();
+		
+		int windowY = bgy1 + scroll + window.getY();
+		GL11.glPushMatrix();
+		GL11.glTranslated(bgx1, windowY, 0);
+		GL11.glDisable(GL11.GL_TEXTURE_2D);
+		
+		{
+			int x1 = 0;
+			int y1 = -13;
+			int x2 = x1 + window.getWidth();
+			int y2 = y1 + window.getHeight();
+			int y3 = y1 + 13;
+			int x3 = x1 + 2;
+			int x5 = x2 - 2;
+			
+			// window background
+			// left & right
+			setColorToBackground();
+			GL11.glBegin(GL11.GL_QUADS);
+			GL11.glVertex2i(x1, y3);
+			GL11.glVertex2i(x1, y2);
+			GL11.glVertex2i(x3, y2);
+			GL11.glVertex2i(x3, y3);
+			GL11.glVertex2i(x5, y3);
+			GL11.glVertex2i(x5, y2);
+			GL11.glVertex2i(x2, y2);
+			GL11.glVertex2i(x2, y3);
+			GL11.glEnd();
+			
+			setColorToBackground();
+			GL11.glBegin(GL11.GL_QUADS);
+			
+			// window background
+			// between children
+			int xc1 = 2;
+			int xc2 = x5 - x1;
+			for(int i = 0; i < window.countChildren(); i++)
+			{
+				int yc1 = window.getChild(i).getY();
+				int yc2 = yc1 - 2;
+				GL11.glVertex2i(xc1, yc2);
+				GL11.glVertex2i(xc1, yc1);
+				GL11.glVertex2i(xc2, yc1);
+				GL11.glVertex2i(xc2, yc2);
+			}
+			
+			// window background
+			// bottom
+			int yc1;
+			if(window.countChildren() == 0)
+				yc1 = 0;
+			else
+			{
+				Component lastChild =
+					window.getChild(window.countChildren() - 1);
+				yc1 = lastChild.getY() + lastChild.getHeight();
+			}
+			int yc2 = yc1 + 2;
+			GL11.glVertex2i(xc1, yc2);
+			GL11.glVertex2i(xc1, yc1);
+			GL11.glVertex2i(xc2, yc1);
+			GL11.glVertex2i(xc2, yc2);
+			
+			GL11.glEnd();
+		}
+		
+		for(int i = 0; i < window.countChildren(); i++)
+			window.getChild(i).render(mouseX - bgx1, mouseY - windowY);
+		GL11.glPopMatrix();
 		
 		// sliders
 		for(SliderSetting slider : sliders)
@@ -502,6 +618,13 @@ public class NavigatorFeatureScreen extends NavigatorScreen
 		// scissor box
 		glDisable(GL_SCISSOR_TEST);
 		
+		GL11.glPushMatrix();
+		GL11.glTranslated(bgx1, bgy1 + scroll - 13, 0);
+		GL11.glDisable(GL11.GL_TEXTURE_2D);
+		WurstClient.INSTANCE.getGui().renderPopupsAndTooltip(mouseX - bgx1,
+			mouseY - bgy1 - scroll + 13);
+		GL11.glPopMatrix();
+		
 		// buttons below scissor box
 		for(int i = 0; i < buttonList.size(); i++)
 		{
@@ -539,6 +662,14 @@ public class NavigatorFeatureScreen extends NavigatorScreen
 		glEnable(GL_CULL_FACE);
 		glEnable(GL_TEXTURE_2D);
 		glDisable(GL_BLEND);
+	}
+	
+	@Override
+	public void onGuiClosed()
+	{
+		window.close();
+		WurstClient.INSTANCE.getGui().handleMouseClick(Integer.MIN_VALUE,
+			Integer.MIN_VALUE, 0);
 	}
 	
 	public Feature getFeature()
