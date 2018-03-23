@@ -123,10 +123,13 @@ public final class CmdManager implements ChatOutputListener
 		if(cmd == null)
 		{
 			ChatUtils.error("Unknown command: ." + parts[0]);
-			
-			if(input.equals("..") || input.equalsIgnoreCase("legit"))
-				ChatUtils.message("Try using .say ." + input);
-			
+			if(input.startsWith("/"))
+				ChatUtils.message(
+					"Use \".say " + input + "\" to send it as a chat command.");
+			else
+				ChatUtils
+					.message("Type \".help\" for a list of commands or \".say ."
+						+ input + "\" to send it as a chat message.");
 			return;
 		}
 		
