@@ -7,10 +7,16 @@
  */
 package net.wurstclient.features.mods.combat;
 
+import org.lwjgl.opengl.GL11;
+
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
 import net.wurstclient.compatibility.WMinecraft;
 import net.wurstclient.compatibility.WPlayer;
 import net.wurstclient.events.PostUpdateListener;
+import net.wurstclient.events.RenderListener;
 import net.wurstclient.events.UpdateListener;
 import net.wurstclient.features.Category;
 import net.wurstclient.features.Feature;
@@ -22,12 +28,13 @@ import net.wurstclient.settings.SliderSetting;
 import net.wurstclient.settings.SliderSetting.ValueDisplay;
 import net.wurstclient.utils.EntityUtils;
 import net.wurstclient.utils.EntityUtils.TargetSettings;
+import net.wurstclient.utils.RenderUtils;
 import net.wurstclient.utils.RotationUtils;
 
 @SearchTags({"ForceField", "kill aura", "force field"})
 @Mod.Bypasses
 public final class KillauraMod extends Mod
-	implements UpdateListener, PostUpdateListener
+	implements UpdateListener, PostUpdateListener, RenderListener
 {
 	public final CheckboxSetting useCooldown = !WMinecraft.COOLDOWN ? null
 		: new CheckboxSetting("Use Attack Cooldown as Speed", true)
@@ -69,6 +76,7 @@ public final class KillauraMod extends Mod
 	};
 	
 	private Entity attackTarget;
+	private Entity renderTarget;
 	
 	public KillauraMod()
 	{
@@ -109,6 +117,7 @@ public final class KillauraMod extends Mod
 		
 		wurst.events.add(UpdateListener.class, this);
 		wurst.events.add(PostUpdateListener.class, this);
+		wurst.events.add(RenderListener.class, this);
 	}
 	
 	@Override
@@ -116,6 +125,7 @@ public final class KillauraMod extends Mod
 	{
 		wurst.events.remove(UpdateListener.class, this);
 		wurst.events.remove(PostUpdateListener.class, this);
+		wurst.events.remove(RenderListener.class, this);
 		attackTarget = null;
 	}
 	
@@ -132,6 +142,7 @@ public final class KillauraMod extends Mod
 		
 		// set entity
 		Entity entity = EntityUtils.getBestEntityToAttack(targetSettings);
+		renderTarget = entity;
 		if(entity == null)
 			return;
 		
@@ -153,6 +164,62 @@ public final class KillauraMod extends Mod
 		
 		WPlayer.attackEntity(attackTarget);
 		attackTarget = null;
+	}
+	
+	@Override
+	public void onRender(float partialTicks)
+	{
+		if(renderTarget == null || !(renderTarget instanceof EntityLivingBase))
+			return;
+		
+		EntityLivingBase target = (EntityLivingBase)renderTarget;
+		
+		// GL settings
+		GL11.glEnable(GL11.GL_BLEND);
+		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+		GL11.glEnable(GL11.GL_LINE_SMOOTH);
+		GL11.glLineWidth(2);
+		GL11.glDisable(GL11.GL_TEXTURE_2D);
+		GL11.glEnable(GL11.GL_CULL_FACE);
+		GL11.glDisable(GL11.GL_DEPTH_TEST);
+		
+		GL11.glPushMatrix();
+		GL11.glTranslated(-mc.getRenderManager().renderPosX,
+			-mc.getRenderManager().renderPosY,
+			-mc.getRenderManager().renderPosZ);
+		
+		AxisAlignedBB box = new AxisAlignedBB(BlockPos.ORIGIN);
+		float p = (target.getMaxHealth() - target.getHealth())
+			/ target.getMaxHealth();
+		float red = p * 2F;
+		float green = 2 - red;
+		
+		GL11.glTranslated(target.posX, target.posY, target.posZ);
+		GL11.glTranslated(0, 0.05, 0);
+		GL11.glScaled(target.width, target.height, target.width);
+		GL11.glTranslated(-0.5, 0, -0.5);
+		
+		if(p < 1)
+		{
+			GL11.glTranslated(0.5, 0.5, 0.5);
+			GL11.glScaled(p, p, p);
+			GL11.glTranslated(-0.5, -0.5, -0.5);
+		}
+		
+		GL11.glColor4f(red, green, 0, 0.25F);
+		RenderUtils.drawSolidBox(box);
+		
+		GL11.glColor4f(red, green, 0, 0.5F);
+		RenderUtils.drawOutlinedBox(box);
+		
+		GL11.glPopMatrix();
+		
+		// GL resets
+		GL11.glColor4f(1, 1, 1, 1);
+		GL11.glEnable(GL11.GL_DEPTH_TEST);
+		GL11.glEnable(GL11.GL_TEXTURE_2D);
+		GL11.glDisable(GL11.GL_BLEND);
+		GL11.glDisable(GL11.GL_LINE_SMOOTH);
 	}
 	
 	@Override
