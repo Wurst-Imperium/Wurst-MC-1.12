@@ -83,10 +83,28 @@ public final class Slider extends Component
 			&& mouseY < y2 && mouseY >= -scroll
 			&& mouseY < getParent().getHeight() - 13 - scroll;
 		boolean hSlider = hovering && mouseY >= y3 || dragging;
+		boolean renderAsDisabled = setting.isDisabled() || setting.isLocked();
 		
 		// tooltip
+		String tooltip = setting.getDescription();
+		if(renderAsDisabled)
+			if(tooltip == null)
+				tooltip = "";
+			else
+				tooltip += "\n\n";
+		if(setting.isLocked())
+			tooltip +=
+				"This slider is locked to " + setting.getValueString() + ".";
+		else if(setting.isDisabled())
+			tooltip += "This slider is disabled.";
 		if(hovering && mouseY < y3)
-			gui.setTooltip(setting.getDescription());
+			gui.setTooltip(tooltip);
+		
+		if(renderAsDisabled)
+		{
+			hovering = false;
+			hSlider = false;
+		}
 		
 		// background
 		GL11.glColor4f(bgColor[0], bgColor[1], bgColor[2], 0.5F);
@@ -134,8 +152,13 @@ public final class Slider extends Component
 		double yk2 = y2 - 1.5;
 		
 		// knob
-		float f = (float)(2 * percentage);
-		GL11.glColor4f(f, 2 - f, 0, hSlider ? 1 : 0.75F);
+		if(renderAsDisabled)
+			GL11.glColor4f(0.5F, 0.5F, 0.5F, 0.75F);
+		else
+		{
+			float f = (float)(2 * percentage);
+			GL11.glColor4f(f, 2 - f, 0, hSlider ? 1 : 0.75F);
+		}
 		GL11.glBegin(GL11.GL_QUADS);
 		GL11.glVertex2d(xk1, yk1);
 		GL11.glVertex2d(xk1, yk2);
@@ -156,9 +179,11 @@ public final class Slider extends Component
 		GL11.glColor4f(1, 1, 1, 1);
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		FontRenderer fr = Fonts.segoe18;
-		fr.drawString(setting.getName(), x1, y1 - 1, 0xf0f0f0);
+		fr.drawString(setting.getName(), x1, y1 - 1,
+			renderAsDisabled ? 0xaaaaaa : 0xf0f0f0);
 		fr.drawString(setting.getValueString(),
-			x2 - fr.getStringWidth(setting.getValueString()), y1 - 1, 0xf0f0f0);
+			x2 - fr.getStringWidth(setting.getValueString()), y1 - 1,
+			renderAsDisabled ? 0xaaaaaa : 0xf0f0f0);
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
 	}
 	
