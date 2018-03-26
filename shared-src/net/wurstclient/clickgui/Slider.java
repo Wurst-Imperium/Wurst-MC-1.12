@@ -127,14 +127,34 @@ public final class Slider extends Component
 		GL11.glVertex2i(x2, y4);
 		GL11.glEnd();
 		
+		double xl1 = x3;
+		double xl2 = x4;
+		if(!renderAsDisabled && setting.isLimited())
+		{
+			double ratio = (x4 - x3) / setting.getRange();
+			xl1 += ratio * (setting.getUsableMin() - setting.getMinimum());
+			xl2 += ratio * (setting.getUsableMax() - setting.getMaximum());
+		}
+		
 		// rail
+		GL11.glColor4f(1, 0, 0, hSlider ? 0.75F : 0.5F);
+		GL11.glBegin(GL11.GL_QUADS);
+		GL11.glVertex2d(x3, y4);
+		GL11.glVertex2d(x3, y5);
+		GL11.glVertex2d(xl1, y5);
+		GL11.glVertex2d(xl1, y4);
+		GL11.glVertex2d(xl2, y4);
+		GL11.glVertex2d(xl2, y5);
+		GL11.glVertex2d(x4, y5);
+		GL11.glVertex2d(x4, y4);
+		GL11.glEnd();
 		GL11.glColor4f(bgColor[0], bgColor[1], bgColor[2],
 			hSlider ? 0.75F : 0.5F);
 		GL11.glBegin(GL11.GL_QUADS);
-		GL11.glVertex2i(x3, y4);
-		GL11.glVertex2i(x3, y5);
-		GL11.glVertex2i(x4, y5);
-		GL11.glVertex2i(x4, y4);
+		GL11.glVertex2d(xl1, y4);
+		GL11.glVertex2d(xl1, y5);
+		GL11.glVertex2d(xl2, y5);
+		GL11.glVertex2d(xl2, y4);
 		GL11.glEnd();
 		GL11.glColor4f(acColor[0], acColor[1], acColor[2], 0.5F);
 		GL11.glBegin(GL11.GL_LINE_LOOP);
