@@ -44,7 +44,10 @@ public abstract class Setting
 	
 	public abstract JsonElement toJson();
 	
-	public abstract void legacyFromJson(JsonObject json);
+	public void legacyFromJson(JsonObject json)
+	{
+		
+	}
 	
 	public void update()
 	{

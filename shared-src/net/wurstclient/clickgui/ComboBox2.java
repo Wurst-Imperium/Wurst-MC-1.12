@@ -14,21 +14,21 @@ import org.lwjgl.opengl.GL11;
 import net.minecraft.client.gui.FontRenderer;
 import net.wurstclient.WurstClient;
 import net.wurstclient.font.Fonts;
-import net.wurstclient.settings.EnumSetting;
+import net.wurstclient.settings.ModeSetting;
 
-public final class ComboBox extends Component
+public final class ComboBox2 extends Component
 {
-	private final EnumSetting setting;
+	private final ModeSetting setting;
 	private final int popupWidth;
 	private ComboBoxPopup popup;
 	
-	public ComboBox(EnumSetting setting)
+	public ComboBox2(ModeSetting setting)
 	{
 		this.setting = setting;
 		
 		FontRenderer fr = Fonts.segoe18;
-		popupWidth = Arrays.stream(setting.getValues())
-			.mapToInt(v -> fr.getStringWidth(v.toString())).max().getAsInt();
+		popupWidth = Arrays.stream(setting.getModes())
+			.mapToInt(m -> fr.getStringWidth(m)).max().getAsInt();
 		
 		setWidth(getDefaultWidth());
 		setHeight(getDefaultHeight());
@@ -54,7 +54,7 @@ public final class ComboBox extends Component
 			gui.addPopup(popup);
 			
 		}else if(mouseButton == 1 && (popup == null || popup.isClosing()))
-			setting.setSelected(setting.getDefaultSelected().toString());
+			setting.setSelected(setting.getDefaultSelected());
 	}
 	
 	@Override
@@ -152,8 +152,7 @@ public final class ComboBox extends Component
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		FontRenderer fr = Fonts.segoe18;
 		fr.drawString(setting.getName(), x1, y1 - 1, 0xf0f0f0);
-		fr.drawString(setting.getSelected().toString(), x4 + 2, y1 - 1,
-			0xf0f0f0);
+		fr.drawString(setting.getSelectedMode(), x4 + 2, y1 - 1, 0xf0f0f0);
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
 	}
 	
@@ -172,7 +171,7 @@ public final class ComboBox extends Component
 	
 	private static class ComboBoxPopup extends Popup
 	{
-		public ComboBoxPopup(ComboBox owner)
+		public ComboBoxPopup(ComboBox2 owner)
 		{
 			super(owner);
 			setWidth(getDefaultWidth());
@@ -187,11 +186,12 @@ public final class ComboBox extends Component
 			if(mouseButton != 0)
 				return;
 			
-			Enum[] values = ((ComboBox)getOwner()).setting.getValues();
+			String[] values = ((ComboBox2)getOwner()).setting.getModes();
 			int yi1 = getY() - 11;
-			for(Enum value : values)
+			for(String value : values)
 			{
-				if(value == ((ComboBox)getOwner()).setting.getSelected())
+				if(value.equalsIgnoreCase(
+					((ComboBox2)getOwner()).setting.getSelectedMode()))
 					continue;
 				
 				yi1 += 11;
@@ -199,7 +199,8 @@ public final class ComboBox extends Component
 				if(mouseY < yi1 || mouseY >= yi2)
 					continue;
 				
-				((ComboBox)getOwner()).setting.setSelected(value.toString());
+				((ComboBox2)getOwner()).setting.setSelected(
+					((ComboBox2)getOwner()).setting.indexOf(value));
 				close();
 				break;
 			}
@@ -231,11 +232,12 @@ public final class ComboBox extends Component
 			GL11.glVertex2i(x2, y1);
 			GL11.glEnd();
 			
-			Enum[] values = ((ComboBox)getOwner()).setting.getValues();
+			String[] values = ((ComboBox2)getOwner()).setting.getModes();
 			int yi1 = y1 - 11;
-			for(Enum value : values)
+			for(String value : values)
 			{
-				if(value == ((ComboBox)getOwner()).setting.getSelected())
+				if(value.equalsIgnoreCase(
+					((ComboBox2)getOwner()).setting.getSelectedMode()))
 					continue;
 				
 				yi1 += 11;
@@ -264,13 +266,13 @@ public final class ComboBox extends Component
 		@Override
 		public int getDefaultWidth()
 		{
-			return ((ComboBox)getOwner()).popupWidth + 15;
+			return ((ComboBox2)getOwner()).popupWidth + 15;
 		}
 		
 		@Override
 		public int getDefaultHeight()
 		{
-			return (((ComboBox)getOwner()).setting.getValues().length - 1) * 11;
+			return (((ComboBox2)getOwner()).setting.getModes().length - 1) * 11;
 		}
 	}
 }

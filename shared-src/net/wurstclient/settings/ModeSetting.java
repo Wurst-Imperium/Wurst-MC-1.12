@@ -14,7 +14,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
-import net.wurstclient.clickgui.ComboBox;
+import net.wurstclient.clickgui.ComboBox2;
 import net.wurstclient.clickgui.Component;
 import net.wurstclient.files.ConfigFiles;
 import net.wurstclient.keybinds.PossibleKeybind;
@@ -201,7 +201,7 @@ public class ModeSetting extends Setting
 	@Override
 	public final Component getComponent()
 	{
-		return new ComboBox(this);
+		return new ComboBox2(this);
 	}
 	
 	@Override
