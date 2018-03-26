@@ -56,10 +56,14 @@ public final class Checkbox extends Component
 		// tooltip
 		String tooltip = setting.getDescription();
 		if(setting.isLocked())
+		{
 			if(tooltip == null)
-				tooltip = "This checkbox is locked.";
+				tooltip = "";
 			else
-				tooltip += "\n\nThis checkbox is locked.";
+				tooltip += "\n\n";
+			tooltip +=
+				"This checkbox is locked to " + setting.isChecked() + ".";
+		}
 		if(hovering && mouseX >= x3)
 			gui.setTooltip(tooltip);
 		
@@ -106,7 +110,10 @@ public final class Checkbox extends Component
 			double yc5 = y1 + 8.5;
 			
 			// check
-			GL11.glColor4f(0, hovering ? 1 : 0.85F, 0, 1);
+			if(setting.isLocked())
+				GL11.glColor4f(0.5F, 0.5F, 0.5F, 0.75F);
+			else
+				GL11.glColor4f(0, hovering ? 1 : 0.85F, 0, 1);
 			GL11.glBegin(GL11.GL_QUADS);
 			GL11.glVertex2d(xc2, yc3);
 			GL11.glVertex2d(xc3, yc4);
