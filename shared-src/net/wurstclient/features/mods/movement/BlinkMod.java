@@ -37,7 +37,6 @@ public final class BlinkMod extends Mod
 		super("Blink", "Suspends all motion updates while enabled.");
 		setCategory(Category.MOVEMENT);
 		addSetting(limit);
-		setComponentSettingsInNavigator();
 	}
 	
 	@Override

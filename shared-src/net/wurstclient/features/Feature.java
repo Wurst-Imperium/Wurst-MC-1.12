@@ -22,7 +22,6 @@ public abstract class Feature
 	private Category category;
 	
 	private final ArrayList<Setting> settings = new ArrayList<>();
-	private boolean componentSettingsInNavigator;
 	
 	private final String helpPage =
 		getClass().isAnnotationPresent(HelpPage.class)
@@ -59,16 +58,6 @@ public abstract class Feature
 	protected final void addSetting(Setting setting)
 	{
 		settings.add(setting);
-	}
-	
-	public final boolean isComponentSettingsInNavigator()
-	{
-		return componentSettingsInNavigator;
-	}
-	
-	protected final void setComponentSettingsInNavigator()
-	{
-		componentSettingsInNavigator = true;
 	}
 	
 	public abstract ArrayList<PossibleKeybind> getPossibleKeybinds();

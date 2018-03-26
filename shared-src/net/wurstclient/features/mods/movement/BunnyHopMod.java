@@ -30,7 +30,6 @@ public final class BunnyHopMod extends Mod implements UpdateListener
 		super("BunnyHop", "Makes you jump automatically.");
 		setCategory(Category.MOVEMENT);
 		addSetting(jumpIf);
-		setComponentSettingsInNavigator();
 	}
 	
 	@Override

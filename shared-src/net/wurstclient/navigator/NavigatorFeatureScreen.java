@@ -58,14 +58,13 @@ public class NavigatorFeatureScreen extends NavigatorScreen
 		this.parent = parent;
 		hasBackground = false;
 		
-		if(feature.isComponentSettingsInNavigator())
-			for(Setting setting : feature.getSettings())
-			{
-				Component c = setting.getComponent();
-				
-				if(c != null)
-					window.add(c);
-			}
+		for(Setting setting : feature.getSettings())
+		{
+			Component c = setting.getComponent();
+			
+			if(c != null)
+				window.add(c);
+		}
 		
 		window.pack();
 		window.setWidth(308);
@@ -142,14 +141,11 @@ public class NavigatorFeatureScreen extends NavigatorScreen
 			sliders.clear();
 			checkboxes.clear();
 			
-			if(feature.isComponentSettingsInNavigator())
-				for(int i = 0; i < Math
-					.ceil(window.getInnerHeight() / 9.0); i++)
-					text += "\n";
-				
+			for(int i = 0; i < Math.ceil(window.getInnerHeight() / 9.0); i++)
+				text += "\n";
+			
 			for(Setting setting : settings)
-				if(setting.getComponent() == null
-					|| !feature.isComponentSettingsInNavigator())
+				if(setting.getComponent() == null)
 					setting.addToFeatureScreen(this);
 		}
 		
