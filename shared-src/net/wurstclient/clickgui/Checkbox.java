@@ -54,8 +54,17 @@ public final class Checkbox extends Component
 			&& mouseY < getParent().getHeight() - 13 - scroll;
 		
 		// tooltip
+		String tooltip = setting.getDescription();
+		if(setting.isLocked())
+			if(tooltip == null)
+				tooltip = "This checkbox is locked.";
+			else
+				tooltip += "\n\nThis checkbox is locked.";
 		if(hovering && mouseX >= x3)
-			gui.setTooltip(setting.getDescription());
+			gui.setTooltip(tooltip);
+		
+		if(setting.isLocked())
+			hovering = false;
 		
 		// background
 		GL11.glColor4f(bgColor[0], bgColor[1], bgColor[2], 0.5F);
@@ -125,7 +134,8 @@ public final class Checkbox extends Component
 		GL11.glColor4f(1, 1, 1, 1);
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		FontRenderer fr = Fonts.segoe18;
-		fr.drawString(setting.getName(), x3 + 2, y1 - 1, 0xf0f0f0);
+		fr.drawString(setting.getName(), x3 + 2, y1 - 1,
+			setting.isLocked() ? 0xaaaaaa : 0xf0f0f0);
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
 	}
 	
