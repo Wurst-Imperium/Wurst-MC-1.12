@@ -7,21 +7,36 @@
  */
 package net.wurstclient.features.mods.movement;
 
+import java.util.function.Predicate;
+
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.wurstclient.compatibility.WMinecraft;
 import net.wurstclient.events.UpdateListener;
 import net.wurstclient.features.Category;
 import net.wurstclient.features.Feature;
 import net.wurstclient.features.Mod;
 import net.wurstclient.features.SearchTags;
+import net.wurstclient.settings.EnumSetting;
 
 @SearchTags({"AutoJump", "BHop", "bunny hop", "auto jump"})
 @Mod.Bypasses
 public final class BunnyHopMod extends Mod implements UpdateListener
 {
+	private final EnumSetting<JumpIf> jumpIf =
+		new EnumSetting<>("Jump if", JumpIf.values(), JumpIf.SPRINTING);
+	
 	public BunnyHopMod()
 	{
-		super("BunnyHop", "Automatically jumps whenever you walk.");
+		super("BunnyHop", "Makes you jump automatically.");
 		setCategory(Category.MOVEMENT);
+		addSetting(jumpIf);
+		setComponentSettingsInNavigator();
+	}
+	
+	@Override
+	public String getRenderName()
+	{
+		return getName() + " [" + jumpIf.getSelected().name + "]";
 	}
 	
 	@Override
@@ -45,20 +60,36 @@ public final class BunnyHopMod extends Mod implements UpdateListener
 	@Override
 	public void onUpdate()
 	{
-		// check onGround
-		if(!WMinecraft.getPlayer().onGround)
+		EntityPlayerSP player = WMinecraft.getPlayer();
+		if(!player.onGround || player.isSneaking())
 			return;
 		
-		// check if sneaking
-		if(WMinecraft.getPlayer().isSneaking())
-			return;
+		if(jumpIf.getSelected().condition.test(player))
+			player.jump();
+	}
+	
+	private enum JumpIf
+	{
+		SPRINTING("Sprinting", p -> p.isSprinting()
+			&& (p.moveForward != 0 || p.moveStrafing != 0)),
 		
-		// check if moving
-		if(WMinecraft.getPlayer().moveForward == 0
-			&& WMinecraft.getPlayer().moveStrafing == 0)
-			return;
+		WALKING("Walking", p -> p.moveForward != 0 || p.moveStrafing != 0),
 		
-		// jump
-		WMinecraft.getPlayer().jump();
+		ALWAYS("Always", p -> true);
+		
+		private final String name;
+		private final Predicate<EntityPlayerSP> condition;
+		
+		private JumpIf(String name, Predicate<EntityPlayerSP> condition)
+		{
+			this.name = name;
+			this.condition = condition;
+		}
+		
+		@Override
+		public String toString()
+		{
+			return name;
+		}
 	}
 }
