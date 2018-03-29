@@ -25,15 +25,14 @@ import net.wurstclient.settings.ModeSetting;
 public final class SneakMod extends Mod
 	implements UpdateListener, PostUpdateListener
 {
-	private final ModeSetting mode =
-		new ModeSetting("Mode", new String[]{"Packet", "Legit"}, 0);
+	private final ModeSetting mode = new ModeSetting("Mode",
+		"§lPacket§r mode makes it look like you're sneaking without slowing you down.\n"
+			+ "§lLegit§r mode actually makes you sneak.",
+		new String[]{"Packet", "Legit"}, 0);
 	
 	public SneakMod()
 	{
-		super("Sneak",
-			"Makes you sneak automatically.\n"
-				+ "§lPacket§r mode makes it look like you're sneaking without slowing you down.\n"
-				+ "§lLegit§r mode actually makes you sneak.");
+		super("Sneak", "Makes you sneak automatically.");
 		setCategory(Category.MOVEMENT);
 	}
 	
