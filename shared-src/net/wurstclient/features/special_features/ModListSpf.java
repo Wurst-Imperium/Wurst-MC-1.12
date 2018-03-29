@@ -17,18 +17,21 @@ import net.wurstclient.settings.ModeSetting;
 	"hack list", "cheat list"})
 public final class ModListSpf extends Spf
 {
-	private final ModeSetting mode =
-		new ModeSetting("Mode", new String[]{"Auto", "Count", "Hidden"}, 0)
+	private final ModeSetting mode = new ModeSetting("Mode",
+		"§lAuto§r mode renders the whole list if it fits onto the screen.\n"
+			+ "§lCount§r mode only renders the number of active mods.\n"
+			+ "§lHidden§r mode renders nothing.",
+		new String[]{"Auto", "Count", "Hidden"}, 0)
+	{
+		@Override
+		public void update()
 		{
-			@Override
-			public void update()
-			{
-				if(getSelected() == 0)
-					animations.unlock();
-				else
-					animations.lock(() -> false);
-			}
-		};
+			if(getSelected() == 0)
+				animations.unlock();
+			else
+				animations.lock(() -> false);
+		}
+	};
 	private final ModeSetting position =
 		new ModeSetting("Position", new String[]{"Left", "Right"}, 0);
 	private final CheckboxSetting animations =
@@ -37,9 +40,6 @@ public final class ModListSpf extends Spf
 	public ModListSpf()
 	{
 		super("ModList", "Shows a list of active mods on the screen.\n"
-			+ "§lAuto§r mode renders the whole list if it fits onto the screen.\n"
-			+ "§lCount§r mode only renders the number of active mods.\n"
-			+ "§lHidden§r mode renders nothing.\n\n"
 			+ "The §lLeft§r position should only be used while TabGui is disabled.");
 		
 		addSetting(mode);
