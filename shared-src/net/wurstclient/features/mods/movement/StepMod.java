@@ -23,24 +23,23 @@ import net.wurstclient.settings.SliderSetting.ValueDisplay;
 @Mod.Bypasses(ghostMode = false)
 public final class StepMod extends Mod implements UpdateListener
 {
-	private final ModeSetting mode =
-		new ModeSetting("Mode", new String[]{"Simple", "Legit"}, 1)
+	private final ModeSetting mode = new ModeSetting("Mode",
+		"§lSimple§r mode can step up multiple blocks (enables Height slider).\n"
+			+ "§lLegit§r mode can bypass NoCheat+.",
+		new String[]{"Simple", "Legit"}, 1)
+	{
+		@Override
+		public void update()
 		{
-			@Override
-			public void update()
-			{
-				height.setDisabled(getSelected() == 1);
-			}
-		};
+			height.setDisabled(getSelected() == 1);
+		}
+	};
 	private final SliderSetting height =
 		new SliderSetting("Height", 1, 1, 100, 1, ValueDisplay.INTEGER);
 	
 	public StepMod()
 	{
-		super("Step",
-			"Allows you to step up full blocks.\n"
-				+ "§lSimple§r mode can step up multiple blocks (enables Height slider).\n"
-				+ "§lLegit§r mode can bypass NoCheat+.");
+		super("Step", "Allows you to step up full blocks.");
 		setCategory(Category.MOVEMENT);
 	}
 	
