@@ -59,8 +59,10 @@ import net.wurstclient.utils.RotationUtils;
 public final class AutoBuildMod extends Mod
 	implements RightClickListener, UpdateListener, RenderListener
 {
-	private final ModeSetting mode =
-		new ModeSetting("Mode", new String[]{"Fast", "Legit"}, 0);
+	private final ModeSetting mode = new ModeSetting("Mode",
+		"§lFast§r mode can place multiple blocks at once.\n"
+			+ "§lLegit§r mode can bypass NoCheat+.",
+		new String[]{"Fast", "Legit"}, 0);
 	private final CheckboxSetting useAi =
 		new CheckboxSetting("Use AI (experimental)", false)
 		{
@@ -89,9 +91,7 @@ public final class AutoBuildMod extends Mod
 	{
 		super("AutoBuild",
 			"Automatically builds the selected template whenever you place a block.\n"
-				+ "§lFast§r mode can place multiple blocks at once.\n"
-				+ "§lLegit§r mode can bypass NoCheat+.\n"
-				+ "Templates can be customized using the TemplateTool.");
+				+ "Custom templates can be created by using TemplateTool.");
 		setCategory(Category.BLOCKS);
 	}
 	
