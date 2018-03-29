@@ -35,16 +35,16 @@ public final class BuildRandomMod extends Mod
 	implements UpdateListener, RenderListener
 {
 	private final Random random = new Random();
-	private final ModeSetting mode =
-		new ModeSetting("Mode", new String[]{"Fast", "Legit"}, 1);
+	private final ModeSetting mode = new ModeSetting("Mode",
+		"§lFast§r mode can place blocks behind other blocks.\n"
+			+ "§lLegit§r mode can bypass NoCheat+.",
+		new String[]{"Fast", "Legit"}, 1);
 	
 	private BlockPos lastPos;
 	
 	public BuildRandomMod()
 	{
 		super("BuildRandom", "Randomly places blocks around you.\n"
-			+ "§lFast§r mode can place blocks behind other blocks.\n"
-			+ "§lLegit§r mode can bypass NoCheat+.\n"
 			+ "Tip: Using this mod in combination with FastPlace will make it faster.");
 		setCategory(Category.BLOCKS);
 	}
