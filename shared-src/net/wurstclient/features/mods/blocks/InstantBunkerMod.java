@@ -44,8 +44,10 @@ public final class InstantBunkerMod extends Mod
 		{-1, 2, -1}, {0, 2, 1}, {1, 2, 0}, {-1, 2, 0}, {0, 2, -1}, {0, 2, 0}};
 	private final ArrayList<BlockPos> positions = new ArrayList<>();
 	
-	private final ModeSetting mode =
-		new ModeSetting("Mode", new String[]{"Instant", "Legit"}, 0);
+	private final ModeSetting mode = new ModeSetting("Mode",
+		"§lInstant§r mode places all 57 blocks at once.\n"
+			+ "§lLegit§r mode builds the bunker like a normal player would (bypasses NoCheat+).",
+		new String[]{"Instant", "Legit"}, 0);
 	
 	private int blockIndex;
 	private boolean building;
@@ -53,9 +55,7 @@ public final class InstantBunkerMod extends Mod
 	public InstantBunkerMod()
 	{
 		super("InstantBunker",
-			"Builds a small bunker around you. Needs 57 blocks.\n"
-				+ "§lInstant§r mode places all 57 blocks at once.\n"
-				+ "§lLegit§r mode builds the bunker like a normal player would (bypasses NoCheat+).");
+			"Builds a small bunker around you. Needs 57 blocks.");
 		setCategory(Category.BLOCKS);
 	}
 	
