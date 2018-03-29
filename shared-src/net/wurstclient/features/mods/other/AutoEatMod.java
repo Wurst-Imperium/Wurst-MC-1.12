@@ -30,15 +30,14 @@ import net.wurstclient.settings.CheckboxSetting;
 @Mod.Bypasses
 public final class AutoEatMod extends Mod implements UpdateListener
 {
-	private final CheckboxSetting ignoreScreen =
-		new CheckboxSetting("Ignore screen", true);
+	private final CheckboxSetting ignoreScreen = new CheckboxSetting(
+		"Ignore screen", "Keeps eating while the inventory is open.", true);
 	
 	private int oldSlot = -1;
 	
 	public AutoEatMod()
 	{
-		super("AutoEat", "Automatically eats food when necessary.\n"
-			+ "§lIgnore screen§r keeps eating while the inventory is open.");
+		super("AutoEat", "Automatically eats food when necessary.");
 		setCategory(Category.OTHER);
 	}
 	
