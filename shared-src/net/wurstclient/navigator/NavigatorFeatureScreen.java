@@ -275,6 +275,11 @@ public class NavigatorFeatureScreen extends NavigatorScreen
 	@Override
 	protected void onMouseClick(int x, int y, int button)
 	{
+		// popups
+		if(WurstClient.INSTANCE.getGui().handleNavigatorPopupClick(
+			x - middleX + 154, y - 60 - scroll + 13, button))
+			return;
+		
 		Rectangle area = new Rectangle(width / 2 - 154, 60, 308, height - 103);
 		if(!area.contains(x, y))
 			return;
@@ -316,9 +321,9 @@ public class NavigatorFeatureScreen extends NavigatorScreen
 			}
 		}
 		
+		// component settings
 		WurstClient.INSTANCE.getGui().handleNavigatorMouseClick(
-			x - middleX + 154, y - 60 - scroll + 13, button, window,
-			x - middleX + 154, y - 60 - scroll - window.getY());
+			x - middleX + 154, y - 60 - scroll - window.getY(), button, window);
 	}
 	
 	@Override

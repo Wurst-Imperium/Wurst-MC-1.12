@@ -175,14 +175,28 @@ public final class ClickGui
 		popups.removeIf(p -> p.isClosing());
 	}
 	
-	public void handleNavigatorMouseClick(int mouseX, int mouseY,
-		int mouseButton, Window window, int cMouseX, int cMouseY)
+	public boolean handleNavigatorPopupClick(int mouseX, int mouseY,
+		int mouseButton)
 	{
 		boolean popupClicked =
 			handlePopupMouseClick(mouseX, mouseY, mouseButton);
 		
-		if(!popupClicked)
-			handleComponentMouseClick(window, cMouseX, cMouseY, mouseButton);
+		if(popupClicked)
+		{
+			for(Popup popup : popups)
+				if(popup.getOwner().getParent().isClosing())
+					popup.close();
+				
+			popups.removeIf(p -> p.isClosing());
+		}
+		
+		return popupClicked;
+	}
+	
+	public void handleNavigatorMouseClick(int cMouseX, int cMouseY,
+		int mouseButton, Window window)
+	{
+		handleComponentMouseClick(window, cMouseX, cMouseY, mouseButton);
 		
 		for(Popup popup : popups)
 			if(popup.getOwner().getParent().isClosing())
