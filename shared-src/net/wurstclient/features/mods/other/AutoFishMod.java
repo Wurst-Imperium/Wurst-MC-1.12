@@ -28,19 +28,19 @@ import net.wurstclient.utils.InventoryUtils;
 public final class AutoFishMod extends Mod
 	implements UpdateListener, PacketInputListener
 {
-	private final CheckboxSetting overfillInventory =
-		new CheckboxSetting("Overfill inventory", false);
+	private final CheckboxSetting overfillInventory = new CheckboxSetting(
+		"Overfill inventory", "Keeps fishing when your inventory is full.\n"
+			+ "Useful if you have a hopper collecting the items.",
+		false);
 	
 	private int timer;
 	
 	public AutoFishMod()
 	{
 		super("AutoFish",
-			"Automatically catches fish until all of your fishing rods are used up or your inventory is full.\n"
+			"Automatically catches fish until all of your fishing rods are used up.\n"
 				+ "If fishing rods are placed outside of the hotbar, they will automatically be moved into the\n"
-				+ "hotbar once needed.\n"
-				+ "§lOverfill inventory§r keeps fishing when your inventory is full. Useful if you have a hopper\n"
-				+ "collecting the items.");
+				+ "hotbar once needed.");
 		setCategory(Category.OTHER);
 	}
 	
