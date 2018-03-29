@@ -38,13 +38,17 @@ public final class BonemealAuraMod extends Mod implements UpdateListener
 {
 	private final SliderSetting range =
 		new SliderSetting("Range", 4.25, 1, 6, 0.05, ValueDisplay.DECIMAL);
-	private final ModeSetting mode =
-		new ModeSetting("Mode", new String[]{"Fast", "Legit"}, 1);
+	private final ModeSetting mode = new ModeSetting("Mode",
+		"§lFast§r mode can use bone meal on multiple blocks at once.\n"
+			+ "§lLegit§r mode can bypass NoCheat+.",
+		new String[]{"Fast", "Legit"}, 1);
 	
 	private final CheckboxSetting saplings =
 		new CheckboxSetting("Saplings", true);
-	private final CheckboxSetting crops = new CheckboxSetting("Crops", true);
-	private final CheckboxSetting stems = new CheckboxSetting("Stems", true);
+	private final CheckboxSetting crops = new CheckboxSetting("Crops",
+		"Wheat, carrots, potatoes and beetroots.", true);
+	private final CheckboxSetting stems =
+		new CheckboxSetting("Stems", "Pumpkins and melons.", true);
 	private final CheckboxSetting cocoa = new CheckboxSetting("Cocoa", true);
 	private final CheckboxSetting other = new CheckboxSetting("Other", false);
 	
@@ -52,8 +56,6 @@ public final class BonemealAuraMod extends Mod implements UpdateListener
 	{
 		super("BonemealAura",
 			"Automatically uses bone meal on specific types of plants.\n"
-				+ "§lFast§r mode can use bone meal on multiple blocks at once.\n"
-				+ "§lLegit§r mode can bypass NoCheat+.\n"
 				+ "Use the checkboxes to specify the types of plants.");
 		setCategory(Category.BLOCKS);
 	}
