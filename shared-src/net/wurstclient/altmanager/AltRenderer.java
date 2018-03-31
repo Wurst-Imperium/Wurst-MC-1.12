@@ -7,28 +7,55 @@
  */
 package net.wurstclient.altmanager;
 
+import java.io.IOException;
+import java.util.HashSet;
+
 import org.lwjgl.opengl.GL11;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.gui.Gui;
+import net.minecraft.client.renderer.ThreadDownloadImageData;
 import net.minecraft.client.resources.DefaultPlayerSkin;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.ResourceLocation;
 
 public final class AltRenderer
 {
+	private static final Minecraft mc = Minecraft.getMinecraft();
+	private static final HashSet<String> loadedSkins = new HashSet<>();
+	
+	private static void bindSkinTexture(String name)
+	{
+		ResourceLocation location = AbstractClientPlayer.getLocationSkin(name);
+		
+		if(loadedSkins.contains(name))
+		{
+			mc.getTextureManager().bindTexture(location);
+			return;
+		}
+		
+		try
+		{
+			ThreadDownloadImageData img =
+				AbstractClientPlayer.getDownloadImageSkin(location, name);
+			img.loadTexture(mc.getResourceManager());
+			
+		}catch(IOException e)
+		{
+			e.printStackTrace();
+		}
+		
+		mc.getTextureManager().bindTexture(location);
+		loadedSkins.add(name);
+	}
+	
 	public static void drawAltFace(String name, int x, int y, int w, int h,
 		boolean selected)
 	{
 		try
 		{
-			AbstractClientPlayer
-				.getDownloadImageSkin(
-					AbstractClientPlayer.getLocationSkin(name), name)
-				.loadTexture(Minecraft.getMinecraft().getResourceManager());
-			Minecraft.getMinecraft().getTextureManager()
-				.bindTexture(AbstractClientPlayer.getLocationSkin(name));
-			
+			bindSkinTexture(name);
 			GL11.glEnable(GL11.GL_BLEND);
 			
 			if(selected)
@@ -63,12 +90,7 @@ public final class AltRenderer
 	{
 		try
 		{
-			AbstractClientPlayer
-				.getDownloadImageSkin(
-					AbstractClientPlayer.getLocationSkin(name), name)
-				.loadTexture(Minecraft.getMinecraft().getResourceManager());
-			Minecraft.getMinecraft().getTextureManager()
-				.bindTexture(AbstractClientPlayer.getLocationSkin(name));
+			bindSkinTexture(name);
 			
 			boolean slim = DefaultPlayerSkin
 				.getSkinType(EntityPlayer.getOfflineUUID(name)).equals("slim");
@@ -199,12 +221,7 @@ public final class AltRenderer
 	{
 		try
 		{
-			AbstractClientPlayer
-				.getDownloadImageSkin(
-					AbstractClientPlayer.getLocationSkin(name), name)
-				.loadTexture(Minecraft.getMinecraft().getResourceManager());
-			Minecraft.getMinecraft().getTextureManager()
-				.bindTexture(AbstractClientPlayer.getLocationSkin(name));
+			bindSkinTexture(name);
 			
 			boolean slim = DefaultPlayerSkin
 				.getSkinType(EntityPlayer.getOfflineUUID(name)).equals("slim");
