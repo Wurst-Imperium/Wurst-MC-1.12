@@ -9,6 +9,7 @@ package net.wurstclient.features.special_features;
 
 import java.util.HashSet;
 
+import net.wurstclient.features.Category;
 import net.wurstclient.features.HelpPage;
 import net.wurstclient.features.Mod;
 import net.wurstclient.features.Mod.Bypasses;
@@ -27,13 +28,14 @@ public final class YesCheatSpf extends Spf
 	
 	public CheckboxSetting modeIndicator =
 		new CheckboxSetting("Mode Indicator", true);
+	private ModeSetting profileSetting;
 	
 	public YesCheatSpf()
 	{
 		super("YesCheat+",
 			"Makes other features bypass AntiCheat plugins or blocks them if they can't.");
-		
-		addSetting(
+		setCategory(Category.OTHER);
+		addSetting(profileSetting =
 			new ModeSetting("Profile", Profile.getNames(), profile.ordinal())
 			{
 				@Override
@@ -56,6 +58,18 @@ public final class YesCheatSpf extends Spf
 				}
 			});
 		addSetting(modeIndicator);
+	}
+	
+	@Override
+	public String getPrimaryAction()
+	{
+		return "Next Profile";
+	}
+	
+	@Override
+	public void doPrimaryAction()
+	{
+		profileSetting.nextMode();
 	}
 	
 	public Profile getProfile()
