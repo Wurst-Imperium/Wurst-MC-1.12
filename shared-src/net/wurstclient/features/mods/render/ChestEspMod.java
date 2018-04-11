@@ -20,30 +20,41 @@ import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.tileentity.TileEntityEnderChest;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.wurstclient.compatibility.WBlock;
 import net.wurstclient.compatibility.WItem;
 import net.wurstclient.compatibility.WMinecraft;
 import net.wurstclient.compatibility.WTileEntity;
+import net.wurstclient.events.CameraTransformViewBobbingListener;
 import net.wurstclient.events.RenderListener;
 import net.wurstclient.events.UpdateListener;
 import net.wurstclient.features.Category;
 import net.wurstclient.features.Feature;
 import net.wurstclient.features.Mod;
 import net.wurstclient.features.SearchTags;
+import net.wurstclient.settings.CheckboxSetting;
 import net.wurstclient.utils.RenderUtils;
+import net.wurstclient.utils.RotationUtils;
 
-@SearchTags({"ChestFinder", "StorageESP", "chest esp", "chest finder",
-	"storage esp"})
+@SearchTags({"ChestFinder", "StorageESP", "ChestTracers", "chest esp",
+	"chest finder", "storage esp", "chest tracers"})
 @Mod.Bypasses
-public final class ChestEspMod extends Mod
-	implements UpdateListener, RenderListener
+public final class ChestEspMod extends Mod implements UpdateListener,
+	CameraTransformViewBobbingListener, RenderListener
 {
+	private final CheckboxSetting tracers =
+		new CheckboxSetting("Tracers", "Draws lines to chests.", false);
+	
+	private final ArrayList<AxisAlignedBB> basicChests = new ArrayList<>();
+	private final ArrayList<AxisAlignedBB> trappedChests = new ArrayList<>();
+	private final ArrayList<AxisAlignedBB> enderChests = new ArrayList<>();
+	private final ArrayList<Entity> minecarts = new ArrayList<>();
+	
 	private int solidBox;
 	private int outlinedBox;
 	private int crossBox;
 	
 	private int normalChests;
-	private final ArrayList<Entity> minecarts = new ArrayList<>();
 	
 	private int chestCounter;
 	
@@ -59,6 +70,7 @@ public final class ChestEspMod extends Mod
 				+ "§6orange§r - trapped chests\n" + "§bcyan§r - ender chests\n"
 				+ "[  ] - empty\n" + "[X] - not empty");
 		setCategory(Category.RENDER);
+		addSetting(tracers);
 	}
 	
 	@Override
@@ -78,6 +90,7 @@ public final class ChestEspMod extends Mod
 	public void onEnable()
 	{
 		wurst.events.add(UpdateListener.class, this);
+		wurst.events.add(CameraTransformViewBobbingListener.class, this);
 		wurst.events.add(RenderListener.class, this);
 		
 		emptyChests.clear();
@@ -105,6 +118,7 @@ public final class ChestEspMod extends Mod
 	public void onDisable()
 	{
 		wurst.events.remove(UpdateListener.class, this);
+		wurst.events.remove(CameraTransformViewBobbingListener.class, this);
 		wurst.events.remove(RenderListener.class, this);
 		
 		GL11.glDeleteLists(solidBox, 1);
@@ -129,7 +143,7 @@ public final class ChestEspMod extends Mod
 		ArrayList<AxisAlignedBB> trappedNew = new ArrayList<>();
 		ArrayList<AxisAlignedBB> trappedEmpty = new ArrayList<>();
 		ArrayList<AxisAlignedBB> trappedNotEmpty = new ArrayList<>();
-		ArrayList<AxisAlignedBB> enderChests = new ArrayList<>();
+		enderChests.clear();
 		
 		for(TileEntity tileEntity : WMinecraft.getWorld().loadedTileEntityList)
 			if(tileEntity instanceof TileEntityChest)
@@ -183,6 +197,16 @@ public final class ChestEspMod extends Mod
 				enderChests.add(bb);
 			}
 		
+		basicChests.clear();
+		basicChests.addAll(basicNew);
+		basicChests.addAll(basicEmpty);
+		basicChests.addAll(basicNotEmpty);
+		
+		trappedChests.clear();
+		trappedChests.addAll(trappedNew);
+		trappedChests.addAll(trappedEmpty);
+		trappedChests.addAll(trappedNotEmpty);
+		
 		GL11.glNewList(normalChests, GL11.GL_COMPILE);
 		GL11.glColor4f(0, 1, 0, 0.25F);
 		renderBoxes(basicNew, solidBox);
@@ -214,6 +238,14 @@ public final class ChestEspMod extends Mod
 		chestCounter = basicNew.size() + basicEmpty.size()
 			+ basicNotEmpty.size() + trappedNew.size() + trappedEmpty.size()
 			+ trappedNotEmpty.size() + enderChests.size() + minecarts.size();
+	}
+	
+	@Override
+	public void onCameraTransformViewBobbing(
+		CameraTransformViewBobbingEvent event)
+	{
+		if(tracers.isChecked())
+			event.cancel();
 	}
 	
 	@Override
@@ -253,6 +285,29 @@ public final class ChestEspMod extends Mod
 		GL11.glColor4f(0, 1, 0, 0.5F);
 		renderBoxes(minecartBoxes, outlinedBox);
 		
+		if(tracers.isChecked())
+		{
+			Vec3d start = RotationUtils.getClientLookVec()
+				.addVector(0, WMinecraft.getPlayer().getEyeHeight(), 0)
+				.addVector(mc.getRenderManager().renderPosX,
+					mc.getRenderManager().renderPosY,
+					mc.getRenderManager().renderPosZ);
+			
+			GL11.glBegin(GL11.GL_LINES);
+			
+			GL11.glColor4f(0, 1, 0, 0.5F);
+			renderLines(start, basicChests);
+			renderLines(start, minecartBoxes);
+			
+			GL11.glColor4f(1, 0.5F, 0, 0.5F);
+			renderLines(start, trappedChests);
+			
+			GL11.glColor4f(0, 1, 1, 0.5F);
+			renderLines(start, enderChests);
+			
+			GL11.glEnd();
+		}
+		
 		GL11.glPopMatrix();
 		
 		// GL resets
@@ -273,6 +328,16 @@ public final class ChestEspMod extends Mod
 				bb.maxZ - bb.minZ);
 			GL11.glCallList(displayList);
 			GL11.glPopMatrix();
+		}
+	}
+	
+	private void renderLines(Vec3d start, ArrayList<AxisAlignedBB> boxes)
+	{
+		for(AxisAlignedBB bb : boxes)
+		{
+			Vec3d end = bb.getCenter();
+			GL11.glVertex3d(start.xCoord, start.yCoord, start.zCoord);
+			GL11.glVertex3d(end.xCoord, end.yCoord, end.zCoord);
 		}
 	}
 	

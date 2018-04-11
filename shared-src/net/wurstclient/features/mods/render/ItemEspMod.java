@@ -15,9 +15,11 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.Vec3d;
 import net.wurstclient.compatibility.WEntityRenderer;
 import net.wurstclient.compatibility.WItem;
 import net.wurstclient.compatibility.WMinecraft;
+import net.wurstclient.events.CameraTransformViewBobbingListener;
 import net.wurstclient.events.RenderListener;
 import net.wurstclient.events.UpdateListener;
 import net.wurstclient.features.Category;
@@ -27,15 +29,18 @@ import net.wurstclient.features.SearchTags;
 import net.wurstclient.settings.CheckboxSetting;
 import net.wurstclient.update.Version;
 import net.wurstclient.utils.RenderUtils;
+import net.wurstclient.utils.RotationUtils;
 
-@SearchTags({"item esp"})
+@SearchTags({"item esp", "ItemTracers", "item tracers"})
 @Mod.Bypasses
-public final class ItemEspMod extends Mod
-	implements UpdateListener, RenderListener
+public final class ItemEspMod extends Mod implements UpdateListener,
+	CameraTransformViewBobbingListener, RenderListener
 {
 	private final CheckboxSetting names =
 		new Version(WMinecraft.VERSION).isLowerThan("1.10") ? null
 			: new CheckboxSetting("Show item names", true);
+	private final CheckboxSetting tracers =
+		new CheckboxSetting("Tracers", "Draws lines to items.", false);
 	
 	private int itemBox;
 	private final ArrayList<EntityItem> items = new ArrayList<>();
@@ -47,6 +52,7 @@ public final class ItemEspMod extends Mod
 		
 		if(names != null)
 			addSetting(names);
+		addSetting(tracers);
 	}
 	
 	@Override
@@ -60,6 +66,7 @@ public final class ItemEspMod extends Mod
 	public void onEnable()
 	{
 		wurst.events.add(UpdateListener.class, this);
+		wurst.events.add(CameraTransformViewBobbingListener.class, this);
 		wurst.events.add(RenderListener.class, this);
 		
 		itemBox = GL11.glGenLists(1);
@@ -78,6 +85,7 @@ public final class ItemEspMod extends Mod
 	public void onDisable()
 	{
 		wurst.events.remove(UpdateListener.class, this);
+		wurst.events.remove(CameraTransformViewBobbingListener.class, this);
 		wurst.events.remove(RenderListener.class, this);
 		
 		GL11.glDeleteLists(itemBox, 1);
@@ -94,6 +102,14 @@ public final class ItemEspMod extends Mod
 	}
 	
 	@Override
+	public void onCameraTransformViewBobbing(
+		CameraTransformViewBobbingEvent event)
+	{
+		if(tracers.isChecked())
+			event.cancel();
+	}
+	
+	@Override
 	public void onRender(float partialTicks)
 	{
 		// GL settings
@@ -101,31 +117,17 @@ public final class ItemEspMod extends Mod
 		GL11.glEnable(GL11.GL_LINE_SMOOTH);
 		GL11.glLineWidth(2);
 		
-		for(EntityItem e : items)
-		{
-			float x = (float)(e.prevPosX + (e.posX - e.prevPosX) * partialTicks
-				- mc.getRenderManager().renderPosX);
-			float y = (float)(e.prevPosY + (e.posY - e.prevPosY) * partialTicks
-				- mc.getRenderManager().renderPosY);
-			float z = (float)(e.prevPosZ + (e.posZ - e.prevPosZ) * partialTicks
-				- mc.getRenderManager().renderPosZ);
-			
-			GL11.glPushMatrix();
-			GL11.glTranslatef(x, y, z);
-			GL11.glCallList(itemBox);
-			GL11.glPopMatrix();
-			
-			if(names != null && names.isChecked())
-			{
-				ItemStack stack = e.getEntityItem();
-				WEntityRenderer.drawNameplate(mc.fontRendererObj,
-					WItem.getStackSize(stack) + "x " + stack.getDisplayName(),
-					x, y + 1, z, 0, mc.getRenderManager().playerViewY,
-					mc.getRenderManager().playerViewX,
-					mc.gameSettings.thirdPersonView == 2, false);
-				GL11.glDisable(GL11.GL_LIGHTING);
-			}
-		}
+		GL11.glPushMatrix();
+		GL11.glTranslated(-mc.getRenderManager().renderPosX,
+			-mc.getRenderManager().renderPosY,
+			-mc.getRenderManager().renderPosZ);
+		
+		renderBoxes(partialTicks);
+		
+		if(tracers.isChecked())
+			renderTracers(partialTicks);
+		
+		GL11.glPopMatrix();
 		
 		// GL resets
 		GL11.glColor4f(1, 1, 1, 1);
@@ -133,5 +135,58 @@ public final class ItemEspMod extends Mod
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		GL11.glDisable(GL11.GL_BLEND);
 		GL11.glDisable(GL11.GL_LINE_SMOOTH);
+	}
+	
+	private void renderBoxes(double partialTicks)
+	{
+		for(EntityItem e : items)
+		{
+			GL11.glPushMatrix();
+			GL11.glTranslated(e.prevPosX + (e.posX - e.prevPosX) * partialTicks,
+				e.prevPosY + (e.posY - e.prevPosY) * partialTicks,
+				e.prevPosZ + (e.posZ - e.prevPosZ) * partialTicks);
+			
+			GL11.glCallList(itemBox);
+			
+			if(names != null && names.isChecked())
+			{
+				ItemStack stack = e.getEntityItem();
+				WEntityRenderer.drawNameplate(mc.fontRendererObj,
+					WItem.getStackSize(stack) + "x " + stack.getDisplayName(),
+					0, 1, 0, 0, mc.getRenderManager().playerViewY,
+					mc.getRenderManager().playerViewX,
+					mc.gameSettings.thirdPersonView == 2, false);
+				GL11.glDisable(GL11.GL_LIGHTING);
+			}
+			
+			GL11.glPopMatrix();
+		}
+	}
+	
+	private void renderTracers(double partialTicks)
+	{
+		GL11.glEnable(GL11.GL_BLEND);
+		GL11.glDisable(GL11.GL_TEXTURE_2D);
+		GL11.glDisable(GL11.GL_DEPTH_TEST);
+		GL11.glColor4f(1, 1, 0, 0.5F);
+		
+		Vec3d start = RotationUtils.getClientLookVec()
+			.addVector(0, WMinecraft.getPlayer().getEyeHeight(), 0)
+			.addVector(mc.getRenderManager().renderPosX,
+				mc.getRenderManager().renderPosY,
+				mc.getRenderManager().renderPosZ);
+		
+		GL11.glBegin(GL11.GL_LINES);
+		for(EntityItem e : items)
+		{
+			Vec3d end = e.getEntityBoundingBox().getCenter()
+				.subtract(new Vec3d(e.posX, e.posY, e.posZ)
+					.subtract(e.prevPosX, e.prevPosY, e.prevPosZ)
+					.scale(1 - partialTicks));
+			
+			GL11.glVertex3d(start.xCoord, start.yCoord, start.zCoord);
+			GL11.glVertex3d(end.xCoord, end.yCoord, end.zCoord);
+		}
+		GL11.glEnd();
 	}
 }

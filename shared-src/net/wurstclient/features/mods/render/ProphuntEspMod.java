@@ -37,8 +37,7 @@ public final class ProphuntEspMod extends Mod implements RenderListener
 	@Override
 	public Feature[] getSeeAlso()
 	{
-		return new Feature[]{wurst.mods.playerEspMod, wurst.mods.mobEspMod,
-			wurst.mods.tracersMod};
+		return new Feature[]{wurst.mods.playerEspMod, wurst.mods.mobEspMod};
 	}
 	
 	@Override

@@ -42,7 +42,7 @@ public final class PlayerFinderMod extends Mod
 	@Override
 	public Feature[] getSeeAlso()
 	{
-		return new Feature[]{wurst.mods.playerEspMod, wurst.mods.tracersMod};
+		return new Feature[]{wurst.mods.playerEspMod};
 	}
 	
 	@Override

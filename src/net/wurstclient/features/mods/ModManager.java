@@ -168,7 +168,6 @@ public final class ModManager
 	public final ThrowMod throwMod = new ThrowMod();
 	public final TimerMod timerMod = new TimerMod();
 	public final TiredMod tiredMod = new TiredMod();
-	public final TracersMod tracersMod = new TracersMod();
 	public final TpAuraMod tpAuraMod = new TpAuraMod();
 	public final TrajectoriesMod trajectoriesMod = new TrajectoriesMod();
 	public final TriggerBotMod triggerBotMod = new TriggerBotMod();
