@@ -11,7 +11,7 @@ import net.wurstclient.clickgui.ClickGuiScreen;
 import net.wurstclient.features.Mod;
 import net.wurstclient.features.SearchTags;
 
-@SearchTags({"WindowGUI", "click gui", "window gui"})
+@SearchTags({"click gui", "WindowGUI", "window gui", "HackMenu", "hack menu"})
 @Mod.Bypasses
 @Mod.DontSaveState
 public final class ClickGuiMod extends Mod

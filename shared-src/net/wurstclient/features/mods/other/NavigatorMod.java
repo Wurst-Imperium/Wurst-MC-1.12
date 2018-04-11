@@ -11,7 +11,8 @@ import net.wurstclient.features.Mod;
 import net.wurstclient.features.SearchTags;
 import net.wurstclient.navigator.NavigatorMainScreen;
 
-@SearchTags({"ClickGUI"})
+@SearchTags({"ClickGUI", "click gui", "SearchGUI", "search gui", "HackMenu",
+	"hack menu"})
 @Mod.Bypasses
 @Mod.DontSaveState
 public final class NavigatorMod extends Mod

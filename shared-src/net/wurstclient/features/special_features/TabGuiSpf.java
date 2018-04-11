@@ -12,7 +12,8 @@ import net.wurstclient.features.SearchTags;
 import net.wurstclient.features.Spf;
 import net.wurstclient.settings.ModeSetting;
 
-@SearchTags({"tab gui"})
+@SearchTags({"tab gui", "HackMenu", "hack menu", "SideBar", "side bar",
+	"blocks movement combat render chat fun items retro other"})
 public final class TabGuiSpf extends Spf
 {
 	private final ModeSetting status =
