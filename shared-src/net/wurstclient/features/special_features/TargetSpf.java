@@ -9,11 +9,13 @@ package net.wurstclient.features.special_features;
 
 import net.wurstclient.features.Feature;
 import net.wurstclient.features.HelpPage;
+import net.wurstclient.features.SearchTags;
 import net.wurstclient.features.Spf;
 import net.wurstclient.settings.CheckboxSetting;
 import net.wurstclient.settings.ColorsSetting;
 
 @HelpPage("Special_Features/Target")
+@SearchTags({"AntiBot", "anti bot", "AntiKillauraBot", "anti killaura bot"})
 public final class TargetSpf extends Spf
 {
 	public final CheckboxSetting players = new CheckboxSetting("Players", true);
