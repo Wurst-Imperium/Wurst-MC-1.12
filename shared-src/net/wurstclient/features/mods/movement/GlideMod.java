@@ -70,7 +70,7 @@ public final class GlideMod extends Mod implements UpdateListener
 		if(minHeight.getValue() > 0)
 		{
 			AxisAlignedBB box = player.getEntityBoundingBox();
-			box = box.expand(0, -minHeight.getValue(), 0);
+			box = box.union(box.offset(0, -minHeight.getValue(), 0));
 			if(WWorld.collidesWithAnyBlock(box))
 				return;
 			
