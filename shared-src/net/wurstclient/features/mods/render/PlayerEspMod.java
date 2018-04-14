@@ -184,8 +184,13 @@ public final class PlayerEspMod extends Mod implements UpdateListener,
 					.subtract(e.prevPosX, e.prevPosY, e.prevPosZ)
 					.scale(1 - partialTicks));
 			
-			float f = WMinecraft.getPlayer().getDistanceToEntity(e) / 20F;
-			GL11.glColor4f(2 - f, f, 0, 0.5F);
+			if(wurst.friends.contains(e.getName()))
+				GL11.glColor4f(0, 0, 1, 0.5F);
+			else
+			{
+				float f = WMinecraft.getPlayer().getDistanceToEntity(e) / 20F;
+				GL11.glColor4f(2 - f, f, 0, 0.5F);
+			}
 			
 			GL11.glVertex3d(start.xCoord, start.yCoord, start.zCoord);
 			GL11.glVertex3d(end.xCoord, end.yCoord, end.zCoord);
