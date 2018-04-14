@@ -8,9 +8,7 @@
 package net.wurstclient.features.mods.chat;
 
 import java.awt.Desktop;
-import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.BufferedReader;
@@ -33,6 +31,7 @@ import net.wurstclient.features.Mod;
 import net.wurstclient.features.SearchTags;
 import net.wurstclient.files.ConfigFiles;
 import net.wurstclient.files.WurstFolders;
+import net.wurstclient.hooks.FrameHook;
 import net.wurstclient.utils.ChatUtils;
 
 @SearchTags({"Force OP", "AuthMe Cracker", "AuthMeCracker", "auth me cracker",
@@ -78,6 +77,14 @@ public final class ForceOpMod extends Mod implements ChatInputListener
 	{
 		super("ForceOP", "Cracks AuthMe passwords. Can be used to get OP.");
 		setCategory(Category.CHAT);
+		
+		try
+		{
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		}catch(Exception e)
+		{
+			e.printStackTrace();
+		}
 	}
 	
 	@Override
@@ -109,11 +116,9 @@ public final class ForceOpMod extends Mod implements ChatInputListener
 		ConfigFiles.OPTIONS.load();
 		dialog = new JDialog((JFrame)null, ForceOpMod.this.getName(), false);
 		dialog.setAlwaysOnTop(true);
-		Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
 		dialog.setSize(512, 248);
 		dialog.setResizable(false);
-		dialog.setLocation((screen.width - dialog.getWidth()) / 2,
-			(screen.height - dialog.getHeight()) / 2);
+		dialog.setLocationRelativeTo(FrameHook.getFrame());
 		dialog.setLayout(null);
 		dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		dialog.addWindowListener(new WindowAdapter()
