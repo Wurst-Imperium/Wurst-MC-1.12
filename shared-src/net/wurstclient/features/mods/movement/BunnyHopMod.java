@@ -69,8 +69,9 @@ public final class BunnyHopMod extends Mod implements UpdateListener
 	
 	private enum JumpIf
 	{
-		SPRINTING("Sprinting", p -> p.isSprinting()
-			&& (p.moveForward != 0 || p.moveStrafing != 0)),
+		SPRINTING("Sprinting",
+			p -> p.isSprinting()
+				&& (p.moveForward != 0 || p.moveStrafing != 0)),
 		
 		WALKING("Walking", p -> p.moveForward != 0 || p.moveStrafing != 0),
 		

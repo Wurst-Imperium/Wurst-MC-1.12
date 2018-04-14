@@ -33,10 +33,9 @@ public final class SearchMod extends Mod
 	
 	public SearchMod()
 	{
-		super("Search",
-			"Helps you to find specific blocks.\n"
-				+ "Use §l.search id <block_id>§r or §l.search name <block_name>§r to specify the block to search\n"
-				+ "for.");
+		super("Search", "Helps you to find specific blocks.\n"
+			+ "Use §l.search id <block_id>§r or §l.search name <block_name>§r to specify the block to search\n"
+			+ "for.");
 		setCategory(Category.RENDER);
 	}
 	

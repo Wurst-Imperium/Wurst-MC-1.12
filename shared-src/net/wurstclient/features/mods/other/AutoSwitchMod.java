@@ -20,10 +20,9 @@ public final class AutoSwitchMod extends Mod implements UpdateListener
 {
 	public AutoSwitchMod()
 	{
-		super("AutoSwitch",
-			"Switches the item in your hand all the time.\n"
-				+ "Tip: Use this in combination with BuildRandom while having a lot of different colored wool\n"
-				+ "blocks in your hotbar.");
+		super("AutoSwitch", "Switches the item in your hand all the time.\n"
+			+ "Tip: Use this in combination with BuildRandom while having a lot of different colored wool\n"
+			+ "blocks in your hotbar.");
 		setCategory(Category.OTHER);
 	}
 	

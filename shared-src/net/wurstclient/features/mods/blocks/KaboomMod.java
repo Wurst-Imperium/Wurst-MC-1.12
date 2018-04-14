@@ -29,11 +29,10 @@ public final class KaboomMod extends Mod implements UpdateListener
 	
 	public KaboomMod()
 	{
-		super("Kaboom",
-			"Breaks blocks around you like an explosion.\n"
-				+ "This can be a lot faster than Nuker if the server doesn't have NoCheat+.\n"
-				+ "It works best with fast tools and weak blocks.\n"
-				+ "Note that this is not an actual explosion.");
+		super("Kaboom", "Breaks blocks around you like an explosion.\n"
+			+ "This can be a lot faster than Nuker if the server doesn't have NoCheat+.\n"
+			+ "It works best with fast tools and weak blocks.\n"
+			+ "Note that this is not an actual explosion.");
 		setCategory(Category.BLOCKS);
 	}
 	
