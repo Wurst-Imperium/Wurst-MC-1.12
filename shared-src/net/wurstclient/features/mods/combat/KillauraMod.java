@@ -53,6 +53,12 @@ public final class KillauraMod extends Mod
 		new SliderSetting("FOV", 360, 30, 360, 10, ValueDisplay.DEGREES);
 	public final CheckboxSetting hitThroughWalls =
 		new CheckboxSetting("Hit through walls", false);
+	private final SliderSetting filterFlying =
+		new SliderSetting("Filter flying",
+			"Won't attack players that\n" + "are at least the given\n"
+				+ "distance above ground.",
+			0, 0, 2, 0.05,
+			v -> v == 0 ? "off" : ValueDisplay.DECIMAL.getValueString(v));
 	
 	private final TargetSettings targetSettings = new TargetSettings()
 	{
@@ -72,6 +78,12 @@ public final class KillauraMod extends Mod
 		public float getFOV()
 		{
 			return fov.getValueF();
+		}
+		
+		@Override
+		public double getFilterFlying()
+		{
+			return filterFlying.getValue();
 		}
 	};
 	
@@ -94,6 +106,7 @@ public final class KillauraMod extends Mod
 		addSetting(range);
 		addSetting(fov);
 		addSetting(hitThroughWalls);
+		addSetting(filterFlying);
 	}
 	
 	@Override

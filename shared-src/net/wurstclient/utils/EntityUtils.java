@@ -20,6 +20,7 @@ import net.minecraft.entity.monster.EntitySlime;
 import net.minecraft.entity.passive.EntityAmbientCreature;
 import net.minecraft.entity.passive.EntityWaterMob;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.wurstclient.WurstClient;
 import net.wurstclient.compatibility.WMinecraft;
 
@@ -78,6 +79,17 @@ public class EntityUtils
 				if(((EntityPlayer)en).isInvisible())
 					return false;
 				
+			// flying players
+			double filterFlying = settings.getFilterFlying();
+			if(filterFlying > 0)
+			{
+				AxisAlignedBB box = en.getEntityBoundingBox();
+				box = box.union(box.offset(0, -filterFlying, 0));
+				
+				if(!WMinecraft.getWorld().collidesWithAnyBlock(box))
+					return false;
+			}
+			
 			// team players
 			if(settings.targetTeams() && !checkName(
 				((EntityPlayer)en).getDisplayName().getFormattedText(),
@@ -305,6 +317,11 @@ public class EntityUtils
 		{
 			return WurstClient.INSTANCE.special.targetSpf.invisibleMobs
 				.isChecked();
+		}
+		
+		public double getFilterFlying()
+		{
+			return 0;
 		}
 		
 		public boolean targetTeams()
