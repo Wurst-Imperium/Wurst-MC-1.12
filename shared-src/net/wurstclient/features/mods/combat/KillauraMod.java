@@ -48,7 +48,7 @@ public final class KillauraMod extends Mod
 	public final SliderSetting speed =
 		new SliderSetting("Speed", 12, 0.1, 20, 0.1, ValueDisplay.DECIMAL);
 	public final SliderSetting range =
-		new SliderSetting("Range", 4.25, 1, 6, 0.05, ValueDisplay.DECIMAL);
+		new SliderSetting("Range", 4.25, 1, 10, 0.05, ValueDisplay.DECIMAL);
 	public final SliderSetting fov =
 		new SliderSetting("FOV", 360, 30, 360, 10, ValueDisplay.DEGREES);
 	public final CheckboxSetting hitThroughWalls =
