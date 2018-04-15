@@ -23,6 +23,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.wurstclient.WurstClient;
 import net.wurstclient.compatibility.WMinecraft;
+import net.wurstclient.compatibility.WWorld;
 
 public class EntityUtils
 {
@@ -86,7 +87,7 @@ public class EntityUtils
 				AxisAlignedBB box = en.getEntityBoundingBox();
 				box = box.union(box.offset(0, -filterFlying, 0));
 				
-				if(!WMinecraft.getWorld().collidesWithAnyBlock(box))
+				if(!WWorld.collidesWithAnyBlock(box))
 					return false;
 			}
 			
