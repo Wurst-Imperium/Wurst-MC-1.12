@@ -7,6 +7,10 @@
  */
 package net.wurstclient.features.mods.combat;
 
+import java.util.Comparator;
+import java.util.function.ToDoubleFunction;
+import java.util.stream.Stream;
+
 import org.lwjgl.opengl.GL11;
 
 import net.minecraft.entity.Entity;
@@ -24,6 +28,7 @@ import net.wurstclient.features.Mod;
 import net.wurstclient.features.SearchTags;
 import net.wurstclient.features.special_features.YesCheatSpf.Profile;
 import net.wurstclient.settings.CheckboxSetting;
+import net.wurstclient.settings.EnumSetting;
 import net.wurstclient.settings.SliderSetting;
 import net.wurstclient.settings.SliderSetting.ValueDisplay;
 import net.wurstclient.utils.EntityUtils;
@@ -49,6 +54,13 @@ public final class KillauraMod extends Mod
 		new SliderSetting("Speed", 12, 0.1, 20, 0.1, ValueDisplay.DECIMAL);
 	public final SliderSetting range =
 		new SliderSetting("Range", 4.25, 1, 10, 0.05, ValueDisplay.DECIMAL);
+	private final EnumSetting<Priority> priority = new EnumSetting<>("Priority",
+		"Determines which entity will be attacked first.\n"
+			+ "\u00a7lDistance\u00a7r - Attacks the closest entity.\n"
+			+ "\u00a7lAngle\u00a7r - Attacks the entity that requires\n"
+			+ "the least head movement.\n"
+			+ "\u00a7lHealth\u00a7r - Attacks the weakest entity.",
+		Priority.values(), Priority.ANGLE);
 	public final SliderSetting fov =
 		new SliderSetting("FOV", 360, 30, 360, 10, ValueDisplay.DEGREES);
 	public final CheckboxSetting hitThroughWalls =
@@ -104,6 +116,7 @@ public final class KillauraMod extends Mod
 		
 		addSetting(speed);
 		addSetting(range);
+		addSetting(priority);
 		addSetting(fov);
 		addSetting(hitThroughWalls);
 		addSetting(filterFlying);
@@ -154,7 +167,9 @@ public final class KillauraMod extends Mod
 			return;
 		
 		// set entity
-		Entity entity = EntityUtils.getBestEntityToAttack(targetSettings);
+		Stream<Entity> stream = EntityUtils.getEntityStream(targetSettings);
+		Entity entity =
+			stream.min(priority.getSelected().comparator).orElse(null);
 		renderTarget = entity;
 		if(entity == null)
 			return;
@@ -254,6 +269,38 @@ public final class KillauraMod extends Mod
 			speed.setUsableMax(12);
 			range.setUsableMax(4.25);
 			break;
+		}
+	}
+	
+	private enum Priority
+	{
+		DISTANCE("Distance",
+			e -> WMinecraft.getPlayer().getDistanceSqToEntity(e)),
+		
+		ANGLE("Angle",
+			e -> RotationUtils.getAngleToServerRotation(
+				e.getEntityBoundingBox().getCenter())),
+		
+		HEALTH("Health", e -> {
+			if(e instanceof EntityLivingBase)
+				return ((EntityLivingBase)e).getHealth();
+			else
+				return Double.POSITIVE_INFINITY;
+		});
+		
+		private final String name;
+		private final Comparator<Entity> comparator;
+		
+		private Priority(String name, ToDoubleFunction<Entity> keyExtractor)
+		{
+			this.name = name;
+			comparator = Comparator.comparingDouble(keyExtractor);
+		}
+		
+		@Override
+		public String toString()
+		{
+			return name;
 		}
 	}
 }

@@ -8,6 +8,7 @@
 package net.wurstclient.utils;
 
 import java.util.ArrayList;
+import java.util.stream.Stream;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityAgeable;
@@ -169,6 +170,12 @@ public class EntityUtils
 		
 		// no known color => white
 		return !hasKnownColor && teamColors[15];
+	}
+	
+	public static Stream<Entity> getEntityStream(TargetSettings settings)
+	{
+		return WMinecraft.getWorld().loadedEntityList.parallelStream()
+			.filter(e -> isCorrectEntity(e, settings));
 	}
 	
 	public static ArrayList<Entity> getValidEntities(TargetSettings settings)
