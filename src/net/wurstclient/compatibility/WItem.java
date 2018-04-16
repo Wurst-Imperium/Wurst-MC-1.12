@@ -28,6 +28,11 @@ public final class WItem
 		return armor.armorType.ordinal() - 2;
 	}
 	
+	public static float getArmorToughness(ItemArmor armor)
+	{
+		return armor.toughness;
+	}
+	
 	public static boolean isThrowable(ItemStack stack)
 	{
 		Item item = stack.getItem();

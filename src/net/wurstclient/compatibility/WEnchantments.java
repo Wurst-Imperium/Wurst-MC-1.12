@@ -14,6 +14,7 @@ import net.minecraft.item.ItemStack;
 
 public final class WEnchantments
 {
+	public static final Enchantment PROTECTION = Enchantments.PROTECTION;
 	public static final Enchantment EFFICIENCY = Enchantments.EFFICIENCY;
 	public static final Enchantment SILK_TOUCH = Enchantments.SILK_TOUCH;
 	
