@@ -7,6 +7,8 @@
  */
 package net.wurstclient.features.mods.blocks;
 
+import java.util.function.Supplier;
+
 import net.minecraft.block.material.Material;
 import net.minecraft.util.math.BlockPos;
 import net.wurstclient.compatibility.WBlock;
@@ -17,8 +19,7 @@ import net.wurstclient.features.Category;
 import net.wurstclient.features.Feature;
 import net.wurstclient.features.Mod;
 import net.wurstclient.features.SearchTags;
-import net.wurstclient.settings.CheckboxSetting;
-import net.wurstclient.settings.ModeSetting;
+import net.wurstclient.settings.EnumSetting;
 import net.wurstclient.settings.SliderSetting;
 import net.wurstclient.settings.SliderSetting.ValueDisplay;
 import net.wurstclient.utils.BlockUtils;
@@ -33,60 +34,10 @@ import net.wurstclient.utils.BlockUtils.BlockValidator;
 public final class SpeedNukerMod extends Mod
 	implements LeftClickListener, UpdateListener
 {
-	private BlockValidator validator;
-	
-	public CheckboxSetting useNuker =
-		new CheckboxSetting("Use Nuker settings", true)
-		{
-			@Override
-			public void update()
-			{
-				if(isChecked())
-				{
-					NukerMod nuker = wurst.mods.nukerMod;
-					range.lock(nuker.range);
-					mode.lock(nuker.mode.getSelected());
-				}else
-				{
-					range.unlock();
-					mode.unlock();
-				}
-			}
-		};
-	public final SliderSetting range =
-		new SliderSetting("Range", 6, 1, 6, 0.05, ValueDisplay.DECIMAL);
-	public final ModeSetting mode = new ModeSetting("Mode",
-		new String[]{"Normal", "ID", "Flat", "Smash"}, 0)
-	{
-		@Override
-		public void update()
-		{
-			switch(getSelected())
-			{
-				default:
-				case 0:
-				// normal mode
-				validator = (pos) -> true;
-				break;
-				
-				case 1:
-				// id mode
-				validator =
-					(pos) -> wurst.mods.nukerMod.getId() == WBlock.getId(pos);
-				break;
-				
-				case 2:
-				// flat mode
-				validator = (pos) -> pos.getY() >= WMinecraft.getPlayer().posY;
-				break;
-				
-				case 3:
-				// smash mode
-				validator = (pos) -> WBlock.getHardness(pos) >= 1;
-				break;
-			}
-		}
-	};
+	private final SliderSetting range =
+		new SliderSetting("Range", 5, 1, 6, 0.05, ValueDisplay.DECIMAL);
+	private final EnumSetting<Mode> mode =
+		new EnumSetting<>("Mode", Mode.values(), Mode.NORMAL);
 	
 	public SpeedNukerMod()
 	{
@@ -98,7 +49,6 @@ public final class SpeedNukerMod extends Mod
 	@Override
 	public void initSettings()
 	{
-		addSetting(useNuker);
 		addSetting(range);
 		addSetting(mode);
 	}
@@ -106,17 +56,7 @@ public final class SpeedNukerMod extends Mod
 	@Override
 	public String getRenderName()
 	{
-		switch(mode.getSelected())
-		{
-			case 0:
-			return "SpeedNuker";
-			
-			case 1:
-			return "IDSpeedNuker [" + wurst.mods.nukerMod.getId() + "]";
-			
-			default:
-			return mode.getSelectedMode() + "SpeedNuker";
-		}
+		return mode.getSelected().renderName.get();
 	}
 	
 	@Override
@@ -154,13 +94,13 @@ public final class SpeedNukerMod extends Mod
 	public void onUpdate()
 	{
 		// abort if using IDNuker without an ID being set
-		if(mode.getSelected() == 1 && wurst.mods.nukerMod.getId() == 0)
+		if(mode.getSelected() == Mode.ID && wurst.mods.nukerMod.getId() == 0)
 			return;
 		
 		// get valid blocks
 		Iterable<BlockPos> validBlocks =
 			BlockUtils.getValidBlocksByDistanceReversed(range.getValue(), true,
-				validator);
+				mode.getSelected().validator);
 		
 		// AutoTool
 		for(BlockPos pos : validBlocks)
@@ -182,7 +122,7 @@ public final class SpeedNukerMod extends Mod
 			return;
 		
 		// check mode
-		if(mode.getSelected() != 1)
+		if(mode.getSelected() != Mode.ID)
 			return;
 		
 		// check material
@@ -192,5 +132,37 @@ public final class SpeedNukerMod extends Mod
 		// set id
 		wurst.mods.nukerMod
 			.setId(WBlock.getId(mc.objectMouseOver.getBlockPos()));
+	}
+	
+	private enum Mode
+	{
+		NORMAL("Normal", () -> "SpeedNuker", pos -> true),
+		
+		ID("ID", () -> "IDSpeedNuker [" + wurst.mods.nukerMod.getId() + "]",
+			pos -> wurst.mods.nukerMod.getId() == WBlock.getId(pos)),
+		
+		FLAT("Flat", () -> "FlatSpeedNuker",
+			pos -> pos.getY() >= WMinecraft.getPlayer().posY),
+		
+		SMASH("Smash", () -> "SmashSpeedNuker",
+			pos -> WBlock.getHardness(pos) >= 1);
+		
+		private final String name;
+		private final Supplier<String> renderName;
+		private final BlockValidator validator;
+		
+		private Mode(String name, Supplier<String> renderName,
+			BlockValidator validator)
+		{
+			this.name = name;
+			this.renderName = renderName;
+			this.validator = validator;
+		}
+		
+		@Override
+		public String toString()
+		{
+			return name;
+		}
 	}
 }
