@@ -7,48 +7,74 @@
  */
 package net.wurstclient.features.mods.render;
 
+import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.client.settings.GameSettings;
+import net.minecraft.client.settings.KeyBinding;
 import net.wurstclient.compatibility.WMinecraft;
+import net.wurstclient.events.PlayerMoveListener;
 import net.wurstclient.events.UpdateListener;
 import net.wurstclient.features.Category;
 import net.wurstclient.features.Feature;
 import net.wurstclient.features.Mod;
 import net.wurstclient.features.SearchTags;
+import net.wurstclient.settings.SliderSetting;
+import net.wurstclient.settings.SliderSetting.ValueDisplay;
 import net.wurstclient.utils.EntityFakePlayer;
 
 @SearchTags({"free camera", "spectator"})
 @Mod.Bypasses
 @Mod.DontSaveState
-public final class FreecamMod extends Mod implements UpdateListener
+public final class FreecamMod extends Mod
+	implements UpdateListener, PlayerMoveListener
 {
+	private final SliderSetting speed =
+		new SliderSetting("Speed", 1, 0.05, 10, 0.05, ValueDisplay.DECIMAL);
+	
 	private EntityFakePlayer fakePlayer;
 	
 	public FreecamMod()
 	{
-		super("Freecam", "Allows you to fly out of your body.");
+		super("Freecam",
+			"Allows you to move the camera without moving your character.");
 		setCategory(Category.RENDER);
+		addSetting(speed);
 	}
 	
 	@Override
 	public Feature[] getSeeAlso()
 	{
-		return new Feature[]{wurst.mods.remoteViewMod, wurst.mods.flightMod};
+		return new Feature[]{wurst.mods.remoteViewMod};
 	}
 	
 	@Override
 	public void onEnable()
 	{
+		wurst.events.add(UpdateListener.class, this);
+		wurst.events.add(PlayerMoveListener.class, this);
+		
 		fakePlayer = new EntityFakePlayer();
 		
-		wurst.events.add(UpdateListener.class, this);
+		GameSettings gs = mc.gameSettings;
+		KeyBinding[] bindings = {gs.keyBindForward, gs.keyBindBack,
+			gs.keyBindLeft, gs.keyBindRight, gs.keyBindJump, gs.keyBindSneak};
+		
+		for(KeyBinding binding : bindings)
+			binding.pressed = GameSettings.isKeyDown(binding);
 	}
 	
 	@Override
 	public void onDisable()
 	{
 		wurst.events.remove(UpdateListener.class, this);
+		wurst.events.remove(PlayerMoveListener.class, this);
 		
 		fakePlayer.resetPlayerPosition();
 		fakePlayer.despawn();
+		
+		EntityPlayerSP player = WMinecraft.getPlayer();
+		player.motionX = 0;
+		player.motionY = 0;
+		player.motionZ = 0;
 		
 		mc.renderGlobal.loadRenderers();
 	}
@@ -56,19 +82,24 @@ public final class FreecamMod extends Mod implements UpdateListener
 	@Override
 	public void onUpdate()
 	{
-		WMinecraft.getPlayer().motionX = 0;
-		WMinecraft.getPlayer().motionY = 0;
-		WMinecraft.getPlayer().motionZ = 0;
+		EntityPlayerSP player = WMinecraft.getPlayer();
+		player.motionX = 0;
+		player.motionY = 0;
+		player.motionZ = 0;
 		
-		WMinecraft.getPlayer().jumpMovementFactor =
-			wurst.mods.flightMod.speed.getValueF() / 10F;
+		player.onGround = false;
+		player.jumpMovementFactor = speed.getValueF();
 		
 		if(mc.gameSettings.keyBindJump.pressed)
-			WMinecraft.getPlayer().motionY +=
-				wurst.mods.flightMod.speed.getValue();
+			player.motionY += speed.getValue();
 		
 		if(mc.gameSettings.keyBindSneak.pressed)
-			WMinecraft.getPlayer().motionY -=
-				wurst.mods.flightMod.speed.getValue();
+			player.motionY -= speed.getValue();
+	}
+	
+	@Override
+	public void onPlayerMove(EntityPlayerSP player)
+	{
+		player.noClip = true;
 	}
 }

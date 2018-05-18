@@ -7,8 +7,10 @@
  */
 package net.wurstclient.event;
 
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.wurstclient.WurstClient;
 import net.wurstclient.events.CameraTransformViewBobbingListener.CameraTransformViewBobbingEvent;
+import net.wurstclient.events.PlayerMoveListener.PlayerMoveEvent;
 
 public final class EventFactory
 {
@@ -18,5 +20,10 @@ public final class EventFactory
 			new CameraTransformViewBobbingEvent();
 		WurstClient.INSTANCE.events.fire(event);
 		return !event.isCancelled();
+	}
+	
+	public static void onPlayerMove(EntityPlayerSP player)
+	{
+		WurstClient.INSTANCE.events.fire(new PlayerMoveEvent(player));
 	}
 }
