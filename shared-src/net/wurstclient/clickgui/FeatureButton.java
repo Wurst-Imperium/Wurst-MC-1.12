@@ -7,6 +7,8 @@
  */
 package net.wurstclient.clickgui;
 
+import static org.lwjgl.opengl.GL11.glColor4f;
+
 import org.lwjgl.opengl.GL11;
 
 import net.minecraft.client.Minecraft;
@@ -80,6 +82,7 @@ public final class FeatureButton extends Component
 		ClickGui gui = WurstClient.INSTANCE.getGui();
 		float[] bgColor = gui.getBgColor();
 		float[] acColor = gui.getAcColor();
+		float opacity = gui.getOpacity();
 		boolean settings = !feature.getSettings().isEmpty();
 		
 		int x1 = getX();
@@ -97,15 +100,29 @@ public final class FeatureButton extends Component
 		boolean hSettings = hovering && mouseX >= x3;
 		
 		// tooltip
+		String tooltip = feature.getDescription();
+		if(feature.isBlocked())
+		{
+			if(tooltip == null)
+				tooltip = "";
+			else
+				tooltip += "\n\n";
+			tooltip +=
+				"Your current YesCheat+ profile is blocking this feature.";
+		}
+		
 		if(hHack)
-			gui.setTooltip(feature.getDescription());
+			gui.setTooltip(tooltip);
 		
 		// color
 		if(feature.isEnabled())
-			GL11.glColor4f(0, 1, 0, hHack ? 0.75F : 0.5F);
+			if(feature.isBlocked())
+				glColor4f(1, 0, 0, hHack ? opacity * 1.5F : opacity);
+			else
+				GL11.glColor4f(0, 1, 0, hHack ? opacity * 1.5F : opacity);
 		else
 			GL11.glColor4f(bgColor[0], bgColor[1], bgColor[2],
-				hHack ? 0.75F : 0.5F);
+				hHack ? opacity * 1.5F : opacity);
 		
 		// background
 		GL11.glBegin(GL11.GL_QUADS);
@@ -116,7 +133,7 @@ public final class FeatureButton extends Component
 		if(settings)
 		{
 			GL11.glColor4f(bgColor[0], bgColor[1], bgColor[2],
-				hSettings ? 0.75F : 0.5F);
+				hSettings ? opacity * 1.5F : opacity);
 			GL11.glVertex2i(x3, y1);
 			GL11.glVertex2i(x3, y2);
 			GL11.glVertex2i(x2, y2);

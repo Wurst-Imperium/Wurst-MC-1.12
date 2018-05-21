@@ -13,10 +13,12 @@ import java.awt.Rectangle;
 import java.util.ArrayList;
 
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.opengl.GL11;
 
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import net.wurstclient.WurstClient;
+import net.wurstclient.clickgui.ClickGui;
 import net.wurstclient.features.Feature;
 import net.wurstclient.files.ConfigFiles;
 import net.wurstclient.font.Fonts;
@@ -234,19 +236,22 @@ public class NavigatorMainScreen extends NavigatorScreen
 					area.y + area.height);
 			}else
 			{
+				ClickGui gui = WurstClient.INSTANCE.getGui();
+				float[] bgColor = gui.getBgColor();
+				float opacity = gui.getOpacity();
+				
 				// color
 				boolean hovering = area.contains(mouseX, mouseY);
 				if(hovering)
 					hoveredFeature = i;
 				if(feature.isEnabled())
 					if(feature.isBlocked())
-						glColor4f(hovering ? 1F : 0.875F, 0F, 0F, 0.5F);
+						glColor4f(1, 0, 0, hovering ? opacity * 1.5F : opacity);
 					else
-						glColor4f(0F, hovering ? 1F : 0.875F, 0F, 0.5F);
-				else if(hovering)
-					glColor4f(0.375F, 0.375F, 0.375F, 0.5F);
+						glColor4f(0, 1, 0, hovering ? opacity * 1.5F : opacity);
 				else
-					glColor4f(0.25F, 0.25F, 0.25F, 0.5F);
+					glColor4f(bgColor[0], bgColor[1], bgColor[2],
+						hovering ? opacity * 1.5F : opacity);
 				
 				// box & shadow
 				drawBox(area.x, area.y, area.x + area.width,
@@ -277,7 +282,7 @@ public class NavigatorMainScreen extends NavigatorScreen
 				double ay2 = area.y + twoThrirds;
 				
 				// arrow
-				glColor4f(0f, 1f, 0f, hovering ? 0.75f : 0.375f);
+				glColor4f(0, hovering ? 1 : 0.85F, 0, 1);
 				glBegin(GL_TRIANGLES);
 				{
 					glVertex2d(ax1, ay1);
@@ -287,8 +292,8 @@ public class NavigatorMainScreen extends NavigatorScreen
 				glEnd();
 				
 				// arrow shadow
-				glLineWidth(1f);
-				glColor4f(0.125f, 0.125f, 0.125f, hovering ? 0.75f : 0.5f);
+				glLineWidth(1);
+				GL11.glColor4f(0.0625F, 0.0625F, 0.0625F, 0.5F);
 				glBegin(GL_LINE_LOOP);
 				{
 					glVertex2d(ax1, ay1);

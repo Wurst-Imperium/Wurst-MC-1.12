@@ -28,7 +28,9 @@ import net.minecraft.client.gui.ScaledResolution;
 import net.wurstclient.WurstClient;
 import net.wurstclient.features.Category;
 import net.wurstclient.features.Feature;
+import net.wurstclient.features.mods.other.ClickGuiMod;
 import net.wurstclient.font.Fonts;
+import net.wurstclient.settings.Setting;
 import net.wurstclient.utils.JsonUtils;
 
 public final class ClickGui
@@ -37,8 +39,9 @@ public final class ClickGui
 	private final ArrayList<Popup> popups = new ArrayList<>();
 	private final Path windowsFile;
 	
-	private float[] bgColor = new float[]{0.25F, 0.25F, 0.25F};
+	private float[] bgColor = new float[3];
 	private float[] acColor = new float[3];
+	private float opacity;
 	
 	private String tooltip;
 	
@@ -63,6 +66,12 @@ public final class ClickGui
 				windowMap.get(f.getCategory()).add(new FeatureButton(f));
 			
 		windows.addAll(windowMap.values());
+		
+		Window uiSettings = new Window("UI Settings");
+		for(Setting setting : WurstClient.INSTANCE.mods.clickGuiMod
+			.getSettings())
+			uiSettings.add(setting.getComponent());
+		windows.add(uiSettings);
 		
 		int x = 5;
 		int y = 5;
@@ -532,6 +541,11 @@ public final class ClickGui
 	
 	public void updateColors()
 	{
+		ClickGuiMod clickGui = WurstClient.INSTANCE.mods.clickGuiMod;
+		
+		opacity = clickGui.getOpacity();
+		bgColor = clickGui.getBgColor();
+		
 		if(WurstClient.INSTANCE.mods.rainbowUiMod.isActive())
 		{
 			float x = System.currentTimeMillis() % 2000 / 1000F;
@@ -540,11 +554,7 @@ public final class ClickGui
 			acColor[2] = 0.5F + 0.5F * (float)Math.sin((x + 8F / 3F) * Math.PI);
 			
 		}else
-		{
-			acColor[0] = 0.0625F;
-			acColor[1] = 0.0625F;
-			acColor[2] = 0.0625F;
-		}
+			acColor = clickGui.getAcColor();
 	}
 	
 	private void renderWindow(Window window, int mouseX, int mouseY)
@@ -588,7 +598,7 @@ public final class ClickGui
 				int ys4 = ys3 + (int)scrollbarHeight;
 				
 				// window background
-				GL11.glColor4f(bgColor[0], bgColor[1], bgColor[2], 0.5F);
+				GL11.glColor4f(bgColor[0], bgColor[1], bgColor[2], opacity);
 				GL11.glBegin(GL11.GL_QUADS);
 				GL11.glVertex2i(xs2, ys1);
 				GL11.glVertex2i(xs2, ys2);
@@ -609,7 +619,7 @@ public final class ClickGui
 				
 				// scrollbar
 				GL11.glColor4f(acColor[0], acColor[1], acColor[2],
-					hovering ? 0.75F : 0.5F);
+					hovering ? opacity * 1.5F : opacity);
 				GL11.glBegin(GL11.GL_QUADS);
 				GL11.glVertex2i(xs1, ys3);
 				GL11.glVertex2i(xs1, ys4);
@@ -634,7 +644,7 @@ public final class ClickGui
 			
 			// window background
 			// left & right
-			GL11.glColor4f(bgColor[0], bgColor[1], bgColor[2], 0.5F);
+			GL11.glColor4f(bgColor[0], bgColor[1], bgColor[2], opacity);
 			GL11.glBegin(GL11.GL_QUADS);
 			GL11.glVertex2i(x1, y3);
 			GL11.glVertex2i(x1, y2);
@@ -656,7 +666,7 @@ public final class ClickGui
 			GL11.glPushMatrix();
 			GL11.glTranslated(x1, y4, 0);
 			
-			GL11.glColor4f(bgColor[0], bgColor[1], bgColor[2], 0.5F);
+			GL11.glColor4f(bgColor[0], bgColor[1], bgColor[2], opacity);
 			GL11.glBegin(GL11.GL_QUADS);
 			
 			// window background
@@ -753,7 +763,7 @@ public final class ClickGui
 		
 		// title bar background
 		// above & below buttons
-		GL11.glColor4f(acColor[0], acColor[1], acColor[2], 0.5F);
+		GL11.glColor4f(acColor[0], acColor[1], acColor[2], opacity);
 		GL11.glBegin(GL11.GL_QUADS);
 		GL11.glVertex2i(x3, y1);
 		GL11.glVertex2i(x3, y4);
@@ -789,7 +799,7 @@ public final class ClickGui
 		
 		// button background
 		GL11.glColor4f(bgColor[0], bgColor[1], bgColor[2],
-			hovering ? 0.75F : 0.5F);
+			hovering ? opacity * 1.5F : opacity);
 		GL11.glBegin(GL11.GL_QUADS);
 		GL11.glVertex2i(x1, y1);
 		GL11.glVertex2i(x1, y2);
@@ -798,7 +808,7 @@ public final class ClickGui
 		GL11.glEnd();
 		
 		// background between buttons
-		GL11.glColor4f(acColor[0], acColor[1], acColor[2], 0.5F);
+		GL11.glColor4f(acColor[0], acColor[1], acColor[2], opacity);
 		GL11.glBegin(GL11.GL_QUADS);
 		GL11.glVertex2i(x2, y1);
 		GL11.glVertex2i(x2, y2);
@@ -807,6 +817,7 @@ public final class ClickGui
 		GL11.glEnd();
 		
 		// button outline
+		GL11.glColor4f(acColor[0], acColor[1], acColor[2], 0.5F);
 		GL11.glBegin(GL11.GL_LINE_LOOP);
 		GL11.glVertex2i(x1, y1);
 		GL11.glVertex2i(x1, y2);
@@ -1049,6 +1060,11 @@ public final class ClickGui
 	public float[] getAcColor()
 	{
 		return acColor;
+	}
+	
+	public float getOpacity()
+	{
+		return opacity;
 	}
 	
 	public void setTooltip(String tooltip)

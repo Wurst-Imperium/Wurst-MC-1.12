@@ -40,6 +40,7 @@ public final class Checkbox extends Component
 		ClickGui gui = WurstClient.INSTANCE.getGui();
 		float[] bgColor = gui.getBgColor();
 		float[] acColor = gui.getAcColor();
+		float opacity = gui.getOpacity();
 		
 		int x1 = getX();
 		int x2 = x1 + getWidth();
@@ -71,7 +72,7 @@ public final class Checkbox extends Component
 			hovering = false;
 		
 		// background
-		GL11.glColor4f(bgColor[0], bgColor[1], bgColor[2], 0.5F);
+		GL11.glColor4f(bgColor[0], bgColor[1], bgColor[2], opacity);
 		GL11.glBegin(GL11.GL_QUADS);
 		GL11.glVertex2i(x3, y1);
 		GL11.glVertex2i(x3, y2);
@@ -81,7 +82,7 @@ public final class Checkbox extends Component
 		
 		// box
 		GL11.glColor4f(bgColor[0], bgColor[1], bgColor[2],
-			hovering ? 0.75F : 0.5F);
+			hovering ? opacity * 1.5F : opacity);
 		GL11.glBegin(GL11.GL_QUADS);
 		GL11.glVertex2i(x1, y1);
 		GL11.glVertex2i(x1, y2);

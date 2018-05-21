@@ -63,6 +63,7 @@ public final class ComboBox2 extends Component
 		ClickGui gui = WurstClient.INSTANCE.getGui();
 		float[] bgColor = gui.getBgColor();
 		float[] acColor = gui.getAcColor();
+		float opacity = gui.getOpacity();
 		
 		int x1 = getX();
 		int x2 = x1 + getWidth();
@@ -84,7 +85,7 @@ public final class ComboBox2 extends Component
 			gui.setTooltip(setting.getDescription());
 		
 		// background
-		GL11.glColor4f(bgColor[0], bgColor[1], bgColor[2], 0.5F);
+		GL11.glColor4f(bgColor[0], bgColor[1], bgColor[2], opacity);
 		GL11.glBegin(GL11.GL_QUADS);
 		GL11.glVertex2i(x1, y1);
 		GL11.glVertex2i(x1, y2);
@@ -93,7 +94,8 @@ public final class ComboBox2 extends Component
 		GL11.glEnd();
 		
 		// box
-		GL11.glColor4f(bgColor[0], bgColor[1], bgColor[2], hBox ? 0.75F : 0.5F);
+		GL11.glColor4f(bgColor[0], bgColor[1], bgColor[2],
+			hBox ? opacity * 1.5F : opacity);
 		GL11.glBegin(GL11.GL_QUADS);
 		GL11.glVertex2i(x4, y1);
 		GL11.glVertex2i(x4, y2);
@@ -212,6 +214,7 @@ public final class ComboBox2 extends Component
 			ClickGui gui = WurstClient.INSTANCE.getGui();
 			float[] bgColor = gui.getBgColor();
 			float[] acColor = gui.getAcColor();
+			float opacity = gui.getOpacity();
 			
 			int x1 = getX();
 			int x2 = x1 + getWidth();
@@ -246,7 +249,7 @@ public final class ComboBox2 extends Component
 				
 				// background
 				GL11.glColor4f(bgColor[0], bgColor[1], bgColor[2],
-					hValue ? 0.75F : 0.5F);
+					hValue ? opacity * 1.5F : opacity);
 				GL11.glBegin(GL11.GL_QUADS);
 				GL11.glVertex2i(x1, yi1);
 				GL11.glVertex2i(x1, yi2);

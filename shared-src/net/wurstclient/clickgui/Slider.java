@@ -66,6 +66,7 @@ public final class Slider extends Component
 		ClickGui gui = WurstClient.INSTANCE.getGui();
 		float[] bgColor = gui.getBgColor();
 		float[] acColor = gui.getAcColor();
+		float opacity = gui.getOpacity();
 		
 		int x1 = getX();
 		int x2 = x1 + getWidth();
@@ -107,7 +108,7 @@ public final class Slider extends Component
 		}
 		
 		// background
-		GL11.glColor4f(bgColor[0], bgColor[1], bgColor[2], 0.5F);
+		GL11.glColor4f(bgColor[0], bgColor[1], bgColor[2], opacity);
 		GL11.glBegin(GL11.GL_QUADS);
 		GL11.glVertex2i(x1, y1);
 		GL11.glVertex2i(x1, y4);
@@ -137,7 +138,7 @@ public final class Slider extends Component
 		}
 		
 		// rail
-		GL11.glColor4f(1, 0, 0, hSlider ? 0.75F : 0.5F);
+		GL11.glColor4f(1, 0, 0, hSlider ? opacity * 1.5F : opacity);
 		GL11.glBegin(GL11.GL_QUADS);
 		GL11.glVertex2d(x3, y4);
 		GL11.glVertex2d(x3, y5);
@@ -149,7 +150,7 @@ public final class Slider extends Component
 		GL11.glVertex2d(x4, y4);
 		GL11.glEnd();
 		GL11.glColor4f(bgColor[0], bgColor[1], bgColor[2],
-			hSlider ? 0.75F : 0.5F);
+			hSlider ? opacity * 1.5F : opacity);
 		GL11.glBegin(GL11.GL_QUADS);
 		GL11.glVertex2d(xl1, y4);
 		GL11.glVertex2d(xl1, y5);

@@ -16,6 +16,7 @@ import org.lwjgl.opengl.GL11;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 import net.wurstclient.WurstClient;
+import net.wurstclient.clickgui.ClickGui;
 import net.wurstclient.events.KeyPressListener;
 import net.wurstclient.features.Category;
 import net.wurstclient.features.Feature;
@@ -193,10 +194,13 @@ public final class TabGui implements KeyPressListener
 	
 	private void drawBox(int x1, int y1, int x2, int y2)
 	{
+		ClickGui gui = WurstClient.INSTANCE.getGui();
+		float[] bgColor = gui.getBgColor();
+		float[] acColor = gui.getAcColor();
+		float opacity = gui.getOpacity();
+		
 		// color
-		GL11.glColor4f(0.25F, 0.25F, 0.25F, 0.5F);
-		float[] acColor = WurstClient.INSTANCE.getGui().getAcColor();
-		boolean rainbow = WurstClient.INSTANCE.mods.rainbowUiMod.isActive();
+		GL11.glColor4f(bgColor[0], bgColor[1], bgColor[2], opacity);
 		
 		// box
 		GL11.glBegin(GL11.GL_QUADS);
@@ -216,10 +220,7 @@ public final class TabGui implements KeyPressListener
 		
 		// outline
 		GL11.glLineWidth(1);
-		if(rainbow)
-			GL11.glColor4f(acColor[0], acColor[1], acColor[2], 0.5F);
-		else
-			GL11.glColor4f(0, 0, 0, 0.5F);
+		GL11.glColor4f(acColor[0], acColor[1], acColor[2], 0.5F);
 		GL11.glBegin(GL11.GL_LINE_LOOP);
 		{
 			GL11.glVertex2d(xi1, yi1);
@@ -235,23 +236,17 @@ public final class TabGui implements KeyPressListener
 		yi1 -= 0.9;
 		yi2 += 0.9;
 		
-		float[] shadow;
-		if(rainbow)
-			shadow = acColor;
-		else
-			shadow = new float[]{0.125F, 0.125F, 0.125F};
-		
 		// top left
 		GL11.glBegin(GL11.GL_POLYGON);
 		{
-			GL11.glColor4f(shadow[0], shadow[1], shadow[2], 0.75F);
+			GL11.glColor4f(acColor[0], acColor[1], acColor[2], 0.75F);
 			GL11.glVertex2d(x1, y1);
 			GL11.glVertex2d(x2, y1);
 			GL11.glColor4f(0, 0, 0, 0);
 			GL11.glVertex2d(xi2, yi1);
 			GL11.glVertex2d(xi1, yi1);
 			GL11.glVertex2d(xi1, yi2);
-			GL11.glColor4f(shadow[0], shadow[1], shadow[2], 0.75F);
+			GL11.glColor4f(acColor[0], acColor[1], acColor[2], 0.75F);
 			GL11.glVertex2d(x1, y2);
 		}
 		GL11.glEnd();
@@ -265,7 +260,7 @@ public final class TabGui implements KeyPressListener
 			GL11.glVertex2d(xi2, yi1);
 			GL11.glVertex2d(xi2, yi2);
 			GL11.glVertex2d(xi1, yi2);
-			GL11.glColor4f(shadow[0], shadow[1], shadow[2], 0.75F);
+			GL11.glColor4f(acColor[0], acColor[1], acColor[2], 0.75F);
 			GL11.glVertex2d(x1, y2);
 		}
 		GL11.glEnd();
