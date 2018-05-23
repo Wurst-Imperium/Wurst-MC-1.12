@@ -1,6 +1,6 @@
-From 82b53b429f69abd8f8cab58acc505ae707e3c811 Mon Sep 17 00:00:00 2001
+From 3e4e6165c42bd057cf6d5372c759039d94029404 Mon Sep 17 00:00:00 2001
 From: Alexander01998 <contact.wurstimperium@gmail.com>
-Date: Fri, 18 May 2018 12:56:53 +0200
+Date: Wed, 23 May 2018 21:01:43 +0200
 Subject: [PATCH] mod
 
 ---
@@ -10,7 +10,7 @@ Subject: [PATCH] mod
  net/minecraft/block/BlockLiquid.java               |  15 +-
  net/minecraft/block/BlockSlab.java                 |   6 +-
  net/minecraft/block/BlockSoulSand.java             |   6 +
- net/minecraft/client/Minecraft.java                | 210 +++++++++----------
+ net/minecraft/client/Minecraft.java                | 212 +++++++++----------
  net/minecraft/client/entity/EntityPlayerSP.java    | 126 ++++++++----
  net/minecraft/client/gui/FontRenderer.java         |  17 +-
  net/minecraft/client/gui/GuiButton.java            |  28 ++-
@@ -30,12 +30,13 @@ Subject: [PATCH] mod
  net/minecraft/client/gui/GuiLanguage.java          |   2 +-
  net/minecraft/client/gui/GuiListExtended.java      |   2 +-
  net/minecraft/client/gui/GuiLockIconButton.java    |   2 +-
- net/minecraft/client/gui/GuiMainMenu.java          |  43 +++-
+ net/minecraft/client/gui/GuiMainMenu.java          |  45 ++--
  net/minecraft/client/gui/GuiMemoryErrorScreen.java |   4 +-
  net/minecraft/client/gui/GuiMerchant.java          |   2 +-
  net/minecraft/client/gui/GuiMultiplayer.java       | 105 ++++++++--
  net/minecraft/client/gui/GuiNewChat.java           |  20 +-
  net/minecraft/client/gui/GuiOptionsRowList.java    |   4 +-
+ net/minecraft/client/gui/GuiOverlayDebug.java      |   4 +-
  net/minecraft/client/gui/GuiPageButtonList.java    |   2 +-
  net/minecraft/client/gui/GuiScreen.java            |  27 ++-
  net/minecraft/client/gui/GuiScreenBook.java        |  79 ++++++-
@@ -90,13 +91,14 @@ Subject: [PATCH] mod
  .../network/play/INetHandlerPlayClient.java        |  81 +-------
  net/minecraft/potion/PotionEffect.java             |  11 +-
  net/minecraft/realms/RealmsButton.java             |   2 +-
+ net/minecraft/realms/RealmsSharedConstants.java    |   4 +-
  net/minecraft/tileentity/TileEntitySign.java       |   2 +-
  net/minecraft/util/MovementInput.java              |   4 +-
  net/minecraft/util/MovementInputFromOptions.java   |   8 +-
  net/minecraft/util/ScreenShotHelper.java           |  15 +-
  net/minecraft/util/Timer.java                      |  14 +-
  net/minecraft/world/World.java                     |  35 ++--
- 92 files changed, 1531 insertions(+), 926 deletions(-)
+ 94 files changed, 1537 insertions(+), 932 deletions(-)
 
 diff --git a/Start.java b/Start.java
 index ae0025f..46ccf4f 100644
@@ -354,7 +356,7 @@ index b48d9bd..88f7932 100644
          entityIn.motionZ *= 0.4D;
      }
 diff --git a/net/minecraft/client/Minecraft.java b/net/minecraft/client/Minecraft.java
-index 2dea5d6..6e3f0aa 100644
+index 2dea5d6..60e78ee 100644
 --- a/net/minecraft/client/Minecraft.java
 +++ b/net/minecraft/client/Minecraft.java
 @@ -1,18 +1,5 @@
@@ -613,6 +615,15 @@ index 2dea5d6..6e3f0aa 100644
      }
  
      private void func_193986_ar()
+@@ -684,7 +647,7 @@ public class Minecraft implements IThreadListener, ISnooperInfo
+     private void createDisplay() throws LWJGLException
+     {
+         Display.setResizable(true);
+-        Display.setTitle("Minecraft 1.12");
++        Display.setTitle("Minecraft 1.12.2");
+ 
+         try
+         {
 @@ -724,6 +687,9 @@ public class Minecraft implements IThreadListener, ISnooperInfo
          else
          {
@@ -1665,7 +1676,7 @@ index e0f466e..4cc1caa 100644
          if (this.visible)
          {
 diff --git a/net/minecraft/client/gui/GuiMainMenu.java b/net/minecraft/client/gui/GuiMainMenu.java
-index 8971081..1d95329 100644
+index 8971081..e05df68 100644
 --- a/net/minecraft/client/gui/GuiMainMenu.java
 +++ b/net/minecraft/client/gui/GuiMainMenu.java
 @@ -1,7 +1,5 @@
@@ -1752,6 +1763,15 @@ index 8971081..1d95329 100644
      {
          this.mc.getFramebuffer().unbindFramebuffer();
          GlStateManager.viewport(0, 0, 256, 256);
+@@ -583,7 +604,7 @@ public class GuiMainMenu extends GuiScreen
+         GlStateManager.scale(f, f, f);
+         this.drawCenteredString(this.fontRendererObj, this.splashText, 0, -8, -256);
+         GlStateManager.popMatrix();
+-        String s = "Minecraft 1.12";
++        String s = "Minecraft 1.12.2";
+ 
+         if (this.mc.isDemo())
+         {
 diff --git a/net/minecraft/client/gui/GuiMemoryErrorScreen.java b/net/minecraft/client/gui/GuiMemoryErrorScreen.java
 index e7e485d..de9c81a 100644
 --- a/net/minecraft/client/gui/GuiMemoryErrorScreen.java
@@ -2043,6 +2063,28 @@ index 7a5d7ba..f092a75 100644
              }
          }
  
+diff --git a/net/minecraft/client/gui/GuiOverlayDebug.java b/net/minecraft/client/gui/GuiOverlayDebug.java
+index d9e9d19..2842d5a 100644
+--- a/net/minecraft/client/gui/GuiOverlayDebug.java
++++ b/net/minecraft/client/gui/GuiOverlayDebug.java
+@@ -103,7 +103,7 @@ public class GuiOverlayDebug extends Gui
+ 
+         if (this.mc.isReducedDebug())
+         {
+-            return Lists.newArrayList("Minecraft 1.12 (" + this.mc.getVersion() + "/" + ClientBrandRetriever.getClientModName() + ")", this.mc.debug, this.mc.renderGlobal.getDebugInfoRenders(), this.mc.renderGlobal.getDebugInfoEntities(), "P: " + this.mc.effectRenderer.getStatistics() + ". T: " + this.mc.world.getDebugLoadedEntities(), this.mc.world.getProviderName(), "", String.format("Chunk-relative: %d %d %d", blockpos.getX() & 15, blockpos.getY() & 15, blockpos.getZ() & 15));
++            return Lists.newArrayList("Minecraft 1.12.2 (" + this.mc.getVersion() + "/" + ClientBrandRetriever.getClientModName() + ")", this.mc.debug, this.mc.renderGlobal.getDebugInfoRenders(), this.mc.renderGlobal.getDebugInfoEntities(), "P: " + this.mc.effectRenderer.getStatistics() + ". T: " + this.mc.world.getDebugLoadedEntities(), this.mc.world.getProviderName(), "", String.format("Chunk-relative: %d %d %d", blockpos.getX() & 15, blockpos.getY() & 15, blockpos.getZ() & 15));
+         }
+         else
+         {
+@@ -129,7 +129,7 @@ public class GuiOverlayDebug extends Gui
+                     s = "Towards positive X";
+             }
+ 
+-            List<String> list = Lists.newArrayList("Minecraft 1.12 (" + this.mc.getVersion() + "/" + ClientBrandRetriever.getClientModName() + ("release".equalsIgnoreCase(this.mc.getVersionType()) ? "" : "/" + this.mc.getVersionType()) + ")", this.mc.debug, this.mc.renderGlobal.getDebugInfoRenders(), this.mc.renderGlobal.getDebugInfoEntities(), "P: " + this.mc.effectRenderer.getStatistics() + ". T: " + this.mc.world.getDebugLoadedEntities(), this.mc.world.getProviderName(), "", String.format("XYZ: %.3f / %.5f / %.3f", this.mc.getRenderViewEntity().posX, this.mc.getRenderViewEntity().getEntityBoundingBox().minY, this.mc.getRenderViewEntity().posZ), String.format("Block: %d %d %d", blockpos.getX(), blockpos.getY(), blockpos.getZ()), String.format("Chunk: %d %d %d in %d %d %d", blockpos.getX() & 15, blockpos.getY() & 15, blockpos.getZ() & 15, blockpos.getX() >> 4, blockpos.getY() >> 4, blockpos.getZ() >> 4), String.format("Facing: %s (%s) (%.1f / %.1f)", enumfacing, s, MathHelper.wrapDegrees(entity.rotationYaw), MathHelper.wrapDegrees(entity.rotationPitch)));
++            List<String> list = Lists.newArrayList("Minecraft 1.12.2 (" + this.mc.getVersion() + "/" + ClientBrandRetriever.getClientModName() + ("release".equalsIgnoreCase(this.mc.getVersionType()) ? "" : "/" + this.mc.getVersionType()) + ")", this.mc.debug, this.mc.renderGlobal.getDebugInfoRenders(), this.mc.renderGlobal.getDebugInfoEntities(), "P: " + this.mc.effectRenderer.getStatistics() + ". T: " + this.mc.world.getDebugLoadedEntities(), this.mc.world.getProviderName(), "", String.format("XYZ: %.3f / %.5f / %.3f", this.mc.getRenderViewEntity().posX, this.mc.getRenderViewEntity().getEntityBoundingBox().minY, this.mc.getRenderViewEntity().posZ), String.format("Block: %d %d %d", blockpos.getX(), blockpos.getY(), blockpos.getZ()), String.format("Chunk: %d %d %d in %d %d %d", blockpos.getX() & 15, blockpos.getY() & 15, blockpos.getZ() & 15, blockpos.getX() >> 4, blockpos.getY() >> 4, blockpos.getZ() >> 4), String.format("Facing: %s (%s) (%.1f / %.1f)", enumfacing, s, MathHelper.wrapDegrees(entity.rotationYaw), MathHelper.wrapDegrees(entity.rotationPitch)));
+ 
+             if (this.mc.world != null)
+             {
 diff --git a/net/minecraft/client/gui/GuiPageButtonList.java b/net/minecraft/client/gui/GuiPageButtonList.java
 index bb01f1d..1e67f5e 100644
 --- a/net/minecraft/client/gui/GuiPageButtonList.java
@@ -5326,6 +5368,21 @@ index f5010ee..41dd1b3 100644
      }
  
      public void clicked(int p_clicked_1_, int p_clicked_2_)
+diff --git a/net/minecraft/realms/RealmsSharedConstants.java b/net/minecraft/realms/RealmsSharedConstants.java
+index 35fb414..d8d131b 100644
+--- a/net/minecraft/realms/RealmsSharedConstants.java
++++ b/net/minecraft/realms/RealmsSharedConstants.java
+@@ -4,8 +4,8 @@ import net.minecraft.util.ChatAllowedCharacters;
+ 
+ public class RealmsSharedConstants
+ {
+-    public static int NETWORK_PROTOCOL_VERSION = 335;
++    public static int NETWORK_PROTOCOL_VERSION = 340;
+     public static int TICKS_PER_SECOND = 20;
+-    public static String VERSION_STRING = "1.12";
++    public static String VERSION_STRING = "1.12.2";
+     public static char[] ILLEGAL_FILE_CHARACTERS = ChatAllowedCharacters.ILLEGAL_FILE_CHARACTERS;
+ }
 diff --git a/net/minecraft/tileentity/TileEntitySign.java b/net/minecraft/tileentity/TileEntitySign.java
 index 0048480..319c8e2 100644
 --- a/net/minecraft/tileentity/TileEntitySign.java
