@@ -7,14 +7,13 @@
  */
 package net.wurstclient.navigator;
 
-import static org.lwjgl.opengl.GL11.*;
-
 import java.awt.Rectangle;
 import java.util.ArrayList;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import net.wurstclient.WurstClient;
@@ -30,6 +29,7 @@ public class NavigatorMainScreen extends NavigatorScreen
 	private static final ArrayList<Feature> navigatorDisplayList =
 		new ArrayList<>();
 	private GuiTextField searchBar;
+	private String tooltip;
 	private int hoveredFeature = -1;
 	private boolean hoveringArrow;
 	private int clickTimer = -1;
@@ -163,14 +163,20 @@ public class NavigatorMainScreen extends NavigatorScreen
 	@Override
 	protected void onRender(int mouseX, int mouseY, float partialTicks)
 	{
+		ClickGui gui = WurstClient.INSTANCE.getGui();
+		float[] bgColor = gui.getBgColor();
+		float[] acColor = gui.getAcColor();
+		float opacity = gui.getOpacity();
+		
 		boolean clickTimerNotRunning = clickTimer == -1;
+		tooltip = null;
 		
 		// search bar
 		if(clickTimerNotRunning)
 		{
 			Fonts.segoe22.drawString("Search: ", middleX - 150, 32, 0xffffff);
 			searchBar.drawTextBox();
-			glDisable(GL_TEXTURE_2D);
+			GL11.glDisable(GL11.GL_TEXTURE_2D);
 		}
 		
 		// feature list
@@ -178,7 +184,7 @@ public class NavigatorMainScreen extends NavigatorScreen
 		if(clickTimerNotRunning)
 			hoveredFeature = -1;
 		RenderUtils.scissorBox(0, 59, width, height - 42);
-		glEnable(GL_SCISSOR_TEST);
+		GL11.glEnable(GL11.GL_SCISSOR_TEST);
 		for(int i = Math.max(-scroll * 3 / 20 - 3, 0); i < navigatorDisplayList
 			.size(); i++)
 		{
@@ -236,22 +242,34 @@ public class NavigatorMainScreen extends NavigatorScreen
 					area.y + area.height);
 			}else
 			{
-				ClickGui gui = WurstClient.INSTANCE.getGui();
-				float[] bgColor = gui.getBgColor();
-				float opacity = gui.getOpacity();
-				
 				// color
 				boolean hovering = area.contains(mouseX, mouseY);
 				if(hovering)
 					hoveredFeature = i;
 				if(feature.isEnabled())
 					if(feature.isBlocked())
-						glColor4f(1, 0, 0, hovering ? opacity * 1.5F : opacity);
+						GL11.glColor4f(1, 0, 0,
+							hovering ? opacity * 1.5F : opacity);
 					else
-						glColor4f(0, 1, 0, hovering ? opacity * 1.5F : opacity);
+						GL11.glColor4f(0, 1, 0,
+							hovering ? opacity * 1.5F : opacity);
 				else
-					glColor4f(bgColor[0], bgColor[1], bgColor[2],
+					GL11.glColor4f(bgColor[0], bgColor[1], bgColor[2],
 						hovering ? opacity * 1.5F : opacity);
+				
+				// tooltip
+				String tt = feature.getDescription();
+				if(feature.isBlocked())
+				{
+					if(tt == null)
+						tt = "";
+					else
+						tt += "\n\n";
+					tt +=
+						"Your current YesCheat+ profile is blocking this feature.";
+				}
+				if(hovering)
+					tooltip = tt;
 				
 				// box & shadow
 				drawBox(area.x, area.y, area.x + area.width,
@@ -261,12 +279,10 @@ public class NavigatorMainScreen extends NavigatorScreen
 				int bx1 = area.x + area.width - area.height;
 				int by1 = area.y + 2;
 				int by2 = by1 + area.height - 4;
-				glBegin(GL_LINES);
-				{
-					glVertex2i(bx1, by1);
-					glVertex2i(bx1, by2);
-				}
-				glEnd();
+				GL11.glBegin(GL11.GL_LINES);
+				GL11.glVertex2i(bx1, by1);
+				GL11.glVertex2i(bx1, by2);
+				GL11.glEnd();
 				
 				// hovering
 				if(hovering)
@@ -282,25 +298,21 @@ public class NavigatorMainScreen extends NavigatorScreen
 				double ay2 = area.y + twoThrirds;
 				
 				// arrow
-				glColor4f(0, hovering ? 1 : 0.85F, 0, 1);
-				glBegin(GL_TRIANGLES);
-				{
-					glVertex2d(ax1, ay1);
-					glVertex2d(ax2, ay1);
-					glVertex2d(ax3, ay2);
-				}
-				glEnd();
+				GL11.glColor4f(0, hovering ? 1 : 0.85F, 0, 1);
+				GL11.glBegin(GL11.GL_TRIANGLES);
+				GL11.glVertex2d(ax1, ay1);
+				GL11.glVertex2d(ax2, ay1);
+				GL11.glVertex2d(ax3, ay2);
+				GL11.glEnd();
 				
 				// arrow shadow
-				glLineWidth(1);
+				GL11.glLineWidth(1);
 				GL11.glColor4f(0.0625F, 0.0625F, 0.0625F, 0.5F);
-				glBegin(GL_LINE_LOOP);
-				{
-					glVertex2d(ax1, ay1);
-					glVertex2d(ax2, ay1);
-					glVertex2d(ax3, ay2);
-				}
-				glEnd();
+				GL11.glBegin(GL11.GL_LINE_LOOP);
+				GL11.glVertex2d(ax1, ay1);
+				GL11.glVertex2d(ax2, ay1);
+				GL11.glVertex2d(ax3, ay2);
+				GL11.glEnd();
 				
 				// text
 				if(clickTimerNotRunning)
@@ -308,11 +320,59 @@ public class NavigatorMainScreen extends NavigatorScreen
 					String buttonText = feature.getName();
 					Fonts.segoe15.drawString(buttonText, area.x + 4, area.y + 2,
 						0xffffff);
-					glDisable(GL_TEXTURE_2D);
+					GL11.glDisable(GL11.GL_TEXTURE_2D);
 				}
 			}
 		}
-		glDisable(GL_SCISSOR_TEST);
+		GL11.glDisable(GL11.GL_SCISSOR_TEST);
+		
+		// tooltip
+		if(tooltip != null)
+		{
+			String[] lines = tooltip.split("\n");
+			FontRenderer fr = Fonts.segoe15;
+			
+			int tw = 0;
+			int th = lines.length * fr.FONT_HEIGHT;
+			for(String line : lines)
+			{
+				int lw = fr.getStringWidth(line);
+				if(lw > tw)
+					tw = lw;
+			}
+			int sw = mc.currentScreen.width;
+			int sh = mc.currentScreen.height;
+			
+			int xt1 = mouseX + tw + 11 <= sw ? mouseX + 8 : mouseX - tw - 8;
+			int xt2 = xt1 + tw + 3;
+			int yt1 = mouseY + th - 2 <= sh ? mouseY - 4 : mouseY - th - 4;
+			int yt2 = yt1 + th + 2;
+			
+			// background
+			GL11.glDisable(GL11.GL_TEXTURE_2D);
+			GL11.glColor4f(bgColor[0], bgColor[1], bgColor[2], 0.75F);
+			GL11.glBegin(GL11.GL_QUADS);
+			GL11.glVertex2i(xt1, yt1);
+			GL11.glVertex2i(xt1, yt2);
+			GL11.glVertex2i(xt2, yt2);
+			GL11.glVertex2i(xt2, yt1);
+			GL11.glEnd();
+			
+			// outline
+			GL11.glColor4f(acColor[0], acColor[1], acColor[2], 0.5F);
+			GL11.glBegin(GL11.GL_LINE_LOOP);
+			GL11.glVertex2i(xt1, yt1);
+			GL11.glVertex2i(xt1, yt2);
+			GL11.glVertex2i(xt2, yt2);
+			GL11.glVertex2i(xt2, yt1);
+			GL11.glEnd();
+			
+			// text
+			GL11.glEnable(GL11.GL_TEXTURE_2D);
+			for(int i = 0; i < lines.length; i++)
+				fr.drawString(lines[i], xt1 + 2, yt1 - 1 + i * fr.FONT_HEIGHT,
+					0xffffff);
+		}
 	}
 	
 	public void setExpanding(boolean expanding)
