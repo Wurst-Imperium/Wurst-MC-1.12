@@ -104,6 +104,7 @@ public final class KeybindList
 		keybinds.add(new Keybind("N", "nuker"));
 		keybinds.add(new Keybind("R", "killaura"));
 		keybinds.add(new Keybind("RSHIFT", "navigator"));
+		keybinds.add(new Keybind("RCONTROL", "clickgui"));
 		keybinds.add(new Keybind("U", "freecam"));
 		keybinds.add(new Keybind("X", "x-ray"));
 		keybinds.add(new Keybind("Z", "sneak"));
