@@ -463,7 +463,8 @@ public class NavigatorFeatureScreen extends NavigatorScreen
 		}
 		
 		for(int i = 0; i < window.countChildren(); i++)
-			window.getChild(i).render(mouseX - bgx1, mouseY - windowY);
+			window.getChild(i).render(mouseX - bgx1, mouseY - windowY,
+				partialTicks);
 		GL11.glPopMatrix();
 		
 		// sliders

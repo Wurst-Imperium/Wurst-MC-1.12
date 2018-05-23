@@ -47,7 +47,7 @@ public final class Slider extends Component
 	}
 	
 	@Override
-	public void render(int mouseX, int mouseY)
+	public void render(int mouseX, int mouseY, float partialTicks)
 	{
 		// dragging
 		if(dragging)

@@ -42,7 +42,7 @@ public final class UIRenderer
 		
 		// pinned windows
 		if(!(Minecraft.getMinecraft().currentScreen instanceof ClickGuiScreen))
-			clickGui.renderPinnedWindows();
+			clickGui.renderPinnedWindows(partialTicks);
 		
 		WurstClient.INSTANCE.events.fire(GUIRenderEvent.INSTANCE);
 		

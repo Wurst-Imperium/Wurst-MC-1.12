@@ -35,6 +35,8 @@ public final class Window
 	private boolean closable;
 	private boolean closing;
 	
+	private boolean invisible;
+	
 	private int innerHeight;
 	private int scrollOffset;
 	private boolean scrollingEnabled;
@@ -282,6 +284,16 @@ public final class Window
 	public void close()
 	{
 		closing = true;
+	}
+	
+	public boolean isInvisible()
+	{
+		return invisible;
+	}
+	
+	public void setInvisible(boolean invisible)
+	{
+		this.invisible = invisible;
 	}
 	
 	public int getInnerHeight()

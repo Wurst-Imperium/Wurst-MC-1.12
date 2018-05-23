@@ -16,10 +16,12 @@ public abstract class Component
 	
 	private Window parent;
 	
-	public abstract void handleMouseClick(int mouseX, int mouseY,
-		int mouseButton);
+	public void handleMouseClick(int mouseX, int mouseY, int mouseButton)
+	{
+		
+	}
 	
-	public abstract void render(int mouseX, int mouseY);
+	public abstract void render(int mouseX, int mouseY, float partialTicks);
 	
 	public abstract int getDefaultWidth();
 	

@@ -151,6 +151,7 @@ public final class ModManager
 	public final PotionSaverMod potionSaverMod = new PotionSaverMod();
 	public final ProphuntEspMod prophuntEspMod = new ProphuntEspMod();
 	public final ProtectMod protectMod = new ProtectMod();
+	public final RadarMod radarMod = new RadarMod();
 	public final RainbowUiMod rainbowUiMod = new RainbowUiMod();
 	public final RegenMod regenMod = new RegenMod();
 	public final RemoteViewMod remoteViewMod = new RemoteViewMod();

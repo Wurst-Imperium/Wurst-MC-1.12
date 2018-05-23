@@ -58,7 +58,7 @@ public final class ComboBox extends Component
 	}
 	
 	@Override
-	public void render(int mouseX, int mouseY)
+	public void render(int mouseX, int mouseY, float partialTicks)
 	{
 		ClickGui gui = WurstClient.INSTANCE.getGui();
 		float[] bgColor = gui.getBgColor();

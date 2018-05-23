@@ -73,13 +73,17 @@ public final class ClickGui
 			uiSettings.add(setting.getComponent());
 		windows.add(uiSettings);
 		
+		for(Window window : windows)
+			window.setMinimized(true);
+		
+		windows.add(WurstClient.INSTANCE.mods.radarMod.getWindow());
+		
 		int x = 5;
 		int y = 5;
 		ScaledResolution sr = new ScaledResolution(Minecraft.getMinecraft());
 		for(Window window : windows)
 		{
 			window.pack();
-			window.setMinimized(true);
 			
 			if(x + window.getWidth() + 5 > sr.getScaledWidth())
 			{
@@ -254,6 +258,9 @@ public final class ClickGui
 		for(int i = windows.size() - 1; i >= 0; i--)
 		{
 			Window window = windows.get(i);
+			if(window.isInvisible())
+				continue;
+			
 			int x1 = window.getX();
 			int y1 = window.getY();
 			int x2 = x1 + window.getWidth();
@@ -401,7 +408,8 @@ public final class ClickGui
 			{
 				Window window = windows.get(i);
 				
-				if(!window.isScrollingEnabled() || window.isMinimized())
+				if(!window.isScrollingEnabled() || window.isMinimized()
+					|| window.isInvisible())
 					continue;
 				
 				if(mouseX < window.getX() || mouseY < window.getY() + 13)
@@ -421,6 +429,9 @@ public final class ClickGui
 		tooltip = null;
 		for(Window window : windows)
 		{
+			if(window.isInvisible())
+				continue;
+			
 			// dragging
 			if(window.isDragging())
 				if(Mouse.isButtonDown(0))
@@ -438,7 +449,7 @@ public final class ClickGui
 				else
 					window.stopDraggingScrollbar();
 				
-			renderWindow(window, mouseX, mouseY);
+			renderWindow(window, mouseX, mouseY, partialTicks);
 		}
 		
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
@@ -521,7 +532,7 @@ public final class ClickGui
 		}
 	}
 	
-	public void renderPinnedWindows()
+	public void renderPinnedWindows(float partialTicks)
 	{
 		GL11.glDisable(GL11.GL_CULL_FACE);
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
@@ -531,8 +542,9 @@ public final class ClickGui
 		GL11.glLineWidth(1);
 		
 		for(Window window : windows)
-			if(window.isPinned())
-				renderWindow(window, Integer.MIN_VALUE, Integer.MIN_VALUE);
+			if(window.isPinned() && !window.isInvisible())
+				renderWindow(window, Integer.MIN_VALUE, Integer.MIN_VALUE,
+					partialTicks);
 			
 		GL11.glEnable(GL11.GL_CULL_FACE);
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
@@ -557,7 +569,8 @@ public final class ClickGui
 			acColor = clickGui.getAcColor();
 	}
 	
-	private void renderWindow(Window window, int mouseX, int mouseY)
+	private void renderWindow(Window window, int mouseX, int mouseY,
+		float partialTicks)
 	{
 		int x1 = window.getX();
 		int y1 = window.getY();
@@ -706,7 +719,7 @@ public final class ClickGui
 			int cMouseX = mouseX - x1;
 			int cMouseY = mouseY - y4;
 			for(int i = 0; i < window.countChildren(); i++)
-				window.getChild(i).render(cMouseX, cMouseY);
+				window.getChild(i).render(cMouseX, cMouseY, partialTicks);
 			
 			GL11.glPopMatrix();
 			GL11.glDisable(GL11.GL_SCISSOR_TEST);
