@@ -107,7 +107,7 @@ public final class InstantBunkerMod extends Mod
 		{
 			for(BlockPos pos : positions)
 				if(WBlock.getMaterial(pos) == Material.AIR)
-					BlockUtils.placeBlockSimple(pos);
+					BlockUtils.placeBlockSimple_old(pos);
 			WPlayer.swingArmClient();
 			setEnabled(false);
 			return;

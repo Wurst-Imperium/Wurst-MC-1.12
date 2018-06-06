@@ -7,6 +7,7 @@
  */
 package net.wurstclient.utils;
 
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.play.client.CPacketPlayer;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -84,6 +85,20 @@ public class RotationUtils
 				+ WMath.wrapDegrees(yaw - WMinecraft.getPlayer().rotationYaw),
 			WMinecraft.getPlayer().rotationPitch + WMath
 				.wrapDegrees(pitch - WMinecraft.getPlayer().rotationPitch)};
+	}
+	
+	public static double getAngleToLastReportedLookVec(Vec3d vec)
+	{
+		float[] needed = getNeededRotations(vec);
+		
+		EntityPlayerSP player = WMinecraft.getPlayer();
+		float lastReportedYaw = WMath.wrapDegrees(player.lastReportedYaw);
+		float lastReportedPitch = WMath.wrapDegrees(player.lastReportedPitch);
+		
+		float diffYaw = lastReportedYaw - needed[0];
+		float diffPitch = lastReportedPitch - needed[1];
+		
+		return Math.sqrt(diffYaw * diffYaw + diffPitch * diffPitch);
 	}
 	
 	public static float limitAngleChange(float current, float intended,

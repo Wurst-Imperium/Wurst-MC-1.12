@@ -192,7 +192,7 @@ public final class AutoBuildMod extends Mod
 			// build instantly
 			for(BlockPos pos : positions)
 				if(WBlock.getMaterial(pos).isReplaceable())
-					BlockUtils.placeBlockSimple(pos);
+					BlockUtils.placeBlockSimple_old(pos);
 				
 		}else
 		{
@@ -317,7 +317,7 @@ public final class AutoBuildMod extends Mod
 					.intersectsWith(new AxisAlignedBB(pos)))
 					break;
 				
-				BlockUtils.placeBlockSimple(pos);
+				BlockUtils.placeBlockSimple_old(pos);
 			}
 		else if(mode.getSelected() == 1)
 		{

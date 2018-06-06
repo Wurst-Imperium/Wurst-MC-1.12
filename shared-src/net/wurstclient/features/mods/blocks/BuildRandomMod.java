@@ -185,7 +185,7 @@ public final class BuildRandomMod extends Mod
 			mc.rightClickDelayTimer = 4;
 		}else
 		{
-			if(!BlockUtils.placeBlockSimple(pos))
+			if(!BlockUtils.placeBlockSimple_old(pos))
 				return false;
 			
 			WPlayer.swingArmClient();

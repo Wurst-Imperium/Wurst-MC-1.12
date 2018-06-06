@@ -171,7 +171,7 @@ public final class NukerMod extends Mod implements LeftClickListener,
 			// break block
 			boolean successful =
 				legit ? BlockUtils.prepareToBreakBlockLegit(pos)
-					: BlockUtils.breakBlockSimple(pos);
+					: BlockUtils.breakBlockSimple_old(pos);
 			
 			// set currentBlock if successful
 			if(successful)

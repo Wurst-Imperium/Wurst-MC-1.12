@@ -20,6 +20,7 @@ import net.minecraft.network.play.client.CPacketPlayerDigging.Action;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3i;
 import net.wurstclient.WurstClient;
 import net.wurstclient.compatibility.WBlock;
 import net.wurstclient.compatibility.WConnection;
@@ -117,7 +118,76 @@ public final class BlockUtils
 		return false;
 	}
 	
-	public static boolean placeBlockSimple(BlockPos pos)
+	public static void placeBlockSimple(BlockPos pos)
+	{
+		EnumFacing side = null;
+		EnumFacing[] sides = EnumFacing.values();
+		
+		Vec3d eyesPos = RotationUtils.getEyesPos();
+		Vec3d posVec = new Vec3d(pos).addVector(0.5, 0.5, 0.5);
+		double distanceSqPosVec = eyesPos.squareDistanceTo(posVec);
+		
+		Vec3d[] hitVecs = new Vec3d[sides.length];
+		for(int i = 0; i < sides.length; i++)
+			hitVecs[i] =
+				posVec.add(new Vec3d(sides[i].getDirectionVec()).scale(0.5));
+		
+		for(int i = 0; i < sides.length; i++)
+		{
+			// check if neighbor can be right clicked
+			if(!WBlock.canBeClicked(pos.offset(sides[i])))
+				continue;
+			
+			// check line of sight
+			if(WMinecraft.getWorld().rayTraceBlocks(eyesPos, hitVecs[i], false,
+				true, false) != null)
+				continue;
+			
+			side = sides[i];
+			break;
+		}
+		
+		if(side == null)
+			for(int i = 0; i < sides.length; i++)
+			{
+				// check if neighbor can be right clicked
+				if(!WBlock.canBeClicked(pos.offset(sides[i])))
+					continue;
+				
+				// check if side is facing away from player
+				if(distanceSqPosVec > eyesPos.squareDistanceTo(hitVecs[i]))
+					continue;
+				
+				side = sides[i];
+				break;
+			}
+		
+		if(side == null)
+			return;
+		
+		Vec3d hitVec = hitVecs[side.ordinal()];
+		
+		// face block
+		RotationUtils.faceVectorPacket(hitVec);
+		if(RotationUtils.getAngleToLastReportedLookVec(hitVec) > 1)
+			return;
+		
+		// check timer
+		if(mc.rightClickDelayTimer > 0)
+			return;
+		
+		// place block
+		WPlayerController.processRightClickBlock(pos.offset(side),
+			side.getOpposite(), hitVec);
+		
+		// swing arm
+		WPlayer.swingArmPacket();
+		
+		// reset timer
+		mc.rightClickDelayTimer = 4;
+	}
+	
+	public static boolean placeBlockSimple_old(BlockPos pos)
 	{
 		Vec3d eyesPos = RotationUtils.getEyesPos();
 		Vec3d posVec = new Vec3d(pos).addVector(0.5, 0.5, 0.5);
@@ -274,6 +344,68 @@ public final class BlockUtils
 	}
 	
 	public static boolean breakBlockSimple(BlockPos pos)
+	{
+		EnumFacing side = null;
+		EnumFacing[] sides = EnumFacing.values();
+		
+		Vec3d eyesPos = RotationUtils.getEyesPos();
+		Vec3d relCenter = WBlock.getBoundingBox(pos)
+			.offset(-pos.getX(), -pos.getY(), -pos.getZ()).getCenter();
+		Vec3d center = new Vec3d(pos).add(relCenter);
+		
+		Vec3d[] hitVecs = new Vec3d[sides.length];
+		for(int i = 0; i < sides.length; i++)
+		{
+			Vec3i dirVec = sides[i].getDirectionVec();
+			Vec3d relHitVec = new Vec3d(relCenter.xCoord * dirVec.getX(),
+				relCenter.yCoord * dirVec.getY(),
+				relCenter.zCoord * dirVec.getZ());
+			hitVecs[i] = center.add(relHitVec);
+		}
+		
+		for(int i = 0; i < sides.length; i++)
+		{
+			// check line of sight
+			if(WMinecraft.getWorld().rayTraceBlocks(eyesPos, hitVecs[i], false,
+				true, false) != null)
+				continue;
+			
+			side = sides[i];
+			break;
+		}
+		
+		if(side == null)
+		{
+			double distanceSqToCenter = eyesPos.squareDistanceTo(center);
+			for(int i = 0; i < sides.length; i++)
+			{
+				// check if side is facing towards player
+				if(eyesPos.squareDistanceTo(hitVecs[i]) >= distanceSqToCenter)
+					continue;
+				
+				side = sides[i];
+				break;
+			}
+		}
+		
+		if(side == null)
+			throw new RuntimeException(
+				"How could none of the sides be facing towards the player?!");
+		
+		// face block
+		RotationUtils.faceVectorPacket(hitVecs[side.ordinal()]);
+		
+		// damage block
+		if(!mc.playerController.onPlayerDamageBlock(pos, side))
+			return false;
+		
+		// swing arm
+		WPlayer.swingArmPacket();
+		
+		return true;
+	}
+	
+	public static boolean breakBlockSimple_old(BlockPos pos)
 	{
 		Vec3d eyesPos = RotationUtils.getEyesPos();
 		Vec3d posVec = new Vec3d(pos).addVector(0.5, 0.5, 0.5);

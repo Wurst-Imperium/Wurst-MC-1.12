@@ -62,6 +62,7 @@ public final class ModManager
 	public final AutoBuildMod autoBuildMod = new AutoBuildMod();
 	public final AutoLeaveMod autoLeaveMod = new AutoLeaveMod();
 	public final AutoEatMod autoEatMod = new AutoEatMod();
+	public final AutoFarmMod autoFarmMod = new AutoFarmMod();
 	public final AutoFishMod autoFishMod = new AutoFishMod();
 	public final AutoMineMod autoMineMod = new AutoMineMod();
 	public final AutoRespawnMod autoRespawnMod = new AutoRespawnMod();

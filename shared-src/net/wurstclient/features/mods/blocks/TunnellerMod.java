@@ -126,7 +126,7 @@ public final class TunnellerMod extends Mod
 			if(legit)
 				successful = BlockUtils.prepareToBreakBlockLegit(pos);
 			else
-				successful = BlockUtils.breakBlockSimple(pos);
+				successful = BlockUtils.breakBlockSimple_old(pos);
 			
 			// set currentBlock if successful
 			if(successful)

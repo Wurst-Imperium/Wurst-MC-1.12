@@ -483,7 +483,7 @@ public final class ExcavatorMod extends Mod implements UpdateListener,
 				if(legit)
 					successful = BlockUtils.prepareToBreakBlockLegit(pos);
 				else
-					successful = BlockUtils.breakBlockSimple(pos);
+					successful = BlockUtils.breakBlockSimple_old(pos);
 				
 				// set currentBlock if successful
 				if(successful)

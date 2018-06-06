@@ -17,6 +17,8 @@ import static org.lwjgl.opengl.GL11.glVertex3d;
 
 import java.awt.Color;
 
+import org.lwjgl.opengl.GL11;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -179,5 +181,48 @@ public class RenderUtils
 			glVertex3d(bb.minX, bb.minY, bb.minZ);
 		}
 		glEnd();
+	}
+	
+	public static void drawNode(AxisAlignedBB bb)
+	{
+		double midX = (bb.minX + bb.maxX) / 2;
+		double midY = (bb.minY + bb.maxY) / 2;
+		double midZ = (bb.minZ + bb.maxZ) / 2;
+		
+		GL11.glVertex3d(midX, midY, bb.maxZ);
+		GL11.glVertex3d(bb.minX, midY, midZ);
+		
+		GL11.glVertex3d(bb.minX, midY, midZ);
+		GL11.glVertex3d(midX, midY, bb.minZ);
+		
+		GL11.glVertex3d(midX, midY, bb.minZ);
+		GL11.glVertex3d(bb.maxX, midY, midZ);
+		
+		GL11.glVertex3d(bb.maxX, midY, midZ);
+		GL11.glVertex3d(midX, midY, bb.maxZ);
+		
+		GL11.glVertex3d(midX, bb.maxY, midZ);
+		GL11.glVertex3d(bb.maxX, midY, midZ);
+		
+		GL11.glVertex3d(midX, bb.maxY, midZ);
+		GL11.glVertex3d(bb.minX, midY, midZ);
+		
+		GL11.glVertex3d(midX, bb.maxY, midZ);
+		GL11.glVertex3d(midX, midY, bb.minZ);
+		
+		GL11.glVertex3d(midX, bb.maxY, midZ);
+		GL11.glVertex3d(midX, midY, bb.maxZ);
+		
+		GL11.glVertex3d(midX, bb.minY, midZ);
+		GL11.glVertex3d(bb.maxX, midY, midZ);
+		
+		GL11.glVertex3d(midX, bb.minY, midZ);
+		GL11.glVertex3d(bb.minX, midY, midZ);
+		
+		GL11.glVertex3d(midX, bb.minY, midZ);
+		GL11.glVertex3d(midX, midY, bb.minZ);
+		
+		GL11.glVertex3d(midX, bb.minY, midZ);
+		GL11.glVertex3d(midX, midY, bb.maxZ);
 	}
 }
