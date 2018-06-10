@@ -54,8 +54,10 @@ public abstract class Setting
 		
 	}
 	
-	public abstract void addToFeatureScreen(
-		NavigatorFeatureScreen featureScreen);
+	public void addToFeatureScreen(NavigatorFeatureScreen featureScreen)
+	{
+		
+	}
 	
 	public abstract ArrayList<PossibleKeybind> getPossibleKeybinds(
 		String featureName);
