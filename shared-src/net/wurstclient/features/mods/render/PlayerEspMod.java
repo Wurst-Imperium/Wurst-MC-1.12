@@ -43,7 +43,11 @@ public final class PlayerEspMod extends Mod implements UpdateListener,
 	
 	public PlayerEspMod()
 	{
-		super("PlayerESP", "Highlights nearby players.");
+		super("PlayerESP",
+			"Highlights nearby players.\n"
+				+ "ESP boxes of friends will appear in blue.\n"
+				+ "Sleeping or invisible players will not be\n"
+				+ "shown if they are disabled in Target.");
 		setCategory(Category.RENDER);
 		addSetting(tracers);
 	}
@@ -52,7 +56,8 @@ public final class PlayerEspMod extends Mod implements UpdateListener,
 	public Feature[] getSeeAlso()
 	{
 		return new Feature[]{wurst.mods.mobEspMod, wurst.mods.itemEspMod,
-			wurst.mods.chestEspMod, wurst.mods.playerFinderMod};
+			wurst.mods.chestEspMod, wurst.mods.playerFinderMod,
+			wurst.special.targetSpf};
 	}
 	
 	@Override
