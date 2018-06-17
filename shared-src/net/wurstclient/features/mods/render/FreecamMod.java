@@ -18,6 +18,7 @@ import net.wurstclient.compatibility.WMinecraft;
 import net.wurstclient.events.CameraTransformViewBobbingListener;
 import net.wurstclient.events.PlayerMoveListener;
 import net.wurstclient.events.RenderListener;
+import net.wurstclient.events.SetOpaqueCubeListener;
 import net.wurstclient.events.UpdateListener;
 import net.wurstclient.features.Category;
 import net.wurstclient.features.Feature;
@@ -33,8 +34,9 @@ import net.wurstclient.utils.RotationUtils;
 @SearchTags({"free camera", "spectator"})
 @Mod.Bypasses
 @Mod.DontSaveState
-public final class FreecamMod extends Mod implements UpdateListener,
-	PlayerMoveListener, CameraTransformViewBobbingListener, RenderListener
+public final class FreecamMod extends Mod
+	implements UpdateListener, PlayerMoveListener,
+	CameraTransformViewBobbingListener, SetOpaqueCubeListener, RenderListener
 {
 	private final SliderSetting speed =
 		new SliderSetting("Speed", 1, 0.05, 10, 0.05, ValueDisplay.DECIMAL);
@@ -65,6 +67,7 @@ public final class FreecamMod extends Mod implements UpdateListener,
 		wurst.events.add(UpdateListener.class, this);
 		wurst.events.add(PlayerMoveListener.class, this);
 		wurst.events.add(CameraTransformViewBobbingListener.class, this);
+		wurst.events.add(SetOpaqueCubeListener.class, this);
 		wurst.events.add(RenderListener.class, this);
 		
 		fakePlayer = new EntityFakePlayer();
@@ -89,6 +92,7 @@ public final class FreecamMod extends Mod implements UpdateListener,
 		wurst.events.remove(UpdateListener.class, this);
 		wurst.events.remove(PlayerMoveListener.class, this);
 		wurst.events.remove(CameraTransformViewBobbingListener.class, this);
+		wurst.events.remove(SetOpaqueCubeListener.class, this);
 		wurst.events.remove(RenderListener.class, this);
 		
 		fakePlayer.resetPlayerPosition();
@@ -135,6 +139,12 @@ public final class FreecamMod extends Mod implements UpdateListener,
 	{
 		if(tracer.isChecked())
 			event.cancel();
+	}
+	
+	@Override
+	public void onSetOpaqueCube(SetOpaqueCubeEvent event)
+	{
+		event.cancel();
 	}
 	
 	@Override

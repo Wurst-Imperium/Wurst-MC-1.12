@@ -14,7 +14,6 @@ import net.minecraft.client.gui.GuiScreen;
 import net.wurstclient.WurstClient;
 import net.wurstclient.compatibility.WMinecraft;
 import net.wurstclient.files.ConfigFiles;
-import net.wurstclient.gui.options.xray.GuiXRayBlocksManager;
 import net.wurstclient.gui.options.zoom.GuiZoomManager;
 import net.wurstclient.keybinds.KeybindManagerScreen;
 import net.wurstclient.options.OptionsManager.GoogleAnalytics;
@@ -33,7 +32,7 @@ public class GuiWurstOptions extends GuiScreen
 		"", "",
 		"Keybinds allow you to toggle any mod\n"
 			+ "or command by simply pressing a\n" + "button.",
-		"Manager for the blocks that X-Ray will\n" + "show.",
+		"Manager for the blocks\n" + "that X-Ray will show.",
 		"The Zoom Manager allows you to\n" + "change the zoom key, how far it\n"
 			+ "will zoom in and more.",
 		"", "", "", "", "", "", ""};
@@ -153,7 +152,7 @@ public class GuiWurstOptions extends GuiScreen
 			mc.displayGuiScreen(new KeybindManagerScreen(this));
 		else if(button.id == 7)
 			// X-Ray Block Manager
-			mc.displayGuiScreen(new GuiXRayBlocksManager(this));
+			WurstClient.INSTANCE.mods.xRayMod.showBlockListEditor(this);
 		else if(button.id == 8)
 			// Zoom Manager
 			mc.displayGuiScreen(new GuiZoomManager(this));
