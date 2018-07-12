@@ -10,6 +10,7 @@ package net.wurstclient.event;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Objects;
 
 import net.minecraft.crash.CrashReport;
 import net.minecraft.crash.CrashReportCategory;
@@ -34,8 +35,18 @@ public final class EventManager
 			
 			if(listeners == null || listeners.isEmpty())
 				return;
+				
+			// Creating a copy of the list to avoid concurrent modification
+			// issues.
+			ArrayList<L> listeners2 = new ArrayList<>(listeners);
 			
-			event.fire(new ArrayList<>(listeners));
+			// remove() sets an element to null before removing it. When one
+			// thread calls remove() while another calls fire(), it is possible
+			// for this list to contain null elements, which need to be filtered
+			// out.
+			listeners2.removeIf(Objects::isNull);
+			
+			event.fire(listeners2);
 			
 		}catch(Throwable e)
 		{
