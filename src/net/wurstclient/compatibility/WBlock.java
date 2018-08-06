@@ -9,6 +9,7 @@ package net.wurstclient.compatibility;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.properties.PropertyInteger;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -38,6 +39,12 @@ public final class WBlock
 	public static Material getMaterial(BlockPos pos)
 	{
 		return getState(pos).getMaterial();
+	}
+	
+	public static int getIntegerProperty(IBlockState state,
+		PropertyInteger prop)
+	{
+		return state.getValue(prop);
 	}
 	
 	public static AxisAlignedBB getBoundingBox(BlockPos pos)

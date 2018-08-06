@@ -20,13 +20,7 @@ import java.util.stream.StreamSupport;
 
 import org.lwjgl.opengl.GL11;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockCactus;
-import net.minecraft.block.BlockCrops;
-import net.minecraft.block.BlockFarmland;
-import net.minecraft.block.BlockMelon;
-import net.minecraft.block.BlockPumpkin;
-import net.minecraft.block.BlockReed;
+import net.minecraft.block.*;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.init.Blocks;
@@ -76,9 +70,10 @@ public final class AutoFarmMod extends Mod
 			"Harvests and re-plants crops automatically.\n"
 				+ (WMinecraft.COOLDOWN
 					? "Works with wheat, carrots, potatoes, beetroots,\n"
-						+ "pumpkins, melons, cacti and sugar canes."
+						+ "pumpkins, melons, cacti, sugar canes and\n"
+						+ "nether warts."
 					: "Works with wheat, carrots, potatoes, pumpkins,\n"
-						+ "melons, cacti and sugar canes."));
+						+ "melons, cacti, sugar canes and nether warts."));
 		setCategory(Category.BLOCKS);
 		addSetting(range);
 	}
@@ -259,6 +254,8 @@ public final class AutoFarmMod extends Mod
 		else if(block instanceof BlockCactus)
 			return WBlock.getBlock(pos.down()) instanceof BlockCactus
 				&& !(WBlock.getBlock(pos.down(2)) instanceof BlockCactus);
+		else if(block instanceof BlockNetherWart)
+			return WBlock.getIntegerProperty(state, BlockNetherWart.AGE) >= 3;
 		
 		return false;
 	}
@@ -273,6 +270,7 @@ public final class AutoFarmMod extends Mod
 			seeds.put(Blocks.BEETROOTS, Items.BEETROOT_SEEDS);
 		seeds.put(Blocks.PUMPKIN_STEM, Items.PUMPKIN_SEEDS);
 		seeds.put(Blocks.MELON_STEM, Items.MELON_SEEDS);
+		seeds.put(Blocks.NETHER_WART, Items.NETHER_WART);
 		
 		plants.putAll(blocks.parallelStream()
 			.filter(pos -> seeds.containsKey(WBlock.getBlock(pos)))
@@ -288,6 +286,9 @@ public final class AutoFarmMod extends Mod
 			|| item == Items.POTATO || item == Items.BEETROOT_SEEDS
 			|| item == Items.PUMPKIN_SEEDS || item == Items.MELON_SEEDS)
 			return WBlock.getBlock(pos.down()) instanceof BlockFarmland;
+		
+		if(item == Items.NETHER_WART)
+			return WBlock.getBlock(pos.down()) instanceof BlockSoulSand;
 		
 		return false;
 	}
