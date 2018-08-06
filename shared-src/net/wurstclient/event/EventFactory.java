@@ -9,10 +9,12 @@ package net.wurstclient.event;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.network.Packet;
 import net.minecraft.tileentity.TileEntity;
 import net.wurstclient.WurstClient;
 import net.wurstclient.events.CameraTransformViewBobbingListener.CameraTransformViewBobbingEvent;
 import net.wurstclient.events.GetAmbientOcclusionLightValueListener.GetAmbientOcclusionLightValueEvent;
+import net.wurstclient.events.PacketInputListener.PacketInputEvent;
 import net.wurstclient.events.PlayerMoveListener.PlayerMoveEvent;
 import net.wurstclient.events.RenderBlockModelListener.RenderBlockModelEvent;
 import net.wurstclient.events.RenderTileEntityListener.RenderTileEntityEvent;
@@ -68,6 +70,13 @@ public final class EventFactory
 	public static boolean renderTileEntity(TileEntity tileEntity)
 	{
 		RenderTileEntityEvent event = new RenderTileEntityEvent(tileEntity);
+		WurstClient.INSTANCE.events.fire(event);
+		return !event.isCancelled();
+	}
+	
+	public static boolean onReceivePacket(Packet packet)
+	{
+		PacketInputEvent event = new PacketInputEvent(packet);
 		WurstClient.INSTANCE.events.fire(event);
 		return !event.isCancelled();
 	}
